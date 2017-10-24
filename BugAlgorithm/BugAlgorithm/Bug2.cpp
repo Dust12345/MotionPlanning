@@ -15,9 +15,6 @@ Point Bug2::getMovementVector(Point baseVector)
 	normVct.x = baseVector.x / length;
 	normVct.y = baseVector.y / length;
 	normVct.z = 0;
-	
-
-	//Point normVct = baseVector.Normalize();
 	normVct.SetLength(speed);
 
 	return normVct;
@@ -34,7 +31,6 @@ bool Bug2::followLine(Box obstacle[], Box& robot, int nObst) {
 	//line between the start an the end pos
 	Point line = goalPosition - startPosition;
 
-	//cout << line.x<<"/"<<line.y << endl;
 	//check for collisions
 	int obsIndex = obstacleInWay(obstacle, robot, nObst);
 
@@ -46,6 +42,7 @@ bool Bug2::followLine(Box obstacle[], Box& robot, int nObst) {
 		addMovement(mVct, robot);
 		
 		if (distanceEuclid(actPoint, goalPosition) < speed*2) {
+			actPoint = goalPosition;
 			return true;
 		}
 		else {
@@ -84,91 +81,101 @@ bool Bug2::moveAroundObs(Box obstacle[], Box& robot, int nObst)
 {
 	Point* pt = new Point();
 	
-	//int obsIndex = obstacleInWay(obstacle, robot, nObst);	
-	
-	
 	double dist= robot.distance(obstacle[objToFollow], pt);
 
-	int driftCorrection = 0;
-
-	
-
-	moved++;
-	
+	moved++;	
 
 	Point rVct = rotate((*pt), -90);
 
 	Point mVct = getMovementVector(rVct);
 
-	//check where we would end up
-
+	//check where we would end up	
+	Box tmp = robot;
+	Point p;
+	p.x = actPoint.x + mVct.x;
+	p.y = actPoint.y + mVct.y;
+	p.z = 0;
+	tmp.Set(p);
+	dist = tmp.distance(obstacle[objToFollow], pt);
 	
-	
-	
-	
-		Box tmp = robot;
-		Point p;
-		p.x = actPoint.x + mVct.x;
-		p.y = actPoint.y + mVct.y;
+	if (dist > speed * 2)
+	{
+		double length = sqrt((pt->x * pt->x) + (pt->y * pt->y));
+		Point normVct;
+		normVct.x = pt->x / length;
+		normVct.y = pt->y / length;
+		normVct.z = 0;		
+		double l = dist - (speed * 1.2);
+		normVct.SetLength(l);
+		p = p + normVct;
 		p.z = 0;
-		tmp.Set(p);
-		dist = tmp.distance(obstacle[objToFollow], pt);
-
-		if (dist > speed * 2)
-		{
-			double length = sqrt((pt->x * pt->x) + (pt->y * pt->y));
-
-			Point normVct;
-			normVct.x = pt->x / length;
-			normVct.y = pt->y / length;
-			normVct.z = 0;		
-
-			double l = dist - (speed * 1.2);
-
-			normVct.SetLength(l);
-
-			p = p + normVct;
-			p.z = 0;
-			robot.Set(p);
-			actPoint = p;
-		}
-		else {
-			addMovement(mVct, robot);
-		}
+		robot.Set(p);
+		actPoint = p;
+	}
+	else
+	{
+		addMovement(mVct, robot);
+	}
 
 		
-		if (moved > 3) {
-			double distToLine = perpendicularDist(startPosition, goalPosition, actPoint);
+	if (moved > 3)
+	{
+		double distToLine = perpendicularDist(startPosition, goalPosition, actPoint);
 
+		if (distToLine < speed)
+		{
+			//move onto the closest point on the line
+			Point nextPos = getClosestPointOnSegment(startPosition, goalPosition, actPoint);
 
+			leavePoint.push_back(actPoint);
 
-
-
-			if (distToLine < speed)
-			{
-				cState = FOLLOW_LINE;
-				return false;
-			}
-
-			if (distanceEuclid(hitPoint.at(hitPoint.size() - 1), actPoint)<speed) {
-
-				cout << "no way found" << endl;
-				return true;
-			}
-			else {
-
-
-
-				return false;
-			}
-		}
-		else {
+			actPoint = nextPos;
+			robot.Set(actPoint);
+			
+			cState = FOLLOW_LINE;
 			return false;
 		}
 
+		if (distanceEuclid(hitPoint.at(hitPoint.size() - 1), actPoint)<speed) {
 
-	
+			cout << "no way found" << endl;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
 
+Point Bug2::getClosestPointOnSegment(Point a, Point b, Point p)
+{
+	//implementation inspired by
+	//https://stackoverflow.com/questions/3120357/get-closest-point-to-a-line
+
+	Point aToP = p - a;  
+	Point aToB = b - a;  
+
+	aToB.z = 0;
+	aToP.z = 0;
+
+	double atb2 = pow(aToB.x, 2) + pow(aToB.y, 2);	
+
+	double dot = aToP.Dot(aToB);
+
+	double t = dot / atb2; 
+
+	Point pOnLine;
+
+	pOnLine.x = a.x + aToB.x * t;
+	pOnLine.y = a.y + aToB.y * t;
+	pOnLine.z = 0;
+
+	return pOnLine;
 }
 
 bool Bug2::backToLine(Box obstacle[], Box& robot, int nObst) {

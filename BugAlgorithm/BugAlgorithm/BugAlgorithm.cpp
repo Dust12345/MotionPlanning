@@ -126,6 +126,11 @@ bool BugAlgorithm::update(Box obstacle[], Box robot[], int nObst)
 /*****************************************************************************/
 int BugAlgorithm::obstacleInWay(Box obstacle[], Box& robot, int nObst)
 {
+	Point line = goalPosition - startPosition;
+
+	line = line.Normalize();
+	line.z = 0;
+
 	double stopDist = speed * 1.5;
 	//not going to use this for now
 	Point* pt = new Point();
@@ -134,11 +139,20 @@ int BugAlgorithm::obstacleInWay(Box obstacle[], Box& robot, int nObst)
     {
 		double distToObst = robot.distance(obstacle[i], pt);
 
-		if (distToObst < stopDist)
-		{
-			delete pt;
-			return i;
+		//check if the obstical is blocking the direction we intend to go
+
+		(*pt) = pt->Normalize();
+
+		double angle = atan2(pt->y, pt->x) - atan2(line.y, line.x);
+		if (angle > -90 && angle < 90) {
+			if (distToObst < stopDist)
+			{
+				delete pt;
+				return i;
+			}
 		}
+
+		
     }
 
 	delete pt;

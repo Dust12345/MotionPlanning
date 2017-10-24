@@ -7,7 +7,7 @@ class Bug2 :
 private:	
 	
 	//state machine states
-	enum state { FOLLOW_LINE = 0, MOVE_AROUND_OBS = 1, BACK_TO_LINE = 2 };
+	enum state { FOLLOW_LINE = 0, MOVE_AROUND_OBS = 1};
 	state cState;
 	int objToFollow;
 	
@@ -21,6 +21,8 @@ private:
 	bool backToLine(Box obstacle[], Box& robot, int nObst);
 	Point rotate(Point vct, double deg);
 	double perpendicularDist(Point lp1, Point lp2, Point refPoint);
+
+	Point getClosestPointOnSegment(Point a, Point b, Point p);
 
 public:
 	Bug2(const string& name);
