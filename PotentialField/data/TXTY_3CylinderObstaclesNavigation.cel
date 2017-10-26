@@ -1,0 +1,454 @@
+CELLFILE V 6.6
+! D:\MotionPlanning\PotentialFieldMethod\data\TXTY_3CylinderObstaclesNavigation.cel
+! W7654321-6 6
+ROBOTFILE V 6.6
+! D:\MotionPlanning\PotentialFieldMethod\data\
+! W7654321-6 6
+! robotname UNIV-ROBOT_1 Unique_ID
+name         UNIV-ROBOT_1 101957409
+kin_id       10 UNIV_ROB DH_ROB
+type_dir_chain     TT XY CC
+num_configs  1
+! Inverse kin_number  kin_user_data_file_name Invkin_Sub_ID
+invkin_no    0 NULL 0
+kin_dof      2 12 12
+! lz
+lenghts                 0.0000000    0.0000000
+! lx
+offsets1                0.0000000    0.0000000
+! ly
+offsets2                0.0000000    0.0000000
+! rot_x
+ROT_X                   0.0000000    0.0000000
+! rot_y
+ROT_Y                   0.0000000    0.0000000
+! rot_z
+ROT_Z                   0.0000000    0.0000000
+!
+!Passive Joints
+passiv_jnts 0
+!End Passive Joints
+!
+! base to Joint 1
+bT0                     0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+! singularity tolerances
+sing_tol                0.0050000    0.1000000
+! joint offsets
+joint_offsets           0.0000000    0.0000000
+! sign
+verpolt                   1      1
+config      1
+! config solution IDs
+cnfg_soln                 0
+! world to basis
+wTb                     0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+! joint start_location
+q                       0.3000000   -0.3000000
+! travel range min
+swe_min                 0.0000000    0.0000000
+! travel range max
+swe_max                 0.0000000    0.0000000
+ROBATTRIB
+! Robot Type
+ROB_ROBOT_TYPE            2
+! Robot enable  1-Enabled 0-Disabled
+ROB_ROBOT_ENABLED         1
+! Robot render  0-Visible 4-Invisible
+ROB_ROBOT_RENDER          0
+! Tool render  0-Visible 4-Invisible
+ROB_TOOL_RENDER           0
+! Robot Collision  1-robot is in collision queue
+ROB_ROBOT_COLLISION       1
+! Tool Collision  1-tool is in collision queue
+ROB_TOOL_COLLISION        1
+! Robot Reference Collision  1-collision chk vs. reference device
+ROB_ROBOT_REF_COLLISION      0
+! travel range calc
+ROB_SWE_CALC              0
+! Jnt 1
+ROB_SWE_MIN_CALC 1 =SWEN(1)
+ROB_SWE_MAX_CALC 1 =SWEP(1)
+! Jnt 2
+ROB_SWE_MIN_CALC 2 =SWEN(2)
+ROB_SWE_MAX_CALC 2 =SWEP(2)
+! Robot Cartesian active, passive Jnt Idx Bitfield
+CART_LIMIT_JNT_IDX   0x007f 0x0000
+! Robot Cartesian Space Limits Min
+CART_LIMIT_MIN          0.0000000    0.0000000    0.0000000
+! Robot Cartesian Space Limits Max
+CART_LIMIT_MAX          0.0000000    0.0000000    0.0000000
+! active Jnt achs_T0_last
+! Extended Attributes: Backlink Axis_CouplingA2A3 CounterWeight [-1 or 2- undef, 0-No, 1-Yes]
+ROB_EXT_ATTRIB            2 2 2
+! Turn interval [deg, m]
+ROB_TURN_INTERVAL       0.0000000    0.0000000
+! Turn offset [deg, m]
+ROB_TURN_OFFSET         0.0000000    0.0000000
+! Ext. TCP
+ROB_EXT_TCP             0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+ROB_EXT_TCP_BASE        0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+! Number Tools, current Tool
+ROB_NUM_TOOL              1 1
+! Tool name
+ROB_TOOL_NAME        TOOL_1
+! Tool
+ROB_TOOL                0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+! Number Homepositions, current Homeposition
+ROB_NUM_HOMEPOS           1 1
+! Homepos name
+ROB_HOMEPOS_NAME     HOME_1
+! home position [deg, m]
+ROB_HOMEPOS             0.0000000    0.0000000
+! Joint name
+ROB_JOINT_NAME       JOINT_1 JOINT_2
+! Configuration name
+ROB_CONFIG_NAME      CONFIG_1
+! Number Kin_User_Data
+ROB_NUM_KIN_USRD         12
+! Kin. User Data Name
+ROB_KIN_USRD_NAME    KUD_1_1 KUD_1_2 KUD_1_3 KUD_1_4 KUD_1_5 KUD_1_6 KUD_1_7 KUD_1_8 KUD_1_9 KUD_1_10 KUD_1_11 KUD_1_12
+! Kin. User Data [deg,mm]
+ROB_KIN_USRD            0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+! Kin. User Data Name
+ROB_KIN_USRD_NAME    KUD_2_1 KUD_2_2 KUD_2_3 KUD_2_4 KUD_2_5 KUD_2_6 KUD_2_7 KUD_2_8 KUD_2_9 KUD_2_10 KUD_2_11 KUD_2_12
+! Kin. User Data [deg,mm]
+ROB_KIN_USRD            0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+! Kin. User Data Name
+ROB_KIN_USRD_NAME    KUD_3_1 KUD_3_2 KUD_3_3 KUD_3_4 KUD_3_5 KUD_3_6 KUD_3_7 KUD_3_8 KUD_3_9 KUD_3_10 KUD_3_11 KUD_3_12
+! Kin. User Data [deg,mm]
+ROB_KIN_USRD            0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+! Kin. User Data Name
+ROB_KIN_USRD_NAME    KUD_4_1 KUD_4_2 KUD_4_3 KUD_4_4 KUD_4_5 KUD_4_6 KUD_4_7 KUD_4_8 KUD_4_9 KUD_4_10 KUD_4_11 KUD_4_12
+! Kin. User Data [deg,mm]
+ROB_KIN_USRD            0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+! Kin. User Data Name
+ROB_KIN_USRD_NAME    KUD_5_1 KUD_5_2 KUD_5_3 KUD_5_4 KUD_5_5 KUD_5_6 KUD_5_7 KUD_5_8 KUD_5_9 KUD_5_10 KUD_5_11 KUD_5_12
+! Kin. User Data [deg,mm]
+ROB_KIN_USRD            0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+! Kin. User Data Name
+ROB_KIN_USRD_NAME    KUD_6_1 KUD_6_2 KUD_6_3 KUD_6_4 KUD_6_5 KUD_6_6 KUD_6_7 KUD_6_8 KUD_6_9 KUD_6_10 KUD_6_11 KUD_6_12
+! Kin. User Data [deg,mm]
+ROB_KIN_USRD            0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+! Kin. User Data Name
+ROB_KIN_USRD_NAME    KUD_7_1 KUD_7_2 KUD_7_3 KUD_7_4 KUD_7_5 KUD_7_6 KUD_7_7 KUD_7_8 KUD_7_9 KUD_7_10 KUD_7_11 KUD_7_12
+! Kin. User Data [deg,mm]
+ROB_KIN_USRD            0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+! Kin. User Data Name
+ROB_KIN_USRD_NAME    KUD_8_1 KUD_8_2 KUD_8_3 KUD_8_4 KUD_8_5 KUD_8_6 KUD_8_7 KUD_8_8 KUD_8_9 KUD_8_10 KUD_8_11 KUD_8_12
+! Kin. User Data [deg,mm]
+ROB_KIN_USRD            0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+! Kin. User Data Name
+ROB_KIN_USRD_NAME    KUD_9_1 KUD_9_2 KUD_9_3 KUD_9_4 KUD_9_5 KUD_9_6 KUD_9_7 KUD_9_8 KUD_9_9 KUD_9_10 KUD_9_11 KUD_9_12
+! Kin. User Data [deg,mm]
+ROB_KIN_USRD            0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+! Kin. User Data Name
+ROB_KIN_USRD_NAME    KUD_10_1 KUD_10_2 KUD_10_3 KUD_10_4 KUD_10_5 KUD_10_6 KUD_10_7 KUD_10_8 KUD_10_9 KUD_10_10 KUD_10_11 KUD_10_12
+! Kin. User Data [deg,mm]
+ROB_KIN_USRD            0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+! Kin. User Data Name
+ROB_KIN_USRD_NAME    KUD_11_1 KUD_11_2 KUD_11_3 KUD_11_4 KUD_11_5 KUD_11_6 KUD_11_7 KUD_11_8 KUD_11_9 KUD_11_10 KUD_11_11 KUD_11_12
+! Kin. User Data [deg,mm]
+ROB_KIN_USRD            0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+! Kin. User Data Name
+ROB_KIN_USRD_NAME    KUD_12_1 KUD_12_2 KUD_12_3 KUD_12_4 KUD_12_5 KUD_12_6 KUD_12_7 KUD_12_8 KUD_12_9 KUD_12_10 KUD_12_11 KUD_12_12
+! Kin. User Data [deg,mm]
+ROB_KIN_USRD            0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+! v_max [deg/s, m/s]
+ROB_V_MAX               3.1415927    3.1415927
+! a_max [deg/s^2, m/s^2]
+ROB_A_MAX               6.2831855    6.2831855
+! t_max [Nm, N]
+ROB_T_MAX              15.0000000   15.0000000
+! vx_max [m/s]
+ROB_VX_MAX              1.0000000
+! vx_ori_max [deg/s]
+ROB_VX_ORI_MAX        180.0000000
+! ax_max [m/s^2]
+ROB_AX_MAX              2.0000000
+! ax_ori_max [deg/s^2]
+ROB_AX_ORI_MAX        360.0000000
+! dyn_cntrl_fct
+ROB_DYN_CNTR              0
+! dyn_model_fct
+ROB_DYN_MODE              0
+! gear ratio
+ROB_N                  50.0000000   50.0000000
+! T_base
+ROB_T_BASE              2.7419357    2.7419357
+! Inertia base
+ROB_INERTIA             0.0051000    0.0051000
+! Damping base
+ROB_DAMPING             0.0018600    0.0018600
+! vz1_v
+ROB_VZ1_V             537.6343994  537.6343994
+! vz1_a
+ROB_VZ1_A               0.9981781    0.9981781
+! KPP
+ROB_KPP                 7.4429770    7.4429770
+! KPV
+ROB_KPV                 0.1469400    0.1469400
+! KIV
+ROB_KIV                29.5457916   29.5457916
+! AUX1
+ROB_AUX1                1.0000000    1.0000000
+! AUX2
+ROB_AUX2                0.0000000    0.0000000
+! AUX3
+ROB_AUX3                0.0000000    0.0000000
+! ipo_jnt_fct
+ROB_IPO_JNT               0
+! ipo_cp_fct
+ROB_IPO_CP                0
+! ipo_circ_fct
+ROB_IPO_CIRC              0
+! DT_SYS [s]
+ROB_DT_SYS              0.0050000
+! DT_CNTRL [s]
+ROB_DT_CNTRL            0.0100000
+! DT_IPO [s]
+ROB_DT_IPO              0.0100000
+! IPO LEAD [s]
+ROB_IPO_LEAD            0.0000000
+! IPO LAG [s]
+ROB_IPO_LAG             0.0000000
+! IPO Vq [deg/s], Vq_Ov []
+ROB_IPO_VQ             20.0000000  636.6197510
+! IPO Vqe [deg/s]
+ROB_IPO_VQE             0.0000000    0.0000000
+! IPO Vx [m/s]
+ROB_IPO_VX              0.1000000
+! IPO Vxe [m/s]
+ROB_IPO_VXE             0.0000000
+! IPO Aq [deg/s^2]
+ROB_IPO_AQ             40.0000000
+! IPO Ax [m/s^2]
+ROB_IPO_AX              0.2000000
+! IPO Ov_Pro []
+ROB_IPO_OV_PRO        100.0000000
+! IPO Vq_Axis [deg/s, m/s]
+ROB_IPO_VQ_AXIS        20.0000000   20.0000000
+! IPO Aq_Axis [deg/s^2, m/s^2]
+ROB_IPO_AQ_AXIS        40.0000000   40.0000000
+! IPO Aq_Decel_Axis [deg/s^2, m/s^2]
+ROB_IPO_AQ_DECEL_AXIS   40.0000000   40.0000000
+! IPO VX_ORI [deg/s]
+ROB_IPO_VX_ORI         20.0000000
+! IPO VXE_ORI [deg/s]
+ROB_IPO_VXE_ORI         0.0000000
+! IPO AX_ORI [deg/s]
+ROB_IPO_AX_ORI         40.0000000
+! IPO AQE [deg/s^2]
+ROB_IPO_AQE            40.0000000
+! IPO AXE [m/s^2]
+ROB_IPO_AXE             0.2000000
+! IPO AXE_ORI [deg/s^2]
+ROB_IPO_AXE_ORI        40.0000000
+! IPO Zone [mm]
+ROB_IPO_ZONE            0.1000000
+! IPO LeadPos
+ROB_IPO_LEAD_POS          2
+! IPO LIN_ORI_MODE
+ROB_IPO_LIN_ORI_MODE      4
+! IPO CIRC_ORI_MODE
+ROB_IPO_CIRC_ORI_MODE      5
+! IPO CIRC_ORI_IPO_MODE
+ROB_IPO_CIRC_ORI_IPO_MODE      1
+! Rotation Notation RxRyRz
+ROB_ROT_IDX     1
+! Controller EASY-ROB, Program Interpreter ID
+ROB_CNTRL       1 0
+! move base: pass. Jnt.to move base
+ROB_PJNTTMB             0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+! --- Syntax ---
+! REF_SYS_TRACK   Ref_Type Grp_Idx Unique_Robot_ID
+!    Ref_Type = [1-REF_NO_REF, 2-REF_BASE, 3-REF_TOOL, 4-REF_WORLD, 5-REF_WOBJ, 6-REF_TAG, 7-REF_CAD, 8-REF_TIP, 9-REF_JNT, 10-REF_GRAB, 11-REF_AUX]
+!    Grp_Idx  = [-1-UNDEF_GRP, 0-ROBOT_GRP, 1-TOOL_GRP, 2-BODY_GRP]
+!    Unique_Robot_ID
+! REF_SYS_TRACK_NAME  name  jnt_idx
+!     name    = [Name of Reference]
+!     jnt_idx = [>=0 - active joints, <0 - passive joints]
+!
+! REF_SYS_DEVICE      -> REF_SYS_TRACK
+! REF_SYS_DEVICE_NAME -> REF_SYS_TRACK_NAME
+! REF_SYS_DEVICE_SYNC -> REF_SYS_TRACK
+! REF_SYS_DEVICE_SIDX jnt_sync_idx for each active Jnt
+! --- End Syntax ---
+ROB_REF_SYS_TRACK         2 -1 0
+ROB_REF_SYS_TRACK_NAME    REF_BASE 0
+ROB_REF_SYS_DEVICE        4 -1 0
+ROB_REF_SYS_DEVICE_NAME   REF_WORLD 0
+ROB_REF_SYS_DEVICE_SYNC   1 0 0
+ROB_REF_SYS_DEVICE_SIDX      0      0
+!Tol [deg], Tol [mm], Number of Iterations
+ROB_NUM_INV_TOL         0.1000000    0.1000000 150
+ROB_NUM_INV_MASK        1.0000000    1.0000000    1.0000000    1.0000000    1.0000000    1.0000000
+ROB_NUM_INV_WEIGHT      1.0000000    1.0000000
+! Reference Kinematics 0- REF_KIN_ID_UNDEF, 1-REF_KIN_ID_RRR_RRR, 2-REF_KIN_ID_RRR_RRR_BL, 3-REF_KIN_ID_SCARA, 4-REF_KIN_ID_GANTRY
+! ID num_dof num_configs type direction SID
+ROB_NRK_ID           0 0 0 - - 0
+ENDROBATTRIB
+ROBBODYS
+! --- Syntax ---
+! STATUS          grab[0,1,Unique_ID] ax_idx[0..dof] visible[0,1] invert[0,1] collision[0-off,1-concave,2-convex,3-bbox,4-disabled] show_name[0,1] bface_cull[0,1] show_normals[0,1] show_mesh[0,1] show_edges[0,1] show_transparent [0,1]
+! QUADER          name color render lx ly   lz   transparency collision_tolerance
+! PYRAMIDE        name color render lx ly   lz   dx    dy   transparency collision_tolerance
+! PYRAMIDENST     name color render lx ly   lz   lx2   ly2   dx    dy   transparency collision_tolerance
+! ZYLINDER        name color render r1 h1   r2   h2    ang   skal1 skal2 dx dy   transparency collision_tolerance
+! KEGEL           name color render r1 h1   skal dx    dy    ang   transparency collision_tolerance
+! KUGEL           name color render r  skal ang  beta1 beta2   transparency collision_tolerance
+! IGP             name color render IGP-Partfile xscal yscal zscal   transparency collision_tolerance
+! STL             name color render STL-Partfile xscal yscal zscal   transparency collision_tolerance
+! 3DS             name color render 3DS-Partfile xscal yscal zscal   transparency collision_tolerance
+! color=[1..15], render=[0=SMOOTH,1=WIRE,2=BBFLAT,3=BBWIRE,4=INVIS,5=POINTS,6=FLAT]
+! --- End Syntax ---
+!
+STATUS       0 2 1 0 1 0 1 0 0 0 0
+REFPOS                  0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+POS                     0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+ZYLINDER     ROBOTCYLINDER   1   0    0.05000    0.20000    0.05000    0.20000  360.00000    1.00000    1.00000     0.00000     0.00000    1.0    0.00000
+ENDROBBODYS
+!
+TOOLFILE V 6.6
+! D:\MotionPlanning\PotentialFieldMethod\data\
+! W7654321-6 6
+! tool transformation
+tool                    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+TOOLBODYS
+! --- Syntax ---
+! STATUS          grab[0,1,Unique_ID] ax_idx[0..dof] visible[0,1] invert[0,1] collision[0-off,1-concave,2-convex,3-bbox,4-disabled] show_name[0,1] bface_cull[0,1] show_normals[0,1] show_mesh[0,1] show_edges[0,1] show_transparent [0,1]
+! QUADER          name color render lx ly   lz   transparency collision_tolerance
+! PYRAMIDE        name color render lx ly   lz   dx    dy   transparency collision_tolerance
+! PYRAMIDENST     name color render lx ly   lz   lx2   ly2   dx    dy   transparency collision_tolerance
+! ZYLINDER        name color render r1 h1   r2   h2    ang   skal1 skal2 dx dy   transparency collision_tolerance
+! KEGEL           name color render r1 h1   skal dx    dy    ang   transparency collision_tolerance
+! KUGEL           name color render r  skal ang  beta1 beta2   transparency collision_tolerance
+! IGP             name color render IGP-Partfile xscal yscal zscal   transparency collision_tolerance
+! STL             name color render STL-Partfile xscal yscal zscal   transparency collision_tolerance
+! 3DS             name color render 3DS-Partfile xscal yscal zscal   transparency collision_tolerance
+! color=[1..15], render=[0=SMOOTH,1=WIRE,2=BBFLAT,3=BBWIRE,4=INVIS,5=POINTS,6=FLAT]
+! --- End Syntax ---
+ENDTOOLBODYS
+!
+! END TOOLFILE  18188308
+! END ROBOTFILE  255185128
+PRGFILE
+! Program file for 'UNIV-ROBOT_1', Program Interpreter ID, [Mimic file] [UserKey]
+Program      TXTY_3CYLINDEROBSTACLESNAVIGATION.PRG 0 NULL NULL
+! END PRGFILE  1834024640
+RECFILE
+Recording    NULL
+! END RECFILE  2641082732
+VIEWFILE V 6.6
+! C:\Program Files\EASY-ROB\EASY-ROB x64\Proj\my_view.vie
+! W7654321-6 6
+! zoompkt in basis
+bz_f                    0.1000000   -2.0000000    0.6000000
+! lichtpkt in basis
+bl_f                    0.0000000   -4.0000000    1.0000000
+! Skalierwert
+skal                    0.3000000
+! Skalierwert Aenderung min
+dskal_min               0.0500000
+! Skalierwert Aenderung max
+dskal_max               0.2500000
+! Rotations Aenderung [deg]
+rot_dq                  5.0000000
+! Transl. Aenderung [m]
+dbAs_p                  0.1000000
+! Zoompkt Aenderung [m]
+dbz_f                   0.0500000
+! Lichtpkt Aenderung [m]
+dbl_f                   0.0500000
+! grafik nach basis
+gAb                     0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+! delta_frame basis nach 'basis
+Rot                    -0.3242431   -1.3238130    0.2565944   71.4999237    0.0000000  -12.4998827
+! END VIEWFILE  3431141664
+BODYSFILE V 6.6
+! C:\Program Files\EASY-ROB\EASY-ROB x64\Proj\my_bodys.bod
+! W7654321-6 6
+BODYBODYS
+! --- Syntax ---
+! STATUS          grab[0,1,Unique_ID] ax_idx[0..dof] visible[0,1] invert[0,1] collision[0-off,1-concave,2-convex,3-bbox,4-disabled] show_name[0,1] bface_cull[0,1] show_normals[0,1] show_mesh[0,1] show_edges[0,1] show_transparent [0,1]
+! QUADER          name color render lx ly   lz   transparency collision_tolerance
+! PYRAMIDE        name color render lx ly   lz   dx    dy   transparency collision_tolerance
+! PYRAMIDENST     name color render lx ly   lz   lx2   ly2   dx    dy   transparency collision_tolerance
+! ZYLINDER        name color render r1 h1   r2   h2    ang   skal1 skal2 dx dy   transparency collision_tolerance
+! KEGEL           name color render r1 h1   skal dx    dy    ang   transparency collision_tolerance
+! KUGEL           name color render r  skal ang  beta1 beta2   transparency collision_tolerance
+! IGP             name color render IGP-Partfile xscal yscal zscal   transparency collision_tolerance
+! STL             name color render STL-Partfile xscal yscal zscal   transparency collision_tolerance
+! 3DS             name color render 3DS-Partfile xscal yscal zscal   transparency collision_tolerance
+! color=[1..15], render=[0=SMOOTH,1=WIRE,2=BBFLAT,3=BBWIRE,4=INVIS,5=POINTS,6=FLAT]
+! --- End Syntax ---
+!
+STATUS       0 0 1 0 1 0 1 0 0 0 0
+REFPOS                  0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+POS                     0.1000000    0.1000000    0.0000000    0.0000000    0.0000000    0.0000000
+ZYLINDER     CYLINDER1   3   0    0.10000    0.10000    0.10000    0.10000  360.00000    1.00000    1.00000     0.00000     0.00000    1.0    0.00000
+!
+STATUS       0 0 1 0 1 0 1 0 0 0 0
+REFPOS                  0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+POS                     0.5000000    0.1000000    0.0000000    0.0000000    0.0000000    0.0000000
+ZYLINDER     CYLINDER2   3   0    0.10000    0.10000    0.10000    0.10000  360.00000    1.00000    1.00000     0.00000     0.00000    1.0    0.00000
+!
+STATUS       0 0 1 0 1 0 1 0 0 0 0
+REFPOS                  0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+POS                     0.3000000    0.3400000    0.0000000    0.0000000    0.0000000    0.0000000
+ZYLINDER     CYLINDER3   3   0    0.10000    0.10000    0.10000    0.10000  360.00000    1.00000    1.00000     0.00000     0.00000    1.0    0.00000
+ENDBODYBODYS
+!
+! END BODYSFILE  3724224576
+TAGFILE V 6.6
+! C:\Program Files\EASY-ROB\EASY-ROB x64\Proj\my_tags
+! PATH_NAME path_name [0-invisible,1-visible] [Path Owner: unique_Robot_ID 0-disabled,1-enabled]
+! WORK_NAME workobject_name
+! TAG_WOBJ  X Y Z in [m]  Rx Ry Rz in [deg]
+! REF_SYS_PATH   1-REF_NO_REF [2-REF_BASE,3-REF_TOOL,4-REF_WORLD,5-REF_WOBJ,6-REF_TAG,7-REF_CAD,8-REF_TIP,9-REF_JNT] Grp_Idx Unique_Robot_ID
+! REF_SYS_PATH_NAME  name (where path is attached to) [jnt_idx (if REF_JNT)]
+! TAG_ATTRIB prefix motype[0-def,1-ptp,2-lin,3-circ,4-via] render[0-def,1-app_z,2-app_x,3-app_y,4-point,5-invisible]
+!            speed_ptp[0-def,[rad]] speed_cp[0-def,[m]] speed_ori [0-def,[rad]]
+!            confdata[0-def,1..numconfigs]
+!            extax[extax: #eax(number of extax) extax_type['R-rot..T-trans'] eaxjnt1 eax1...eaxjntn eaxn]
+! TAG_ATTRIB_EX  zone[-1-def,0-100] accel_ptp[0-def,[rad]] accel_cp[0-def,[m]] accel_ori [0-def,[rad]]
+!            ov_pro[0-200] speed_ptp_ov[0-200] speed_cp_ov[0-200] speed_ori_ov[0-200] accel_ptp_ov[0-200] accel_cp_ov[0-200] accel_ori_ov[0-200]
+!            auto_accel[0-def, 1-ON] acc_set_acc[100-def [20-100]] acc_set_ramp[100-def [20-100]]
+!            no_decel[0-def, 1-enabled] leading_pos[2-def, 1-Pos, 2-VAR, 0-Ori] lead_time[0-def [s]] lag_time[0-def [s]]
+!            lin_ori_mode[4-def, 0-LIN_VARIABLE, 1-LIN_FIX, 2-LIN_TANGENTIAL, 3-LIN_AUX, 4-LIN_QUATERNION]
+!            circ_ori_mode[5-def, 0-CIRC_VARIABLE, 1-CIRC_FIX, 2-CIRC_TANGENTIAL, 3-CIRC_AUX, 4-CIRC_VARIABLE2, 5-CIRC_QUATERNION]
+! TAG_SPEED_AX_OV  speed override for each joint[0-def [0-200]]
+! TAG_ACCEL_AX_OV  accel override for each joint[0-def [0-200]]
+! TAG_TURN_AX      turn_use [0-def,1-ON] turn for each joint[0-def, turn_value]
+! TAG_USR_STRING   user defined Tag string
+! TAG no. name color size X Y Z in [m] Rx Ry Rz in [deg]
+! W7654321-6 6
+! ---------- Path index 1  number of tags 0 ----------
+PATH_NAME    PATH01 1 0 0
+WOBJ_NAME    WOBJ01
+! Workobject frame
+TAG_WOBJ                0.0000000    0.0000000    0.0000000    0.0000000    0.0000000    0.0000000
+REF_SYS_PATH         4 -1 0
+REF_SYS_PATH_NAME    REF_WORLD 0
+ENDTAGFILE
+CAMERAFILE V 6.6
+! C:\Program Files\EASY-ROB\EASY-ROB x64\Proj\my_cam
+! CAMERA_ENABLE    1-On [0-Off]
+! REF_SYS_CAMERA   1-REF_NO_REF [2-REF_BASE,3-REF_TOOL,4-REF_WORLD,5-REF_WOBJ,6-REF_TAG,7-REF_CAD,8-REF_TIP,9-REF_JNT] Grp_Idx Unique_Robot_ID
+! CAMERA_NAME      name (where camera is attached to) [jnt_idx (if REF_JNT)]
+! CAMERA_FOCUS     Camera_Focus Focus Focus_min Focus_max [mm]
+! CAMERA_Z_OFFSET  Camera_Z_offset z_offset z_offset_min z_offset_max [mm]
+! CAMERA_POSITION  Camera_Position X Y Z in [m]  Rx Ry Rz in [deg]
+! W7654321-6 6
+CAMERA_ENABLE 0
+REF_SYS_CAMERA       3 0 0
+CAMERA_NAME          REF_TOOL 0
+CAMERA_FOCUS 51.230 12.251 242.546
+CAMERA_Z_OFFSET 0.000 -200.000 500.000
+! Camera Position frame
+CAMERA_POSITION         0.0000000    0.0000000    0.0000000    0.0000000  180.0000000  -90.0000000
+ENDCAMERAFILE
+CELLATTRIB
+CELL_INFO_SHOW 0
+CELL_INFO 
+ENDCELLATTRIB
+! END CELLFILE  800120636

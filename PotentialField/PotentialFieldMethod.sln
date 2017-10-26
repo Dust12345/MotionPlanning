@@ -1,0 +1,67 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TXTY_2ObstaclesPotential", "TXTY_2ObstaclesPotential\TXTY_2ObstaclesPotential.vcxproj", "{1FCC7924-62ED-4B5F-913A-8D77DC176BF1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{508D0C73-C26E-48B0-A017-16E71A2D86A2} = {508D0C73-C26E-48B0-A017-16E71A2D86A2}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TXTY_3CylinderObstaclesPotential", "TXTY_3CylinderObstaclesPotential\TXTY_3CylinderObstaclesPotential.vcxproj", "{A3B4C25D-8998-41B5-A024-FE84CD1E0403}"
+	ProjectSection(ProjectDependencies) = postProject
+		{508D0C73-C26E-48B0-A017-16E71A2D86A2} = {508D0C73-C26E-48B0-A017-16E71A2D86A2}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TXTY_3CylinderObstaclesNavigation", "TXTY_3CylinderObstaclesNavigation\TXTY_3CylinderObstaclesNavigation.vcxproj", "{BBCD2DB6-0D70-4DE1-AEF1-C0C5614DB597}"
+	ProjectSection(ProjectDependencies) = postProject
+		{508D0C73-C26E-48B0-A017-16E71A2D86A2} = {508D0C73-C26E-48B0-A017-16E71A2D86A2}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Potential", "Potential\Potential.vcxproj", "{508D0C73-C26E-48B0-A017-16E71A2D86A2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1FCC7924-62ED-4B5F-913A-8D77DC176BF1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1FCC7924-62ED-4B5F-913A-8D77DC176BF1}.Debug|Win32.Build.0 = Debug|Win32
+		{1FCC7924-62ED-4B5F-913A-8D77DC176BF1}.Debug|x64.ActiveCfg = Debug|x64
+		{1FCC7924-62ED-4B5F-913A-8D77DC176BF1}.Debug|x64.Build.0 = Debug|x64
+		{1FCC7924-62ED-4B5F-913A-8D77DC176BF1}.Release|Win32.ActiveCfg = Release|Win32
+		{1FCC7924-62ED-4B5F-913A-8D77DC176BF1}.Release|Win32.Build.0 = Release|Win32
+		{1FCC7924-62ED-4B5F-913A-8D77DC176BF1}.Release|x64.ActiveCfg = Release|x64
+		{1FCC7924-62ED-4B5F-913A-8D77DC176BF1}.Release|x64.Build.0 = Release|x64
+		{A3B4C25D-8998-41B5-A024-FE84CD1E0403}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A3B4C25D-8998-41B5-A024-FE84CD1E0403}.Debug|Win32.Build.0 = Debug|Win32
+		{A3B4C25D-8998-41B5-A024-FE84CD1E0403}.Debug|x64.ActiveCfg = Debug|x64
+		{A3B4C25D-8998-41B5-A024-FE84CD1E0403}.Debug|x64.Build.0 = Debug|x64
+		{A3B4C25D-8998-41B5-A024-FE84CD1E0403}.Release|Win32.ActiveCfg = Release|Win32
+		{A3B4C25D-8998-41B5-A024-FE84CD1E0403}.Release|Win32.Build.0 = Release|Win32
+		{A3B4C25D-8998-41B5-A024-FE84CD1E0403}.Release|x64.ActiveCfg = Release|x64
+		{A3B4C25D-8998-41B5-A024-FE84CD1E0403}.Release|x64.Build.0 = Release|x64
+		{BBCD2DB6-0D70-4DE1-AEF1-C0C5614DB597}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BBCD2DB6-0D70-4DE1-AEF1-C0C5614DB597}.Debug|Win32.Build.0 = Debug|Win32
+		{BBCD2DB6-0D70-4DE1-AEF1-C0C5614DB597}.Debug|x64.ActiveCfg = Debug|x64
+		{BBCD2DB6-0D70-4DE1-AEF1-C0C5614DB597}.Debug|x64.Build.0 = Debug|x64
+		{BBCD2DB6-0D70-4DE1-AEF1-C0C5614DB597}.Release|Win32.ActiveCfg = Release|Win32
+		{BBCD2DB6-0D70-4DE1-AEF1-C0C5614DB597}.Release|Win32.Build.0 = Release|Win32
+		{BBCD2DB6-0D70-4DE1-AEF1-C0C5614DB597}.Release|x64.ActiveCfg = Release|x64
+		{BBCD2DB6-0D70-4DE1-AEF1-C0C5614DB597}.Release|x64.Build.0 = Release|x64
+		{508D0C73-C26E-48B0-A017-16E71A2D86A2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{508D0C73-C26E-48B0-A017-16E71A2D86A2}.Debug|Win32.Build.0 = Debug|Win32
+		{508D0C73-C26E-48B0-A017-16E71A2D86A2}.Debug|x64.ActiveCfg = Debug|x64
+		{508D0C73-C26E-48B0-A017-16E71A2D86A2}.Debug|x64.Build.0 = Debug|x64
+		{508D0C73-C26E-48B0-A017-16E71A2D86A2}.Release|Win32.ActiveCfg = Release|Win32
+		{508D0C73-C26E-48B0-A017-16E71A2D86A2}.Release|Win32.Build.0 = Release|Win32
+		{508D0C73-C26E-48B0-A017-16E71A2D86A2}.Release|x64.ActiveCfg = Release|x64
+		{508D0C73-C26E-48B0-A017-16E71A2D86A2}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

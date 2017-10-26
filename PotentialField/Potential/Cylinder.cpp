@@ -1,0 +1,79 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
+
+#include "Cylinder.h"
+//#pragma warning(disable : 4305)
+//#pragma warning(disable : 4136)
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Constructor.
+ */
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Cylinder::Cylinder()
+{
+    center = Point(0., 0., 0.);
+    r = 1.;
+    h = 1.;
+}
+
+Cylinder::Cylinder(const Point p, double pr = 1.0, double ph = 1.0)
+    : center(p)
+    , r(pr)
+    , h(ph)
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Destructor.
+ */
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Cylinder::~Cylinder()
+{
+}
+
+Point& Cylinder::GetCenter()
+{
+    return center;
+}
+
+void Cylinder::SetCenter(const Point p)
+{
+    center = p;
+}
+
+void Cylinder::SetCenter(double x, double y, double z)
+{
+    // sets the center coordinates to x,y,z
+    center.x = x;
+    center.y = y;
+    center.z = z;
+}
+
+void Cylinder::SetRadius(const double pr)
+{
+    // sets the radius
+    r = pr;
+}
+
+double Cylinder::GetRadius()
+{
+    // gets the radius
+    return r;
+}
+
+double Cylinder::distance(Cylinder cyl2, Point *pt)
+{
+    *pt = cyl2.center - center;
+    double d = pt->Magnitude() - r - cyl2.r;
+    pt->SetLength(d);
+
+    return d;
+}
+
+double Cylinder::distance_sqr(Cylinder cyl2)
+{
+    Point d = center.Sub(cyl2.center);
+    return d.SquareMagnitude() - r*r - cyl2.r*cyl2.r;
+}
