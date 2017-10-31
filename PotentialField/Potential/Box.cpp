@@ -27,6 +27,7 @@ Box::Box( )
     m_Verts[6].Set( 1.0, 1.0, 1.0 );
     m_Verts[7].Set( 0.0, 1.0, 1.0 );
     p.x = p.y = p.z = 1.0;
+	center = Point();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -40,6 +41,11 @@ Box::~Box()
 Point& Box::GetVertex(int i)
 {
     return m_Verts[i];
+}
+
+Point Box::getCenter()
+{
+	return center;
 }
 
 void Box::SetVertex(int i, const Point pt)
@@ -84,6 +90,10 @@ void Box::Scale(double sx, double sy, double sz)
 
 void Box::Translate(double x, double y, double z)
 {
+	center.x = center.x + x;
+	center.y = center.y + y;
+	center.z = 0;
+
     // Verschieben
     for (int i = 0; i < 8; ++i)
     {
@@ -95,6 +105,10 @@ void Box::Translate(double x, double y, double z)
 
 void Box::Translate(Point p)
 {
+	center.x = center.x + p.x;
+	center.y = center.y + p.y;
+	center.z = 0;
+
     // Verschieben
     for (int i = 0; i < 8; ++i)
     {
@@ -106,6 +120,10 @@ void Box::Translate(Point p)
 
 void Box::Set(const Point pt)
 {
+	center.x = pt.x;
+	center.y = pt.y;
+	center.z = 0;
+
     // Setzen
     m_Verts[0] = pt + Point(0.0, 0.0, 0.0);
     m_Verts[1] = pt + Point(p.x, 0.0, 0.0);
@@ -119,6 +137,10 @@ void Box::Set(const Point pt)
 
 void Box::Set(double px, double py, double pz)
 {
+	center.x = px;
+	center.y = py;
+	center.z = 0;
+
     // Setzen
     Point pt(px, py, pz);
     m_Verts[0] = pt + Point(0.0, 0.0, 0.0);

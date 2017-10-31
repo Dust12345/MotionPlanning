@@ -33,6 +33,18 @@ public:
     bool update_box(Box obstacle[], Box robot[], int nObst);
     bool update_cylinder(Cylinder obstacle[], Cylinder robot[], int nObst);
     bool update_cylinder_navigation(Cylinder obstacle[], Cylinder robot[], int nObst);
+
+private:
+
+	Point repulsionToObject(Point q, Box robot,Box object,double theshold, double scalingFactor);
+	Point getOverallPotential(Point q, Box obstacle[], Box robot[], int nObst);
+	Point attractivPotential(Point q, double scalingFactor, double switchThreshold);
+	Point repulsivePotential(Point q, Box obstacle[], Box robot[], int nObst);
+
+	Point repulsionToObject(Point q, Cylinder robot, Cylinder object, double theshold, double scalingFactor);
+	Point getOverallPotential(Point q, Cylinder obstacle[], Cylinder robot[], int nObst);
+	Point repulsivePotential(Point q, Cylinder obstacle[], Cylinder robot[], int nObst);
+
 };
 
 #endif /* __POTENTIAL_H__ */
