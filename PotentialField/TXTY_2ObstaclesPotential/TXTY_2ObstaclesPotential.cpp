@@ -87,13 +87,11 @@ int main(void)
 // Chekcs, if local minimum is reached
 bool check_local_minimum(vector<Point> path, Point act)
 {
-    //simple check if the current position was reached bevore
-
+    //simple check if the current position was reached before
 	double errorMargin = 0.00005;
 
 	for (int i = 0; i < path.size()-1; i++)
 	{
-
 		double xDiff = abs(act.x - path[i].x);
 		double yDiff = abs(act.y - path[i].y);
 

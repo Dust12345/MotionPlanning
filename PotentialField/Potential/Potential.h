@@ -36,13 +36,25 @@ public:
 
 private:
 
+	//returns the repulsion of the individual object
 	Point repulsionToObject(Point q, Box robot,Box object,double theshold, double scalingFactor);
-	Point getOverallPotential(Point q, Box obstacle[], Box robot[], int nObst);
-	Point attractivPotential(Point q, double scalingFactor, double switchThreshold);
-	Point repulsivePotential(Point q, Box obstacle[], Box robot[], int nObst);
 
+	//calculates the gradient of the overall potential at the given position
+	Point getOverallPotential(Point q, Box obstacle[], Box robot[], int nObst);
+
+	//returns the gradient of the attarctive potential at the given position
+	Point attractivPotential(Point q, double scalingFactor, double switchThreshold);
+
+	//returns the gradient of all repulsive forces combined
+	Point repulsivePotential(Point q, Box obstacle[], Box robot[], int nObst);
+	
+	//returns the repulsion of the individual object
 	Point repulsionToObject(Point q, Cylinder robot, Cylinder object, double theshold, double scalingFactor);
+
+	//calculates the gradient of the overall potential at the given position
 	Point getOverallPotential(Point q, Cylinder obstacle[], Cylinder robot[], int nObst);
+
+	//returns the gradient of all repulsive forces combined
 	Point repulsivePotential(Point q, Cylinder obstacle[], Cylinder robot[], int nObst);
 
 };

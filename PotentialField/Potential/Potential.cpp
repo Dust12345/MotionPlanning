@@ -8,6 +8,16 @@ static const double INKR = 0.01;        // step size for robot along gradient
 static const double DIST_MIN = 0.05;    // minimum distance between the robot and the goal
 static const double GOAL_ERROR = 0.01;  // distance between the robot and the goal
 
+//scaling factors and thresholds
+static const double C_REP_THRES = 0.1;
+static const double C_REP_SCALING = 0.00000025;
+
+static const double B_REP_THRES = 0.01;
+static const double B_REP_SCALING = 0.000000000025;
+
+static const double ATTRAC_SCALING = 0.025;
+static const double ATTRAC_THES = 0.2;
+
 /*********************************************************************************************************************************/
 Potential::Potential(const std::string& name)
     : goalPosition(1.0, 1.0, 0.0) //set the goal position
@@ -67,13 +77,10 @@ bool Potential::update_box(Box obstacle[], Box robot[], int nObst)
     if (goalReached(robotPos, goalPosition, GOAL_ERROR))
     {
         actPoint = goalPosition;
-        //cout << "at goal, smile :)\n";
-
         return true;
     }
 
-    //actPoint.Mac((goalPosition - robotPos).Normalize(), INKR); // move next step
-
+	//get the movement vector
 	Point movementVector = getOverallPotential(robotPos,obstacle,robot,nObst);
 
 	//invert to move in the correct direction
@@ -81,6 +88,7 @@ bool Potential::update_box(Box obstacle[], Box robot[], int nObst)
 	movementVector.y = movementVector.y * -1;
 	movementVector.z = 0;
 
+	//apply the movement vector
 	actPoint = actPoint + movementVector;
 	robot[0].Set(actPoint);
 
@@ -98,13 +106,11 @@ bool Potential::update_cylinder(Cylinder obstacle[], Cylinder robot[], int nObst
     if (goalReached(robotPos, goalPosition, GOAL_ERROR))
     {
         actPoint = goalPosition;
-        //cout << "at goal, smile :)\n";
-
         return true;
     }
 
-    //actPoint.Mac((goalPosition - robotPos).Normalize(), INKR); // move next step
-
+   
+	//get the movement vector
 	Point movementVector = getOverallPotential(robotPos, obstacle, robot, nObst);
 
 	//invert to move in the correct direction
@@ -112,6 +118,7 @@ bool Potential::update_cylinder(Cylinder obstacle[], Cylinder robot[], int nObst
 	movementVector.y = movementVector.y * -1;
 	movementVector.z = 0;
 
+	//apply the movement vector
 	actPoint = actPoint + movementVector;
 	robot[0].SetCenter(actPoint);
 
@@ -150,7 +157,7 @@ Point Potential::attractivPotential(Point q,double scalingFactor,double switchTh
 	gradient.y = 0;
 	gradient.z = 0;
 
-	//decide on the method
+	//decide on which potential should be used
 	if (distToGoal <= switchThreshold)
 	{
 		//quadratic potention
@@ -180,12 +187,14 @@ Point Potential::repulsionToObject(Point q, Box robot, Box object, double thesho
 	Point* ptr = new Point();
 	double distToObject = robot.distance(object, ptr);	
 	
-	//not sure if c is the center of the object or the closest point
+	//the center of the object
 	Point c = object.getCenter();
 	delete ptr;
 
+	//decide if the object is too far away to matter or not
 	if (distToObject > theshold)
 	{
+		//object does not matter
 		return repGradient;
 	}
 	else
@@ -208,22 +217,16 @@ Point Potential::repulsivePotential(Point q, Box obstacle[], Box robot[], int nO
 	r.y = 0;
 	r.z = 0;
 
-	double thres = 0.01;
-	double scaling = 0.000000000025;
-
 	for (int i = 0; i < nObst; i++) {
-		r = r + repulsionToObject(q, robot[0], obstacle[i], thres, scaling);
+		r = r + repulsionToObject(q, robot[0], obstacle[i], B_REP_THRES, B_REP_SCALING);
 	}
-
 
 	return r;
 }
 
 Point Potential::getOverallPotential(Point q, Box obstacle[], Box robot[], int nObst)
 {
-	double sclaing = 0.025;
-	double thres = 0.2;
-	Point potential = repulsivePotential(q,obstacle,robot,nObst) + attractivPotential(q,sclaing,thres);
+	Point potential = repulsivePotential(q, obstacle, robot, nObst) + attractivPotential(q, ATTRAC_SCALING, ATTRAC_THES);
 	potential.z = 0;
 
 	return potential;
@@ -264,10 +267,8 @@ Point Potential::repulsionToObject(Point q, Cylinder robot, Cylinder object, dou
 
 
 Point Potential::getOverallPotential(Point q, Cylinder obstacle[], Cylinder robot[], int nObst)
-{
-	double sclaing = 0.025;
-	double thres = 0.2;
-	Point potential = repulsivePotential(q, obstacle, robot, nObst) + attractivPotential(q, sclaing, thres);
+{	
+	Point potential = repulsivePotential(q, obstacle, robot, nObst) + attractivPotential(q, ATTRAC_SCALING, ATTRAC_THES);
 	potential.z = 0;
 
 	return potential;
@@ -279,13 +280,9 @@ Point Potential::repulsivePotential(Point q, Cylinder obstacle[], Cylinder robot
 	r.y = 0;
 	r.z = 0;
 
-	double thres = 0.1;
-	double scaling = 0.00000025;
-
 	for (int i = 0; i < nObst; i++) {
-		r = r + repulsionToObject(q, robot[0], obstacle[i], thres, scaling);
+		r = r + repulsionToObject(q, robot[0], obstacle[i], C_REP_THRES, C_REP_SCALING);
 	}
-
 
 	return r;
 }
