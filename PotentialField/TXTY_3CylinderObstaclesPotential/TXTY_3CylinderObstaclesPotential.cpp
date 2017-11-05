@@ -111,7 +111,7 @@ bool check_local_minimum(vector<Point> path, Point act)
 void write_program_file(vector<Point> path)
 {
 	ofstream myfile;
-	myfile.open("Potential2.prg");
+	myfile.open("3CylinderObstaclesPotential.prg");
 	// Iterate and print values of path
 	vector<Point>::const_iterator i;
 	myfile << "ProgramFile" << endl;

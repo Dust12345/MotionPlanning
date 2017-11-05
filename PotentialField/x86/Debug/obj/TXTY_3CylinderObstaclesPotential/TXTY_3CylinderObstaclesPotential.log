@@ -1,3 +1,3 @@
 ﻿  TXTY_3CylinderObstaclesPotential.cpp
-c:\users\fabian\desktop\mp\p2\potentialfieldmethod\txty_3cylinderobstaclespotential\txty_3cylinderobstaclespotential.cpp(96): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
-  TXTY_3CylinderObstaclesPotential.vcxproj -> C:\Users\Fabian\Desktop\MP\P2\PotentialFieldMethod\x86\Debug\TXTY_3CylinderObstaclesPotential.exe
+c:\users\joshua\documents\github\motionplanning\potentialfield\txty_3cylinderobstaclespotential\txty_3cylinderobstaclespotential.cpp(96): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
+  TXTY_3CylinderObstaclesPotential.vcxproj -> C:\Users\Joshua\Documents\GitHub\MotionPlanning\PotentialField\x86\Debug\TXTY_3CylinderObstaclesPotential.exe
