@@ -130,7 +130,7 @@ bool Potential::update_cylinder_navigation(Cylinder obstacle[], Cylinder robot[]
 {
     Point robotPos = actPoint;
     static int cnt = 0;
-	const double K = 1;
+	const double K = 3;
 
     cnt++;
 
@@ -162,7 +162,7 @@ bool Potential::update_cylinder_navigation(Cylinder obstacle[], Cylinder robot[]
 	/*Part 3 [2 * K * d(q,qgoal)^2*K-2 * (q - qgoal) + gradient ß(g)] *********************************************************************************/
 	Point partThree;
 	
-	double partThreeResultOne = pow(2 * K*robotPos.Distance(goalPosition),(2*K)-2);
+	double partThreeResultOne = 2 * K*pow(robotPos.Distance(goalPosition),(2*K)-2);
 	Point partThreeResultTwo;
 	partThreeResultTwo.x = robotPos.x - goalPosition.x;
 	partThreeResultTwo.y = robotPos.y - goalPosition.y;
@@ -192,8 +192,14 @@ bool Potential::update_cylinder_navigation(Cylinder obstacle[], Cylinder robot[]
 	movementVector.y = movementVector.y / partFour;
 	movementVector.z = 0;
 
+	//invert to move in the correct direction
+	movementVector.x = movementVector.x * -1;
+	movementVector.y = movementVector.y * -1;
+	movementVector.z = 0;
+
 	//apply the movement vector
-	actPoint = actPoint + movementVector;
+	//actPoint = actPoint + movementVector.Normalize();
+	actPoint.Mac(movementVector.Normalize(), INKR);
 	robot[0].SetCenter(actPoint);
 
 	//actPoint.Mac((goalPosition - robotPos).Normalize(), INKR); // move next step
