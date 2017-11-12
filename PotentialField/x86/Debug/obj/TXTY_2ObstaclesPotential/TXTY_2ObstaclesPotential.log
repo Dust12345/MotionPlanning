@@ -1,1 +1,3 @@
-﻿  TXTY_2ObstaclesPotential.vcxproj -> C:\Users\Joshua\Documents\GitHub\MotionPlanning\PotentialField\x86\Debug\TXTY_2ObstaclesPotential.exe
+﻿  TXTY_2ObstaclesPotential.cpp
+c:\users\joshua\documents\github\motionplanning\potentialfield\txty_2obstaclespotential\txty_2obstaclespotential.cpp(93): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
+  TXTY_2ObstaclesPotential.vcxproj -> C:\Users\Joshua\Documents\GitHub\MotionPlanning\PotentialField\x86\Debug\TXTY_2ObstaclesPotential.exe

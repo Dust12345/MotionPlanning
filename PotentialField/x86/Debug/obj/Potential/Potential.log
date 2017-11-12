@@ -1,2 +1,5 @@
-﻿  Potential.cpp
+﻿  Box.cpp
+  Cylinder.cpp
+  Dist.cpp
+  Potential.cpp
   Potential.vcxproj -> C:\Users\Joshua\Documents\GitHub\MotionPlanning\PotentialField\x86\Debug\Potential.lib

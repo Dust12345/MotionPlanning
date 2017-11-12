@@ -35,16 +35,16 @@ int main(void)
     aHindernis[1].Set(0.3f, 0.3f, 0.0f);        // REFPOS   0.200000   0.4000000    0.0000000    0.0000000    0.0000000    0.0000000
 
     // Roboter initialisieren
-    Roboter[0].Scale(0.05f, 0.05f, 0.20f);      // QUADER    0.05000    0.05000    0.20000
+    Roboter[0].Scale(0.05f, 0.05f, 0.20f);      // QUADER    0.05000    0.05000    0.20000 locales minium
     //Roboter[0].Translate( -0.025f, -0.025f, 0.0f ); // REFPOS   -0.02500000   -0.02500000    0.0000000    0.0000000    0.0000000    0.0000000
 
     // Startzeit
     DWORD dwStart = GetTickCount();
 
     // Initialize start, goal, actPoint and heading
-    //pot1.setStartPosition(0.6, 0.0); // local minimum
+    pot1.setStartPosition(0.6, 0.0); // local minimum
     //pot1.setStartPosition(0.2, -0.2); // local minimum
-    pot1.setStartPosition(-0.1, -0.2); // no local minimum
+    //pot1.setStartPosition(-0.1, -0.2); // no local minimum
 
     pot1.setGoalPosition(0.1, 0.4); // EASYROB
 

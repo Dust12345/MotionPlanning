@@ -130,7 +130,7 @@ bool Potential::update_cylinder_navigation(Cylinder obstacle[], Cylinder robot[]
 {
     Point robotPos = actPoint;
     static int cnt = 0;
-	const double K = 24;
+	const double K = 12;
 
     cnt++;
 
@@ -153,7 +153,7 @@ bool Potential::update_cylinder_navigation(Cylinder obstacle[], Cylinder robot[]
 	/*Part 2 Formula: d^2(g,goal) * 1/K * [d(q,qgoal)^2K + ß(q)]^1/K-1 *********************************************************************************/
 	double partTwo;
 
-	double firstProduct = pow(robotPos.SquareDistance(goalPosition), 2)*(1/K);
+	double firstProduct = robotPos.SquareDistance(goalPosition)*(1/K);
 
 	double secProduct = pow(pow(robotPos.Distance(goalPosition), 2 * K) + navigationDistanceToAllObstacles(obstacle, robot[0], nObst), (1 / K) - 1);
 
@@ -172,17 +172,13 @@ bool Potential::update_cylinder_navigation(Cylinder obstacle[], Cylinder robot[]
 
 	Point gradientDelta = navigationGradientDistanceToAllObstacle(robot[0], obstacle, nObst);
 
-	partThree.x = partThree.x * gradientDelta.x;
-	partThree.y = partThree.y * gradientDelta.y;
+	partThree.x = partThree.x + gradientDelta.x;
+	partThree.y = partThree.y + gradientDelta.y;
 	partThree.z = 0;
 
 	/*Part 4 [d (q,qgoal)^2*K +ß(g)]^2/K *********************************************************************************/
 	double partFour = pow(robotPos.Distance(goalPosition), 2 * K) + navigationDistanceToAllObstacles(obstacle, robot[0], nObst);
 	partFour = pow(partFour, 2 / K);
-
-	if (cnt == 35) {
-		int a = 0;
-	}
 
 	/*Result *********************************************************************************/
 	Point movementVector;
@@ -202,8 +198,9 @@ bool Potential::update_cylinder_navigation(Cylinder obstacle[], Cylinder robot[]
 	movementVector.z = 0;
 
 	if (movementVector.x != movementVector.x) {
-		return true;
+		//return true;
 	}
+
 	//apply the movement vector
 	//actPoint = actPoint + movementVector.Normalize();
 	actPoint.Mac(movementVector.Normalize(), INKR);
@@ -427,7 +424,7 @@ Point Potential::navigationGradientDistanceToObstacle(Cylinder robot, Cylinder o
 }
 
 Point Potential::navigationGradientDistanceToAllObstacle(Cylinder robot, Cylinder obstacle[], int obstacleNumber) {
-	Point sum;
+	Point sum(0.0, 0.0, 0.0);
 	Point results[4];
 
 	// Formula: Sum ßi(q) * Product ßi(q)  Condition: i != j 
@@ -435,9 +432,6 @@ Point Potential::navigationGradientDistanceToAllObstacle(Cylinder robot, Cylinde
 		Point tmp = navigationGradientDistanceToObstacle(robot, obstacle[i], i);
 		double tmpDeltaDistanceProduct = navigationDistanceToAllObstacles(obstacle, robot, obstacleNumber,i);
 		tmp = tmp.Mult(tmpDeltaDistanceProduct);
-		tmp.x = tmp.x * tmpDeltaDistanceProduct;
-		tmp.y = tmp.y * tmpDeltaDistanceProduct;
-		tmp.z = 0;
 
 		results[i] = tmp;
 
