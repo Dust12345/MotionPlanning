@@ -130,7 +130,7 @@ bool Potential::update_cylinder_navigation(Cylinder obstacle[], Cylinder robot[]
 {
     Point robotPos = actPoint;
     static int cnt = 0;
-	const double K = 3;
+	const double K = 24;
 
     cnt++;
 
@@ -180,6 +180,10 @@ bool Potential::update_cylinder_navigation(Cylinder obstacle[], Cylinder robot[]
 	double partFour = pow(robotPos.Distance(goalPosition), 2 * K) + navigationDistanceToAllObstacles(obstacle, robot[0], nObst);
 	partFour = pow(partFour, 2 / K);
 
+	if (cnt == 35) {
+		int a = 0;
+	}
+
 	/*Result *********************************************************************************/
 	Point movementVector;
 	movementVector.x = partThree.x * partTwo;
@@ -197,6 +201,9 @@ bool Potential::update_cylinder_navigation(Cylinder obstacle[], Cylinder robot[]
 	movementVector.y = movementVector.y * -1;
 	movementVector.z = 0;
 
+	if (movementVector.x != movementVector.x) {
+		return true;
+	}
 	//apply the movement vector
 	//actPoint = actPoint + movementVector.Normalize();
 	actPoint.Mac(movementVector.Normalize(), INKR);
@@ -350,20 +357,23 @@ Point Potential::repulsivePotential(Point q, Cylinder obstacle[], Cylinder robot
 
 double Potential::navigationDistanceToObstacle(Cylinder robot,Cylinder obstacle,int obstacleNumber)
 {
+	Point pt = robot.GetCenter();
 	if (obstacleNumber == 0) {
 
 		// Formula: -d^2 (q,qi) + ri^2
-		return -robot.distance_sqr(obstacle)+ pow(obstacle.GetRadius(),2);
+		return -pt.Sub(obstacle.GetCenter()).SquareMagnitude() + (pow(obstacle.GetRadius() + robot.GetRadius(), 2));
+		//double b = -robot.distance_sqr(obstacle)+ pow(obstacle.GetRadius() + robot.GetRadius(),2);
 	}
 	else {
 		// Formula: d^2 (q,qi) - ri^2
-		return robot.distance_sqr(obstacle) - pow(obstacle.GetRadius(), 2);
+		return pt.Sub(obstacle.GetCenter()).SquareMagnitude() - (pow(obstacle.GetRadius() + robot.GetRadius(), 2));
+		//double d = robot.distance_sqr(obstacle) - pow(obstacle.GetRadius()+ robot.GetRadius(), 2);
 	}
 }
 
 double Potential::navigationDistanceToAllObstacles(Cylinder obstacle[], Cylinder robot, int nObst)
 {
-	double *distance = new double[nObst];
+	double distance [4];
 	double product = 1;
 
 	// Formula: ß(q) = Π ßi(q) 
@@ -372,13 +382,12 @@ double Potential::navigationDistanceToAllObstacles(Cylinder obstacle[], Cylinder
 		product = product * distance[i];
 	}
 
-	delete[] distance;
 	return product;
 }
 
 double Potential::navigationDistanceToAllObstacles(Cylinder obstacle[], Cylinder robot, int nObst, int ignore)
 {
-	double *distance = new double[nObst];
+	double distance[4];
 	double product = 1;
 
 	// Formula: ß(q) = Π ßi(q)
@@ -392,7 +401,6 @@ double Potential::navigationDistanceToAllObstacles(Cylinder obstacle[], Cylinder
 			distance[i] = 1;
 		}
 	}
-	delete[] distance;
 	return product;
 }
 
@@ -405,7 +413,7 @@ Point Potential::navigationGradientDistanceToObstacle(Cylinder robot, Cylinder o
 	if (obstacleNumber == 0) {
 		// Formula: -2(q-qi)
 		point.x = -2*(roboPointC.x - obstaclePointC.x);
-		point.y = -2*(roboPointC.y - obstaclePointC.y);
+		point.y = -2 * (roboPointC.y - obstaclePointC.y);
 		point.z = 0;
 		return point;
 	}
@@ -420,23 +428,21 @@ Point Potential::navigationGradientDistanceToObstacle(Cylinder robot, Cylinder o
 
 Point Potential::navigationGradientDistanceToAllObstacle(Cylinder robot, Cylinder obstacle[], int obstacleNumber) {
 	Point sum;
-	Point *results = new Point[obstacleNumber];
+	Point results[4];
 
 	// Formula: Sum ßi(q) * Product ßi(q)  Condition: i != j 
 	for (int i = 0; i < obstacleNumber; i++) {
-		Point tmp = navigationGradientDistanceToObstacle(robot, obstacle[i], obstacleNumber);
+		Point tmp = navigationGradientDistanceToObstacle(robot, obstacle[i], i);
 		double tmpDeltaDistanceProduct = navigationDistanceToAllObstacles(obstacle, robot, obstacleNumber,i);
-		
+		tmp = tmp.Mult(tmpDeltaDistanceProduct);
 		tmp.x = tmp.x * tmpDeltaDistanceProduct;
 		tmp.y = tmp.y * tmpDeltaDistanceProduct;
 		tmp.z = 0;
 
 		results[i] = tmp;
 
-		sum.x = sum.x + tmp.x;
-		sum.y = sum.y + tmp.y;
+		sum = sum.Add(tmp);
 		sum.z = 0;
 	}
-	delete[] results;
 	return sum;
 }
