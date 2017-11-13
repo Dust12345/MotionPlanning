@@ -58,7 +58,7 @@ private:
 	Point repulsivePotential(Point q, Cylinder obstacle[], Cylinder robot[], int nObst);
 
 	// return the distance between the robot and the obstacle
-	double navigationDistanceToObstacle(Cylinder robot, Cylinder obstacle, int obstacleNumber);
+	double navigationDistanceToObstacle(Cylinder robot, Cylinder obstacle, int obstacleIndex);
 
 	// return the sum value over all obstacle distances
 	double navigationDistanceToAllObstacles(Cylinder obstacle[], Cylinder robot, int nObst, int ignore);
@@ -67,7 +67,7 @@ private:
 	double navigationDistanceToAllObstacles(Cylinder obstacle[], Cylinder robot, int nObst);
 
 	// return a gradient-distance-point between the robot and the obstacle
-	Point navigationGradientDistanceToObstacle(Cylinder robot, Cylinder obstacle, int obstacleNumber);
+	Point navigationGradientDistanceToObstacle(Cylinder robot, Cylinder obstacle, int obstacleIndex);
 
 	// return a gradient-distance-point between the robot and all obstacles
 	Point navigationGradientDistanceToAllObstacle(Cylinder robot, Cylinder obstacle[], int obstacleNumber);

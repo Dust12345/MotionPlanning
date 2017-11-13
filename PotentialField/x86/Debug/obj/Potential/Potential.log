@@ -1,9 +1,5 @@
-﻿Der Buildvorgang wurde am 13.11.2017 11:29:53 gestartet.
-     1>Projekt "C:\Users\Fabian\MotionPlanning\PotentialField\Potential\Potential.vcxproj" auf Knoten "2", Build Ziel(e).
-     1>Lib:
-         Potential.vcxproj -> C:\Users\Fabian\MotionPlanning\PotentialField\x86\Debug\Potential.lib
-     1>Die Erstellung des Projekts "C:\Users\Fabian\MotionPlanning\PotentialField\Potential\Potential.vcxproj" ist abgeschlossen, Build Ziel(e).
-
-Build erfolgreich.
-
-Verstrichene Zeit 00:00:00.03
+﻿  Box.cpp
+  Cylinder.cpp
+  Dist.cpp
+  Potential.cpp
+  Potential.vcxproj -> C:\Users\Joshua\Documents\GitHub\MotionPlanning\PotentialField\x86\Debug\Potential.lib
