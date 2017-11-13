@@ -63,20 +63,29 @@ int main(void)
 	Point robPos;
 	bool goal_reached = false;
 	bool local_minimum_reached = false;
+	bool local_collison_reached = false;
 
-	while (!goal_reached && !local_minimum_reached)
+	while (!goal_reached && !local_minimum_reached && !local_collison_reached)
 	{
 		goal_reached = pot1.update_cylinder_navigation(aHindernis, Roboter, nHind);
 		robPos = pot1.getRobPos();
-		local_minimum_reached = check_local_minimum(path, robPos);
-		path.push_back(pot1.getRobPos()); // speichern des Aktuellen Punktes in vector<Point> path
-		cout << robPos.x << " " << robPos.y << endl; // Ausgabe auf Konsole
+
+		if (robPos.x != robPos.x) {
+			local_collison_reached = true;
+		}
+		else {
+			local_minimum_reached = check_local_minimum(path, robPos);
+			path.push_back(pot1.getRobPos()); // speichern des Aktuellen Punktes in vector<Point> path
+			cout << robPos.x << " " << robPos.y << endl; // Ausgabe auf Konsole
+		}
 	}
 
 	// Zeit für das Aufstellen des Konfigurationsraumes ausgeben ( in ms )
 	DWORD dwElapsed = GetTickCount() - dwStart;
 	if (local_minimum_reached)
 		cout << "local minimum is reached" << endl;
+	if (local_collison_reached)
+		cout << "collison is reached" << endl;
 	if (goal_reached)
 		cout << "goal is reached" << endl;
 	write_program_file(path);
