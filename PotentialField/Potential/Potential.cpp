@@ -12,11 +12,14 @@ static const double GOAL_ERROR = 0.01;  // distance between the robot and the go
 static const double C_REP_THRES = 0.1;
 static const double C_REP_SCALING = 0.00000025;
 
-static const double B_REP_THRES = 0.01;
-static const double B_REP_SCALING = 0.000000000025;
+static const double B_REP_THRES = 0.15;
+static const double B_REP_SCALING = 0.0000000000020;
 
-static const double ATTRAC_SCALING = 0.025;
-static const double ATTRAC_THES = 0.2;
+static const double ATTRAC_SCALING_C = 0.08;
+static const double ATTRAC_THES_C = 0.2;
+
+static const double ATTRAC_SCALING_B = 0.008;
+static const double ATTRAC_THES_B = 0.2;
 
 /*********************************************************************************************************************************/
 Potential::Potential(const std::string& name)
@@ -80,7 +83,7 @@ bool Potential::update_box(Box obstacle[], Box robot[], int nObst)
         return true;
     }
 
-	//get the movement vector
+	//get the movement vector based on the gradient at the current position
 	Point movementVector = getOverallPotential(robotPos,obstacle,robot,nObst);
 
 	//invert to move in the correct direction
@@ -130,7 +133,7 @@ bool Potential::update_cylinder_navigation(Cylinder obstacle[], Cylinder robot[]
 {
     Point robotPos = actPoint;
     static int cnt = 0;
-	const double K = 12;
+	const double K = 8;
 
     cnt++;
 
@@ -140,20 +143,40 @@ bool Potential::update_cylinder_navigation(Cylinder obstacle[], Cylinder robot[]
         return true;
     }
 
+
 	/*Part 1 Formula: 2(q - qgoal) * [d(q - qgoal)^2K + ß(q)]^1/K *********************************************************************************/
 	Point partOne;
 	partOne.x = 2*(robotPos.x - goalPosition.x);
 	partOne.y = 2*(robotPos.y - goalPosition.y);
 	partOne.z = 0;
 
-	partOne.x = partOne.x * (pow(pow(robotPos.Distance(goalPosition), 2 * K) + navigationDistanceToAllObstacles(obstacle, robot[0], nObst), 1 / K));
-	partOne.y = partOne.y * (pow(pow(robotPos.Distance(goalPosition), 2 * K) + navigationDistanceToAllObstacles(obstacle, robot[0], nObst), 1 / K));
+	//double r = pow(robotPos.Distance(goalPosition), 2 * K)+robot[0].GetRadius();
+
+	double r = pow(robotPos.Distance(goalPosition), 2 * K);
+
+	double navR = navigationDistanceToAllObstacles(obstacle, robot[0], nObst);
+
+	double abc = r + navR;
+
+	double la = (pow(r + navR, 1 / K));
+
+	partOne.x = partOne.x * (pow(r + navR, 1 / K));
+	partOne.y = partOne.y * (pow(r + navR, 1 / K));
 
 
 	/*Part 2 Formula: d^2(g,goal) * 1/K * [d(q,qgoal)^2K + ß(q)]^1/K-1 *********************************************************************************/
 	double partTwo;
 
-	double firstProduct = robotPos.SquareDistance(goalPosition)*(1/K);
+	
+
+	
+	
+
+	double firstProduct = pow(robotPos.SquareDistance(goalPosition), 2)*(1 / K);
+
+	
+
+
 
 	double secProduct = pow(pow(robotPos.Distance(goalPosition), 2 * K) + navigationDistanceToAllObstacles(obstacle, robot[0], nObst), (1 / K) - 1);
 
@@ -172,8 +195,8 @@ bool Potential::update_cylinder_navigation(Cylinder obstacle[], Cylinder robot[]
 
 	Point gradientDelta = navigationGradientDistanceToAllObstacle(robot[0], obstacle, nObst);
 
-	partThree.x = partThree.x + gradientDelta.x;
-	partThree.y = partThree.y + gradientDelta.y;
+	partThree.x = partThree.x * gradientDelta.x;
+	partThree.y = partThree.y * gradientDelta.y;
 	partThree.z = 0;
 
 	/*Part 4 [d (q,qgoal)^2*K +ß(g)]^2/K *********************************************************************************/
@@ -197,9 +220,8 @@ bool Potential::update_cylinder_navigation(Cylinder obstacle[], Cylinder robot[]
 	movementVector.y = movementVector.y * -1;
 	movementVector.z = 0;
 
-	if (movementVector.x != movementVector.x) {
-		//return true;
-	}
+
+	//actPoint = actPoint + movementVector;
 
 	//apply the movement vector
 	//actPoint = actPoint + movementVector.Normalize();
@@ -252,8 +274,8 @@ Point Potential::repulsionToObject(Point q, Box robot, Box object, double thesho
 	Point* ptr = new Point();
 	double distToObject = robot.distance(object, ptr);	
 	
-	//the center of the object
-	Point c = object.getCenter();
+	//the closest point of the obstical to the robot
+	Point c = q + (*ptr);
 	delete ptr;
 
 	//decide if the object is too far away to matter or not
@@ -264,6 +286,7 @@ Point Potential::repulsionToObject(Point q, Box robot, Box object, double thesho
 	}
 	else
 	{
+		//object is close enougth to matter
 		Point gradOfDist;
 		gradOfDist.x = (q.x - c.x) / distToObject;
 		gradOfDist.y = (q.y - c.y) / distToObject;
@@ -282,6 +305,7 @@ Point Potential::repulsivePotential(Point q, Box obstacle[], Box robot[], int nO
 	r.y = 0;
 	r.z = 0;
 
+	//sum up the repulsive force of all obsticals
 	for (int i = 0; i < nObst; i++) {
 		r = r + repulsionToObject(q, robot[0], obstacle[i], B_REP_THRES, B_REP_SCALING);
 	}
@@ -291,7 +315,7 @@ Point Potential::repulsivePotential(Point q, Box obstacle[], Box robot[], int nO
 
 Point Potential::getOverallPotential(Point q, Box obstacle[], Box robot[], int nObst)
 {
-	Point potential = repulsivePotential(q, obstacle, robot, nObst) + attractivPotential(q, ATTRAC_SCALING, ATTRAC_THES);
+	Point potential = repulsivePotential(q, obstacle, robot, nObst) + attractivPotential(q, ATTRAC_SCALING_B, ATTRAC_THES_B);
 	potential.z = 0;
 
 	return potential;
@@ -309,8 +333,8 @@ Point Potential::repulsionToObject(Point q, Cylinder robot, Cylinder object, dou
 	Point* ptr = new Point();
 	double distToObject = robot.distance(object, ptr);
 
-	//not sure if c is the center of the object or the closest point
-	Point c = object.GetCenter();
+	
+	Point c =  object.GetCenter();
 	delete ptr;
 
 	if (distToObject > theshold)
@@ -333,7 +357,7 @@ Point Potential::repulsionToObject(Point q, Cylinder robot, Cylinder object, dou
 
 Point Potential::getOverallPotential(Point q, Cylinder obstacle[], Cylinder robot[], int nObst)
 {	
-	Point potential = repulsivePotential(q, obstacle, robot, nObst) + attractivPotential(q, ATTRAC_SCALING, ATTRAC_THES);
+	Point potential = repulsivePotential(q, obstacle, robot, nObst) + attractivPotential(q, ATTRAC_SCALING_C, ATTRAC_THES_C);
 	potential.z = 0;
 
 	return potential;
@@ -345,6 +369,7 @@ Point Potential::repulsivePotential(Point q, Cylinder obstacle[], Cylinder robot
 	r.y = 0;
 	r.z = 0;
 
+	//sum up the repulsive force of all obsticals
 	for (int i = 0; i < nObst; i++) {
 		r = r + repulsionToObject(q, robot[0], obstacle[i], C_REP_THRES, C_REP_SCALING);
 	}
@@ -354,37 +379,39 @@ Point Potential::repulsivePotential(Point q, Cylinder obstacle[], Cylinder robot
 
 double Potential::navigationDistanceToObstacle(Cylinder robot,Cylinder obstacle,int obstacleNumber)
 {
-	Point pt = robot.GetCenter();
+	Point* p = new Point();
+
 	if (obstacleNumber == 0) {
 
-		// Formula: -d^2 (q,qi) + ri^2
-		return -pt.Sub(obstacle.GetCenter()).SquareMagnitude() + (pow(obstacle.GetRadius() + robot.GetRadius(), 2));
-		//double b = -robot.distance_sqr(obstacle)+ pow(obstacle.GetRadius() + robot.GetRadius(),2);
+		// Formula: -d^2 (q,qi) + ri^2		
+
+		return (robot.distance_sqr(obstacle)+ pow(obstacle.GetRadius(),2))*-1;
 	}
 	else {
 		// Formula: d^2 (q,qi) - ri^2
-		return pt.Sub(obstacle.GetCenter()).SquareMagnitude() - (pow(obstacle.GetRadius() + robot.GetRadius(), 2));
-		//double d = robot.distance_sqr(obstacle) - pow(obstacle.GetRadius()+ robot.GetRadius(), 2);
+
+		return robot.distance_sqr(obstacle) - pow(obstacle.GetRadius(), 2);
 	}
 }
 
 double Potential::navigationDistanceToAllObstacles(Cylinder obstacle[], Cylinder robot, int nObst)
 {
-	double distance [4];
+	double *distance = new double[nObst];
 	double product = 1;
 
 	// Formula: ß(q) = Π ßi(q) 
 	for (int i = 0; i < nObst; i++) {
-		distance[i] = navigationDistanceToObstacle(robot, obstacle[i],i);
-		product = product * distance[i];
+		double d = navigationDistanceToObstacle(robot, obstacle[i],i);
+		product = product * d;
 	}
 
+	delete[] distance;
 	return product;
 }
 
 double Potential::navigationDistanceToAllObstacles(Cylinder obstacle[], Cylinder robot, int nObst, int ignore)
 {
-	double distance[4];
+	double *distance = new double[nObst];
 	double product = 1;
 
 	// Formula: ß(q) = Π ßi(q)
@@ -398,6 +425,7 @@ double Potential::navigationDistanceToAllObstacles(Cylinder obstacle[], Cylinder
 			distance[i] = 1;
 		}
 	}
+	delete[] distance;
 	return product;
 }
 
@@ -410,7 +438,7 @@ Point Potential::navigationGradientDistanceToObstacle(Cylinder robot, Cylinder o
 	if (obstacleNumber == 0) {
 		// Formula: -2(q-qi)
 		point.x = -2*(roboPointC.x - obstaclePointC.x);
-		point.y = -2 * (roboPointC.y - obstaclePointC.y);
+		point.y = -2*(roboPointC.y - obstaclePointC.y);
 		point.z = 0;
 		return point;
 	}
@@ -424,19 +452,24 @@ Point Potential::navigationGradientDistanceToObstacle(Cylinder robot, Cylinder o
 }
 
 Point Potential::navigationGradientDistanceToAllObstacle(Cylinder robot, Cylinder obstacle[], int obstacleNumber) {
-	Point sum(0.0, 0.0, 0.0);
-	Point results[4];
+	Point sum;
+	Point *results = new Point[obstacleNumber];
 
 	// Formula: Sum ßi(q) * Product ßi(q)  Condition: i != j 
 	for (int i = 0; i < obstacleNumber; i++) {
-		Point tmp = navigationGradientDistanceToObstacle(robot, obstacle[i], i);
+		Point tmp = navigationGradientDistanceToObstacle(robot, obstacle[i], obstacleNumber);
 		double tmpDeltaDistanceProduct = navigationDistanceToAllObstacles(obstacle, robot, obstacleNumber,i);
-		tmp = tmp.Mult(tmpDeltaDistanceProduct);
+		
+		tmp.x = tmp.x * tmpDeltaDistanceProduct;
+		tmp.y = tmp.y * tmpDeltaDistanceProduct;
+		tmp.z = 0;
 
 		results[i] = tmp;
 
-		sum = sum.Add(tmp);
+		sum.x = sum.x + tmp.x;
+		sum.y = sum.y + tmp.y;
 		sum.z = 0;
 	}
+	delete[] results;
 	return sum;
 }

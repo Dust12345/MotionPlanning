@@ -1,3 +1,15 @@
-﻿  TXTY_3CylinderObstaclesPotential.cpp
-c:\users\joshua\documents\github\motionplanning\potentialfield\txty_3cylinderobstaclespotential\txty_3cylinderobstaclespotential.cpp(96): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
-  TXTY_3CylinderObstaclesPotential.vcxproj -> C:\Users\Joshua\Documents\GitHub\MotionPlanning\PotentialField\x86\Debug\TXTY_3CylinderObstaclesPotential.exe
+﻿Der Buildvorgang wurde am 13.11.2017 11:32:44 gestartet.
+     1>Projekt "C:\Users\Fabian\MotionPlanning\PotentialField\TXTY_3CylinderObstaclesPotential\TXTY_3CylinderObstaclesPotential.vcxproj" auf Knoten "2", Build Ziel(e).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\Users\Fabian\MotionPlanning\PotentialField\Potential /ZI /nologo /W3 /WX- /MP /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"C:\Users\Fabian\MotionPlanning\PotentialField\x86\Debug\obj\TXTY_3CylinderObstaclesPotential\\" /Fd"C:\Users\Fabian\MotionPlanning\PotentialField\x86\Debug\obj\TXTY_3CylinderObstaclesPotential\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt TXTY_3CylinderObstaclesPotential.cpp
+         TXTY_3CylinderObstaclesPotential.cpp
+     1>c:\users\fabian\motionplanning\potentialfield\txty_3cylinderobstaclespotential\txty_3cylinderobstaclespotential.cpp(101): warning C4018: '<': Konflikt zwischen 'signed' und 'unsigned'
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Fabian\MotionPlanning\PotentialField\x86\Debug\TXTY_3CylinderObstaclesPotential.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Fabian\MotionPlanning\PotentialField\x86\Debug\TXTY_3CylinderObstaclesPotential.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Fabian\MotionPlanning\PotentialField\x86\Debug\TXTY_3CylinderObstaclesPotential.lib" /MACHINE:X86 C:\Users\Fabian\MotionPlanning\PotentialField\x86\Debug\obj\TXTY_3CylinderObstaclesPotential\TXTY_3CylinderObstaclesPotential.obj
+         C:\Users\Fabian\MotionPlanning\PotentialField\x86\Debug\Potential.lib
+         TXTY_3CylinderObstaclesPotential.vcxproj -> C:\Users\Fabian\MotionPlanning\PotentialField\x86\Debug\TXTY_3CylinderObstaclesPotential.exe
+     1>Die Erstellung des Projekts "C:\Users\Fabian\MotionPlanning\PotentialField\TXTY_3CylinderObstaclesPotential\TXTY_3CylinderObstaclesPotential.vcxproj" ist abgeschlossen, Build Ziel(e).
+
+Build erfolgreich.
+
+Verstrichene Zeit 00:00:01.00

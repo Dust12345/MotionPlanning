@@ -48,9 +48,9 @@ int main(void)
 	DWORD dwStart = GetTickCount();
 
 	// Initialize start, goal, actPoint and heading
-	pot1.setStartPosition(0.3, -0.3); // local minimum
+	//pot1.setStartPosition(0.3, -0.3); // local minimum
 	//pot1.setStartPosition(0.2, -0.2); // local minimum
-	//pot1.setStartPosition(-0.1, -0.2); // no local minimum
+	pot1.setStartPosition(-0.1, -0.2); // no local minimum
 
 	pot1.setGoalPosition(0.1, 0.4); // EASYROB
 
@@ -82,6 +82,7 @@ int main(void)
 	write_program_file(path);
 	printf("\nBerechnung dauerte %d ms\n", dwElapsed);
 
+
 	return 0;
 }
 
@@ -91,7 +92,7 @@ bool check_local_minimum(vector<Point> path, Point act)
 {
 	//simple check if the current position was reached bevore
 
-	double errorMargin = 0.00005;
+	double errorMargin = 0.000005;
 
 	for (int i = 0; i < path.size() - 1; i++)
 	{
