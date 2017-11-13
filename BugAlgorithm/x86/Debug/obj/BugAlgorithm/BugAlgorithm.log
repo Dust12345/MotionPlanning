@@ -1,2 +1,17 @@
-﻿  BugAlgorithm.cpp
-  BugAlgorithm.vcxproj -> C:\Users\Fabian\Desktop\MP\P1\BugAlgorithm\x86\Debug\BugAlgorithm.exe
+﻿Der Buildvorgang wurde am 13.11.2017 11:03:04 gestartet.
+     1>Projekt "C:\Users\Fabian\MotionPlanning\BugAlgorithm\BugAlgorithm\BugAlgorithm.vcxproj" auf Knoten "2", Build Ziel(e).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /MP /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"C:\Users\Fabian\MotionPlanning\BugAlgorithm\x86\Debug\obj\BugAlgorithm\\" /Fd"C:\Users\Fabian\MotionPlanning\BugAlgorithm\x86\Debug\obj\BugAlgorithm\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
+         main.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Fabian\MotionPlanning\BugAlgorithm\x86\Debug\BugAlgorithm.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Fabian\MotionPlanning\BugAlgorithm\x86\Debug\BugAlgorithm.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Fabian\MotionPlanning\BugAlgorithm\x86\Debug\BugAlgorithm.lib" /MACHINE:X86 C:\Users\Fabian\MotionPlanning\BugAlgorithm\x86\Debug\obj\BugAlgorithm\Box.obj
+         C:\Users\Fabian\MotionPlanning\BugAlgorithm\x86\Debug\obj\BugAlgorithm\Bug2.obj
+         C:\Users\Fabian\MotionPlanning\BugAlgorithm\x86\Debug\obj\BugAlgorithm\BugAlgorithm.obj
+         C:\Users\Fabian\MotionPlanning\BugAlgorithm\x86\Debug\obj\BugAlgorithm\Dist.obj
+         C:\Users\Fabian\MotionPlanning\BugAlgorithm\x86\Debug\obj\BugAlgorithm\main.obj
+         BugAlgorithm.vcxproj -> C:\Users\Fabian\MotionPlanning\BugAlgorithm\x86\Debug\BugAlgorithm.exe
+     1>Die Erstellung des Projekts "C:\Users\Fabian\MotionPlanning\BugAlgorithm\BugAlgorithm\BugAlgorithm.vcxproj" ist abgeschlossen, Build Ziel(e).
+
+Build erfolgreich.
+
+Verstrichene Zeit 00:00:00.87

@@ -24,6 +24,12 @@ private:
 
 	Point getClosestPointOnSegment(Point a, Point b, Point p);
 
+	bool sanityCheck(Box obstacle[], Box robot[], int nObst);
+
+	bool sanityCheckDone = false;
+
+
+
 public:
 	Bug2(const string& name);
 	~Bug2();

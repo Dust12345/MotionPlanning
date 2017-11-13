@@ -4,6 +4,22 @@
 
 Bug2::Bug2(const string& name) : BugAlgorithm(name), cState(Bug2::FOLLOW_LINE)
 {
+	
+
+}
+
+bool Bug2::sanityCheck(Box obstacle[], Box robot[], int nObst) 
+{
+	Point* p= new Point;
+
+	for (int i = 0; i < nObst; i++) {
+		if (robot[0].distance(obstacle[i],p) == 0) {
+			delete p;
+			return false;
+		}
+	}
+	delete p;
+	return true;
 }
 
 Point Bug2::getMovementVector(Point baseVector)
@@ -31,6 +47,11 @@ bool Bug2::followLine(Box obstacle[], Box& robot, int nObst) {
 	//line between the start an the end pos
 	Point line = goalPosition - startPosition;
 
+	if (goalPosition.x == startPosition.x && startPosition.y == goalPosition.y) {
+		return true;
+	}
+
+
 	//check for collisions
 	int obsIndex = obstacleInWay(obstacle, robot, nObst);
 
@@ -41,7 +62,7 @@ bool Bug2::followLine(Box obstacle[], Box& robot, int nObst) {
 
 		addMovement(mVct, robot);
 		
-		if (distanceEuclid(actPoint, goalPosition) < speed*2) {
+		if (distanceEuclid(actPoint, goalPosition) < speed*3) {
 			actPoint = goalPosition;
 			return true;
 		}
@@ -118,33 +139,42 @@ bool Bug2::moveAroundObs(Box obstacle[], Box& robot, int nObst)
 	}
 
 		
-	if (moved > 3)
+	if (moved > 10)
 	{
-		double distToLine = perpendicularDist(startPosition, goalPosition, actPoint);
 
-		if (distToLine < speed)
+		double distToLastHitP = hitPoint.at(hitPoint.size() - 1).Distance(actPoint);
+
+		//if (distanceEuclid(hitPoint.at(hitPoint.size() - 1), actPoint)<speed * 4)
+		if(distToLastHitP< speed*4)
 		{
-			//move onto the closest point on the line
-			Point nextPos = getClosestPointOnSegment(startPosition, goalPosition, actPoint);
-
-			leavePoint.push_back(actPoint);
-
-			actPoint = nextPos;
-			robot.Set(actPoint);
-			
-			cState = FOLLOW_LINE;
-			return false;
-		}
-
-		if (distanceEuclid(hitPoint.at(hitPoint.size() - 1), actPoint)<speed) {
 
 			cout << "no way found" << endl;
 			return true;
 		}
-		else
+
+		double distToLine = actPoint.dist_Point_to_Segment(actPoint, startPosition, goalPosition);
+
+		if (distToLine < speed*3)
 		{
+			//move onto the closest point on the line
+			Point nextPos = getClosestPointOnSegment(startPosition, goalPosition, actPoint);			
+			
+			mVct.SetLength(distToLine);
+			mVct.z = 0;
+			leavePoint.push_back(actPoint);
+
+			addMovement(mVct, robot);			
+			
+			//make an extra step on the line
+			Point line = goalPosition - startPosition;
+			Point mVct = getMovementVector(line);
+
+			addMovement(mVct, robot);
+
+			cState = FOLLOW_LINE;
 			return false;
 		}
+		return false;		
 	}
 	else
 	{
@@ -194,6 +224,18 @@ double Bug2::perpendicularDist(Point lp1, Point lp2, Point refPoint) {
 
 bool Bug2::update(Box obstacle[], Box robot[], int nObst)
 {
+	//perform a sanity check to rule out invalid starting positions
+	if (!sanityCheckDone) {
+		bool checkResult = sanityCheck(obstacle, robot, nObst);
+
+		if (!checkResult)
+		{
+			std::cout << "Robot is inside obstical" << std::endl;
+			return true;
+		}
+
+		sanityCheckDone = true;
+	}
 
 	if (cState == FOLLOW_LINE) {
 		return followLine(obstacle, robot[0], nObst);
@@ -201,9 +243,6 @@ bool Bug2::update(Box obstacle[], Box robot[], int nObst)
 	else if (cState == MOVE_AROUND_OBS) {
 		return moveAroundObs(obstacle, robot[0], nObst);
 	}
-
-
-
 
 	return true;
 }

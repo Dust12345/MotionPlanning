@@ -65,9 +65,12 @@ int main(void)
 
     // Initialize start, goal, actPoint and heading
     Bug2 bug2("Bug2");
-    bug2.setStartPosition(0.2f, 0.f); // EASYROB
-    bug2.setGoalPosition(0.3f, 0.7f); // EASYROB
-    Roboter[0].Set(bug2.getStartPosition());
+    bug2.setStartPosition(0.2f, 0.0f); // EASYROB
+    //bug2.setGoalPosition(0.3f, 0.7f); // EASYROB
+    
+	bug2.setGoalPosition(0.2f, 0.8f); // EASYROB // simple line	
+
+	Roboter[0].Set(bug2.getStartPosition());
     bug2.setIntermediatePoint(bug2.getGoalPosition()); // EASYROB
     bug2.setActPoint(bug2.getStartPosition());
     bug2.setHeading((bug2.getGoalPosition() - bug2.getStartPosition()).Normalize());
@@ -76,7 +79,8 @@ int main(void)
     Point robPos;
     bool goal_reached = false;
     while (!goal_reached)
-    {
+    {	
+
       goal_reached = bug2.update(aHindernis, Roboter, nHind);
       robPos = bug2.getRobPos();
       path.push_back(bug2.getRobPos()); // speichern des Aktuellen Punktes in vector<Point> path
@@ -89,6 +93,5 @@ int main(void)
     printf("\nBerechnung dauerte %d ms\n", dwElapsed);
 
 	
-
     return 0;
 }
