@@ -1,0 +1,5 @@
+set title "Motion Planning: Visibility Graph"
+set size ratio 1.0
+set xrange[0:1]
+set yrange[0:1]
+plot 'VisibilityGraph.dat' u 1:2 with lines lc rgb "red" lw 2
