@@ -41,22 +41,10 @@ struct VertexProperty
 
 namespace bg = boost::geometry;
 
-struct MyPoint {
-	double x, y;
-
-	
-};
-
-
-
-
-typedef boost::geometry::model::d2::point_xy<double> pp;
-
-typedef boost::geometry::model::polygon<pp> MyPolygon;
-
+typedef boost::geometry::model::d2::point_xy<double> MyPoint;
+typedef boost::geometry::model::polygon<MyPoint> MyPolygon;
 typedef boost::property<boost::edge_weight_t, float> EdgeWeightProperty;
 typedef boost::adjacency_list<boost::listS, boost::vecS, boost::undirectedS, VertexProperty, EdgeWeightProperty> Graph;
-
 typedef boost::graph_traits<Graph>::vertex_descriptor vertex_descriptor;
 typedef boost::graph_traits<Graph>::edge_descriptor edge_descriptor;
 typedef std::pair<int, int> Edge;
@@ -64,21 +52,26 @@ typedef std::pair<int, int> Edge;
 std::vector<Point> VisibilityGraph(Graph g, const int nHind, Point startPos, Point goal);
 void write_gnuplot_file(Graph g, std::string filename);
 
-void test();
+std::vector<MyPolygon> getObsPolys(Graph g, const int nHind);
+std::vector<Edge> getInitialEdges(Graph g, const int nHind);
+std::vector<float> calcEdgeWeigths(Graph g, std::vector<Edge> edges);
 
 bool areEqual(float a, const float& b, float epsilon);
-bool pointsArequal(Point p1, pp p2);
+bool pointsArequal(Point p1, MyPoint p2);
 
-float getEdgeW(Edge e, Graph g);
+float getEdgeWeigth(Edge e, Graph g);
 
-std::vector<Point> getPath(Graph g, const int nHind, std::vector<Edge>edges, std::vector<float> weights, int startIndex, int goal);
+std::vector<Point> getShortestPath(Graph g, const int nHind, std::vector<Edge>edges, std::vector<float> weights, int startIndex, int goal);
 
 bool polySegmentIntersect(Point a, Point b, MyPolygon poly);
 
 std::vector<Edge>  getVisibleEdges(Graph& g,Point startPoint,const int nHind, Point goal,std::vector<Edge>& edges, std::vector<MyPolygon>& poly);
 
-bool segmentIntersect(Point a, Point b, Point c, Point d);
+bool checkIfEdgeIsKnown(int indexA, int indexB, std::vector<Edge> lines);
+
 bool isVisible(Graph& g,Point& a, Point& b, int aIndex, int bIndex,std::vector<Edge>& edges, std::vector<MyPolygon>& poly);
+
+std::vector<Point> getShortestPath(Graph g, const int nHind, std::vector<Edge>edges, std::vector<float> weights, int startIndex, int goal);
 
 #endif /* __VISIBILITYGRAPH_H__ */
 

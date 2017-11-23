@@ -19,10 +19,6 @@ void write_program_file(vector<Point> path, string filename);
 int main(void)
 {
 
-	
-
-	
-
     const int nHind = 3;    // Anzahl der Hindernisse
     Box aHindernis[nHind];  // Unsere Hindernisse
 
@@ -53,7 +49,7 @@ int main(void)
         {
             g[i * 4 + j].pt = aHindernis[i].GetVertex(j);
         }
-    }
+    }	
 
     g[nHind * 4].pt = startpoint;   // store startpoint in graph g "behind" the rectangle vertices
     g[nHind * 4 + 1].pt = endpoint; // store endpoint in graph g "behind" the rectangle vertices

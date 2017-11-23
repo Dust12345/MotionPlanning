@@ -157,14 +157,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Box.h" />
-    <ClInclude Include="MyGraph.h" />
+    <ClInclude Include="Dijkstra.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="VisibilityGraph.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Box.cpp" />
+    <ClCompile Include="Dijkstra.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MyGraph.cpp" />
     <ClCompile Include="VisibilityGraph.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
