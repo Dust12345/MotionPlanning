@@ -43,17 +43,19 @@ std::vector<MyPolygon> getObsPolys(Graph g, const int nHind)
 	std::vector<MyPolygon> obsticals;
 	for (int i = 0; i < nHind; i++)
 	{
-		MyPolygon poly;
-
+		MyPolygon poly;	
 		std::vector<MyPoint> points;
 
 		for (int j = i * 4; j < (i * 4) + 4; j++) {
 			points.push_back(MyPoint(g[j].pt.x, g[j].pt.y));
 		}
-		points.push_back(MyPoint(g[i * 4].pt.x, g[i * 4].pt.y));
+		points.push_back(MyPoint(g[i * 4].pt.x, g[i * 4].pt.y));		
+
 		boost::geometry::assign_points(poly, points);
 		obsticals.push_back(poly);
 	}
+
+
 
 	return obsticals;
 }
@@ -63,11 +65,17 @@ std::vector<Edge> getInitialEdges(Graph g, const int nHind)
 	std::vector<Edge> edges;
 
 	for (int i = 0; i < nHind; i++) {
+		//std::cout << "obstical "<< i<< std::endl;
+
 		for (int j = i * 4; j < (i * 4) + 3; j++) {
 			edges.push_back(Edge(j, j + 1));
+			
+
+			//std::cout << g[j].pt.x << "/" << g[j].pt.y << " to " << g[j+1].pt.x << "/" << g[j+1].pt.y << std::endl;
 		}
 
-		edges.push_back(Edge(i * 4, (i * 4) + 4));
+		//std::cout << g[i * 4].pt.x << "/" << g[i * 4].pt.y << " to " << g[(i * 4) + 3].pt.x << "/" << g[(i * 4) + 3].pt.y << std::endl;
+		edges.push_back(Edge((i * 4) + 3,i * 4));
 	}
 
 	return edges;
@@ -88,16 +96,28 @@ std::vector<float> calcEdgeWeigths(Graph g, std::vector<Edge> edges)
 
 vector<Point> VisibilityGraph(Graph g, const int nHind,Point startPos, Point goal)
 {
-	std::vector<Edge> edges = getInitialEdges(g, nHind);
+	std::vector<Edge> edges= getInitialEdges(g, nHind);
 	std::vector<MyPolygon> obsticals = getObsPolys(g, nHind);	
 
 	getVisibleEdges(g, startPos, nHind, goal, edges, obsticals);
 	
+	for (int i = 0; i < edges.size(); i++)
+	{
+		Edge& e = edges[i];
+		//std::cout << g[e.first].pt.x << "/" << g[e.first].pt.y << " to " << g[e.second].pt.x << "/" << g[e.second].pt.y <<std::endl;
+	}
+
 	
 
 	std::vector<float> weigths = calcEdgeWeigths(g, edges);	
 
-	std::vector<Point> path = getShortestPath(g, nHind, edges, weigths, 0, (nHind * 4) + 1);	
+	std::vector<Point> path = getShortestPath(g, nHind, edges, weigths, (nHind * 4), (nHind * 4) + 1);
+
+	for (int i = 0; i < path.size(); i++) {
+		//std::cout << path[i].x << "/" << path[i].y << std::endl;
+	}
+
+	
 
 	write_gnuplot_file(g, "VisibilityGraph.dat");
 
@@ -111,7 +131,7 @@ bool polySegmentIntersect(Point a, Point b, MyPolygon poly)
 	typedef boost::geometry::model::point<float, 2, boost::geometry::cs::cartesian> point_t;
 
 	typedef boost::geometry::model::segment<point_t> Segment;
-	Segment AB(point_t(a.x, a.y), point_t(b.x, b.y));
+
 	
 	typedef boost::geometry::model::linestring<MyPoint> Linestring;
 
@@ -120,10 +140,12 @@ bool polySegmentIntersect(Point a, Point b, MyPolygon poly)
 	MyPoint p1 = MyPoint(a.x, a.y);
 	MyPoint p2 = MyPoint(b.x, b.y);
 
+	//std::cout << a.x << "/" << a.y << " to " << b.x << "/" << b.y << std::endl;
+
 	ls.push_back(p1);
 	ls.push_back(p2);
 
-	std::vector<MyPoint> result;
+	std::vector<MyPoint> result;	
 
 	boost::geometry::intersection(ls, poly, result);
 
@@ -134,6 +156,8 @@ bool polySegmentIntersect(Point a, Point b, MyPolygon poly)
 		//check of the intersections are at the end of the segments
 		for (int j = 0; j < result.size(); j++)
 		{
+			
+				
 			if (pointsArequal(a, result[j]) || pointsArequal(b, result[j])) {
 				
 			}
@@ -165,6 +189,7 @@ bool areEqual(float a,const float& b,float epsilon)
 
 bool isVisible(Graph& g, Point& a, Point& b, int aIndex, int bIndex, std::vector<Edge>& edges, std::vector<MyPolygon>& poly)
 {
+	//int i = 0;
 	for (int i = 0; i < poly.size(); i++)
 	{
 		bool result = polySegmentIntersect(a, b, poly[i]);
@@ -192,18 +217,35 @@ std::vector<Edge> getVisibleEdges(Graph& g, Point startPoint, const int nHind, P
 {
 	std::vector<Edge> lines;	
 
-	for (int i = 0; i < nHind; i++) {
+	
+
+	for (int i = 0; i < nHind; i++)
+	{
 		
+		
+
 		//i is the index of an obstrical
-		for (int j = (i*4); j < (i*4) + 4; j++) {
+		for (int j = (i*4); j < (i*4) + 4; j++)
+		{
+	
+			
 			Point& a = g[j].pt;
+
+		
+
+			//int k = 4;
+
 			//j iterates through the edges of an obstical
-			for (int k = 0; k < (nHind * 4)+2; k++) {
+			for (int k = 0; k < (nHind * 4)+2; k++)
+			{
 				//k goes through all point on the graph
 				Point& b = g[k].pt;
+
+			
 				//make sure we dont add edges that are part of the same obstical
 				if (k >= (i * 4) && k < (i * 4) + 4)
 				{
+					
 					//edge is part of the same object
 				}
 				else{
@@ -212,6 +254,8 @@ std::vector<Edge> getVisibleEdges(Graph& g, Point startPoint, const int nHind, P
 
 					if (lineIsVisible) {
 	
+						
+
 						//check if this combination is already there in reverse order
 						bool alreadyKnown = checkIfEdgeIsKnown(j, k, lines);
 
@@ -221,6 +265,9 @@ std::vector<Edge> getVisibleEdges(Graph& g, Point startPoint, const int nHind, P
 							edges.push_back(Edge(j, k));
 						}
 						
+					}
+					else {
+					
 					}
 				}
 			}
@@ -261,8 +308,6 @@ std::vector<Point> getShortestPath(Graph g, const int nHind, std::vector<Edge>ed
 	Dijkstra::adjacency_list_t adjacency_list((nHind * 4) + 2);
 
 	std::vector<Point> pathToGo;
-
-	//pathToGo.push_back(g[startIndex].pt);
 
 	for (int i = 0; i < edges.size(); i++)
 	{
