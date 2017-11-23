@@ -99,7 +99,7 @@ vector<Point> VisibilityGraph(Graph g, const int nHind,Point startPos, Point goa
 
 	std::vector<Point> path = getShortestPath(g, nHind, edges, weigths, 0, (nHind * 4) + 1);	
 
-	//write_gnuplot_file(g, "VisibilityGraph.dat");
+	write_gnuplot_file(g, "VisibilityGraph.dat");
 
     return path;
 }
