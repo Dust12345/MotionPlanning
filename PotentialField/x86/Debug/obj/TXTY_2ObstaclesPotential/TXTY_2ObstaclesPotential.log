@@ -1,15 +1,3 @@
-﻿Der Buildvorgang wurde am 13.11.2017 11:30:37 gestartet.
-     1>Projekt "C:\Users\Fabian\MotionPlanning\PotentialField\TXTY_2ObstaclesPotential\TXTY_2ObstaclesPotential.vcxproj" auf Knoten "2", Build Ziel(e).
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\Users\Fabian\MotionPlanning\PotentialField\Potential /ZI /nologo /W3 /WX- /MP /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"C:\Users\Fabian\MotionPlanning\PotentialField\x86\Debug\obj\TXTY_2ObstaclesPotential\\" /Fd"C:\Users\Fabian\MotionPlanning\PotentialField\x86\Debug\obj\TXTY_2ObstaclesPotential\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt TXTY_2ObstaclesPotential.cpp
-         TXTY_2ObstaclesPotential.cpp
-     1>c:\users\fabian\motionplanning\potentialfield\txty_2obstaclespotential\txty_2obstaclespotential.cpp(94): warning C4018: '<': Konflikt zwischen 'signed' und 'unsigned'
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Fabian\MotionPlanning\PotentialField\x86\Debug\TXTY_2ObstaclesPotential.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Fabian\MotionPlanning\PotentialField\x86\Debug\TXTY_2ObstaclesPotential.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Fabian\MotionPlanning\PotentialField\x86\Debug\TXTY_2ObstaclesPotential.lib" /MACHINE:X86 C:\Users\Fabian\MotionPlanning\PotentialField\x86\Debug\obj\TXTY_2ObstaclesPotential\TXTY_2ObstaclesPotential.obj
-         C:\Users\Fabian\MotionPlanning\PotentialField\x86\Debug\Potential.lib
-         TXTY_2ObstaclesPotential.vcxproj -> C:\Users\Fabian\MotionPlanning\PotentialField\x86\Debug\TXTY_2ObstaclesPotential.exe
-     1>Die Erstellung des Projekts "C:\Users\Fabian\MotionPlanning\PotentialField\TXTY_2ObstaclesPotential\TXTY_2ObstaclesPotential.vcxproj" ist abgeschlossen, Build Ziel(e).
-
-Build erfolgreich.
-
-Verstrichene Zeit 00:00:00.88
+﻿  TXTY_2ObstaclesPotential.cpp
+c:\users\joshua\documents\github\motionplanning\potentialfield\txty_2obstaclespotential\txty_2obstaclespotential.cpp(90): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
+  TXTY_2ObstaclesPotential.vcxproj -> C:\Users\Joshua\Documents\GitHub\MotionPlanning\PotentialField\x86\Debug\TXTY_2ObstaclesPotential.exe
