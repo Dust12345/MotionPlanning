@@ -131,8 +131,8 @@ vector<Point> VisibilityGraph(Graph g, const int nHind)
 
 	//check if the goal can be reached directly
 	if (isVisible(g[nHind * 4].pt, g[(nHind * 4) + 1].pt, (nHind * 4), (nHind * 4) + 1, edges, obsticals)) {
-		//path.push_back(g[(nHind * 4) + 1].pt);
-		//return path;
+		path.push_back(g[(nHind * 4) + 1].pt);
+		return path;
 	}
 
 	//run the actual visibility graph algo
