@@ -115,12 +115,14 @@ vector<Point> VisibilityGraph(Graph g, const int nHind)
 		return path;
 	}	
 
+	//get the edges of the obsticals
 	std::vector<Edge> edges= getInitialEdges(g, nHind);
-	std::vector<MyPolygon> obsticals = getObsPolys(g, nHind);	
 
-	MyPoint destination = MyPoint(g[(nHind * 4) + 1].pt.x, g[(nHind * 4) + 1].pt.y);
+	//build the obsticals from the graph
+	std::vector<MyPolygon> obsticals = getObsPolys(g, nHind);
 
 	//check if the goal is reachable
+	MyPoint destination = MyPoint(g[(nHind * 4) + 1].pt.x, g[(nHind * 4) + 1].pt.y);	
 	if (!goalIsReachable(destination, obsticals))
 	{
 		std::cout << "goal is unreachable" << std::endl;
@@ -133,59 +135,55 @@ vector<Point> VisibilityGraph(Graph g, const int nHind)
 		return path;
 	}
 
+	//run the actual visibility graph algo
 	getVisibleEdges(g, nHind, edges, obsticals);
 
+	//get the edges weigth
 	std::vector<float> weigths = calcEdgeWeigths(g, edges);	
 
+	//run dijkstra
 	path = getShortestPath(g, nHind, edges, weigths, (nHind * 4), (nHind * 4) + 1);
-
-	for (int i = 0; i < path.size(); i++) {
-		//std::cout << path[i].x << "/" << path[i].y << std::endl;
-	}
-
-	
 
 	write_gnuplot_file(g, "VisibilityGraph.dat");
 
     return path;
 }
 
-bool polySegmentIntersect(Point a, Point b, MyPolygon poly) 
+bool polySegIntersection(Point a, Point b, MyPolygon poly) 
 {
 	float threshold = 0.005;
 
+	//typedefs needed for boost graph
 	typedef boost::geometry::model::point<float, 2, boost::geometry::cs::cartesian> point_t;
-
-	typedef boost::geometry::model::segment<point_t> Segment;
-
-	
+	typedef boost::geometry::model::segment<point_t> Segment;	
 	typedef boost::geometry::model::linestring<MyPoint> Linestring;
 
+	//build the segment
 	Linestring ls;
-
 	MyPoint p1 = MyPoint(a.x, a.y);
 	MyPoint p2 = MyPoint(b.x, b.y);
-
-	//std::cout << a.x << "/" << a.y << " to " << b.x << "/" << b.y << std::endl;
-
 	ls.push_back(p1);
 	ls.push_back(p2);
 
-	std::vector<MyPoint> result;	
+	std::vector<MyPoint> intersectionPoints;	
 
-	boost::geometry::intersection(ls, poly, result);
+	//calc the intersection
+	boost::geometry::intersection(ls, poly, intersectionPoints);
 
-	if (result.size() > 2) {
+	//we have to invastigate the intersections points, because intersections can happen directly on the border of an obstical
+	//such an intersections whould be allowed in our case
+
+	if (intersectionPoints.size() > 2)
+	{
+		//because intersections we allow can only accour at the ends of the segment, so more then two intersections means there was defenetly an obstical in the way
 		return true;
 	}
 	else {
 		//check of the intersections are at the end of the segments
-		for (int j = 0; j < result.size(); j++)
-		{
-			
-				
-			if (pointsArequal(a, result[j],0.01) || pointsArequal(b, result[j], 0.01)) {
-				
+		for (int j = 0; j < intersectionPoints.size(); j++)
+		{				
+			if (pointsArequal(a, intersectionPoints[j],0.01) || pointsArequal(b, intersectionPoints[j], 0.01))
+			{				
 			}
 			else {
 				return true;
@@ -199,7 +197,6 @@ bool pointsArequal(Point p1, Point p2,float epsilon)
 {
 	bool xSame = areEqual(p1.x, p2.x, epsilon);
 	bool ySame = areEqual(p1.y, p2.y, epsilon);
-
 	return xSame && ySame;
 }
 
@@ -207,25 +204,22 @@ bool pointsArequal(Point p1, MyPoint p2, float epsilon)
 {
 	bool xSame = areEqual(p1.x, p2.x(), epsilon);
 	bool ySame = areEqual(p1.y, p2.y(), epsilon);
-
 	return xSame && ySame;
 }
 
 bool areEqual(float a,const float& b,float epsilon)
 {
 	float diff = fabs(a - b);
-
 	return diff < epsilon;
 }
 
 
 bool isVisible(Point& a, Point& b, int aIndex, int bIndex, std::vector<Edge>& edges, std::vector<MyPolygon>& poly)
-{
-	//int i = 0;
+{	
 	for (int i = 0; i < poly.size(); i++)
 	{
-		bool result = polySegmentIntersect(a, b, poly[i]);
-		if (result) {
+		bool intersect = polySegIntersection(a, b, poly[i]);
+		if (intersect) {
 			return false;
 		}
 	}
@@ -237,7 +231,7 @@ bool checkIfEdgeIsKnown(int indexA, int indexB, std::vector<Edge> lines)
 	bool alreadyKnown = false;
 
 	for (int h = 0; h < lines.size(); h++)
-	{
+	{		
 		if (lines[h].first == indexB&&lines[h].second == indexA) {
 			alreadyKnown = true;
 		}
@@ -246,8 +240,7 @@ bool checkIfEdgeIsKnown(int indexA, int indexB, std::vector<Edge> lines)
 }
 
 void getVisibleEdges(Graph& g, const int nHind, std::vector<Edge>& edges, std::vector<MyPolygon>& poly)
-{
-	
+{	
 
 	for (int i = 0; i < nHind; i++)
 	{
@@ -264,18 +257,14 @@ void getVisibleEdges(Graph& g, const int nHind, std::vector<Edge>& edges, std::v
 				//make sure we dont add edges that are part of the same obstical
 				if (k >= (i * 4) && k < (i * 4) + 4)
 				{					
-					//edge is part of the same object
+					//edge is part of the same object, do nothing
 				}
 				else{
 
-					bool lineIsVisible = isVisible(a, b,j,k, edges,poly);
-
-					if (lineIsVisible) {
+					if (isVisible(a, b, j, k, edges, poly)) {
 
 						//check if this combination is already there in reverse order
-						bool alreadyKnown = checkIfEdgeIsKnown(j, k, edges);
-
-						if (!alreadyKnown)
+						if (checkIfEdgeIsKnown(j, k, edges))
 						{						
 							edges.push_back(Edge(j, k));
 						}						
@@ -316,9 +305,11 @@ void write_gnuplot_file(Graph g, string filename)
 
 std::vector<Point> getShortestPath(Graph g, const int nHind, std::vector<Edge>edges, std::vector<float> weights, int startIndex, int goal)
 {
-	Dijkstra::adjacency_list_t adjacency_list((nHind * 4) + 2);
 
-	std::vector<Point> pathToGo;
+	std::vector<Point> shortestPath;
+
+	//build ajacency matrix
+	Dijkstra::adjacency_list_t adjacency_list((nHind * 4) + 2);
 
 	for (int i = 0; i < edges.size(); i++)
 	{
@@ -333,11 +324,12 @@ std::vector<Point> getShortestPath(Graph g, const int nHind, std::vector<Edge>ed
 	dijkstra.DijkstraComputePaths(startIndex, adjacency_list, min_distance, previous);
 	std::list<Dijkstra::vertex_t> path = dijkstra.DijkstraGetShortestPathTo(goal, previous);
 
+	//convert the path into the format we want
 	for (std::list<int>::iterator it = path.begin(); it != path.end(); ++it)
 	{
 		Point p = g[(*it)].pt;
-		pathToGo.push_back(p);
+		shortestPath.push_back(p);
 	}
 
-	return pathToGo;
+	return shortestPath;
 }

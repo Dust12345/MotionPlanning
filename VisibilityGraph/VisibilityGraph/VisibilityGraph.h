@@ -81,7 +81,7 @@ std::vector<Point> getShortestPath(Graph g, const int nHind, std::vector<Edge>ed
 bool goalIsReachable(MyPoint goal, std::vector<MyPolygon> obsticals);
 
 //checks if a polygon an a line intersect. allows for hitting the border of the polygon
-bool polySegmentIntersect(Point a, Point b, MyPolygon poly);
+bool polySegIntersection(Point a, Point b, MyPolygon poly);
 
 //adds all visible edges to the given edge vector
 void getVisibleEdges(Graph& g,const int nHind,std::vector<Edge>& edges, std::vector<MyPolygon>& poly);
