@@ -175,7 +175,7 @@ bool polySegIntersection(Point a, Point b, MyPolygon poly)
 
 	if (intersectionPoints.size() > 1)
 	{
-		//because intersections we allow can only accour at the ends of the segment, so more then two intersections means there was defenetly an obstical in the way
+		//because intersections we allow can only accour at the ends of the segment, so more then one intersection means there was defenetly an obstical in the way
 		return true;
 	}
 	else {

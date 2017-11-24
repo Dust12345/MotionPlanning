@@ -36,8 +36,8 @@ int main(void)
 
     // Roboter initialisieren
     Point startpoint(0.2, 0., 0.);
-   Point endpoint(0.3, 0.7, 0.); // End point for the first two obstacles
-    //Point endpoint(0.4, 1.0, 0.);   // End point for the three obstacles
+   //Point endpoint(0.3, 0.7, 0.); // End point for the first two obstacles
+    Point endpoint(0.4, 1.0, 0.);   // End point for the three obstacles
 
 	//Point endpoint(0.2, 0.2,0); //unreachable goal
 	//Point endpoint(0.2, 0., 0.); // start and goal are equal
