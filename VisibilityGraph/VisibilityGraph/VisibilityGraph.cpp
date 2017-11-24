@@ -128,15 +128,13 @@ vector<Point> VisibilityGraph(Graph g, const int nHind)
 		return path;
 	}
 
-	getVisibleEdges(g, nHind, edges, obsticals);
-	
-	for (int i = 0; i < edges.size(); i++)
-	{
-		Edge& e = edges[i];
-		//std::cout << g[e.first].pt.x << "/" << g[e.first].pt.y << " to " << g[e.second].pt.x << "/" << g[e.second].pt.y <<std::endl;
+	//check if the goal can be reached directly
+	if (isVisible(g[nHind * 4].pt, g[(nHind * 4) + 1].pt, (nHind * 4), (nHind * 4) + 1, edges, obsticals)) {
+		path.push_back(g[(nHind * 4) + 1].pt);
+		return path;
 	}
 
-	
+	getVisibleEdges(g, nHind, edges, obsticals);
 
 	std::vector<float> weigths = calcEdgeWeigths(g, edges);	
 
@@ -222,7 +220,7 @@ bool areEqual(float a,const float& b,float epsilon)
 }
 
 
-bool isVisible(Graph& g, Point& a, Point& b, int aIndex, int bIndex, std::vector<Edge>& edges, std::vector<MyPolygon>& poly)
+bool isVisible(Point& a, Point& b, int aIndex, int bIndex, std::vector<Edge>& edges, std::vector<MyPolygon>& poly)
 {
 	//int i = 0;
 	for (int i = 0; i < poly.size(); i++)
@@ -271,7 +269,7 @@ void getVisibleEdges(Graph& g, const int nHind, std::vector<Edge>& edges, std::v
 				}
 				else{
 
-					bool lineIsVisible = isVisible(g, a, b,j,k, edges,poly);
+					bool lineIsVisible = isVisible(a, b,j,k, edges,poly);
 
 					if (lineIsVisible) {
 

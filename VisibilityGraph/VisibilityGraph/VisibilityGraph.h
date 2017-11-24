@@ -72,7 +72,7 @@ void getVisibleEdges(Graph& g,const int nHind,std::vector<Edge>& edges, std::vec
 
 bool checkIfEdgeIsKnown(int indexA, int indexB, std::vector<Edge> lines);
 
-bool isVisible(Graph& g,Point& a, Point& b, int aIndex, int bIndex,std::vector<Edge>& edges, std::vector<MyPolygon>& poly);
+bool isVisible(Point& a, Point& b, int aIndex, int bIndex,std::vector<Edge>& edges, std::vector<MyPolygon>& poly);
 
 std::vector<Point> getShortestPath(Graph g, const int nHind, std::vector<Edge>edges, std::vector<float> weights, int startIndex, int goal);
 

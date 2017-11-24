@@ -40,7 +40,9 @@ int main(void)
     //Point endpoint(0.4, 1.0, 0.);   // End point for the three obstacles
 
 	//Point endpoint(0.2, 0.2,0); //unreachable goal
-	//Point endpoint(0.2, 0., 0.);
+	//Point endpoint(0.2, 0., 0.); // start and goal are equal
+
+	//Point endpoint(1, 0, 0); // no obstical
 
 
     vector<Point> path;             // create a point vector for storing the path
