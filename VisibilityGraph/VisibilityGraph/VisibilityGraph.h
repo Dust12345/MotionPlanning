@@ -35,7 +35,7 @@ of each pair of edges
 // additional Information for each vertex
 struct VertexProperty
 {
-    Point pt; // point coordinates of vertex
+    Point pt; // point coordinates of vertex	
 };
 
 
@@ -49,7 +49,7 @@ typedef boost::graph_traits<Graph>::vertex_descriptor vertex_descriptor;
 typedef boost::graph_traits<Graph>::edge_descriptor edge_descriptor;
 typedef std::pair<int, int> Edge;
 
-std::vector<Point> VisibilityGraph(Graph g, const int nHind, Point startPos, Point goal);
+std::vector<Point> VisibilityGraph(Graph g, const int nHind);
 void write_gnuplot_file(Graph g, std::string filename);
 
 std::vector<MyPolygon> getObsPolys(Graph g, const int nHind);
@@ -57,15 +57,18 @@ std::vector<Edge> getInitialEdges(Graph g, const int nHind);
 std::vector<float> calcEdgeWeigths(Graph g, std::vector<Edge> edges);
 
 bool areEqual(float a, const float& b, float epsilon);
-bool pointsArequal(Point p1, MyPoint p2);
+bool pointsArequal(Point p1, MyPoint p2, float epsilon);
+bool pointsArequal(Point p1, Point p2, float epsilon);
 
 float getEdgeWeigth(Edge e, Graph g);
 
 std::vector<Point> getShortestPath(Graph g, const int nHind, std::vector<Edge>edges, std::vector<float> weights, int startIndex, int goal);
 
+bool goalIsReachable(MyPoint goal, std::vector<MyPolygon> obsticals);
+
 bool polySegmentIntersect(Point a, Point b, MyPolygon poly);
 
-std::vector<Edge>  getVisibleEdges(Graph& g,Point startPoint,const int nHind, Point goal,std::vector<Edge>& edges, std::vector<MyPolygon>& poly);
+void getVisibleEdges(Graph& g,const int nHind,std::vector<Edge>& edges, std::vector<MyPolygon>& poly);
 
 bool checkIfEdgeIsKnown(int indexA, int indexB, std::vector<Edge> lines);
 

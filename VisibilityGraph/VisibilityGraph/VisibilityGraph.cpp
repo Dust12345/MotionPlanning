@@ -94,12 +94,41 @@ std::vector<float> calcEdgeWeigths(Graph g, std::vector<Edge> edges)
 	return weigths;
 }
 
-vector<Point> VisibilityGraph(Graph g, const int nHind,Point startPos, Point goal)
+bool goalIsReachable(MyPoint goal, std::vector<MyPolygon> obsticals)
 {
+	for (int i = 0; i < obsticals.size(); i++)
+	{
+		if (boost::geometry::within(goal, obsticals[i])) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+vector<Point> VisibilityGraph(Graph g, const int nHind)
+{
+	std::vector<Point> path;
+
+	//check if start and goal are the same
+	if (pointsArequal(g[nHind * 4].pt, g[(nHind * 4) + 1].pt,0.00001))
+	{
+		return path;
+	}	
+
 	std::vector<Edge> edges= getInitialEdges(g, nHind);
 	std::vector<MyPolygon> obsticals = getObsPolys(g, nHind);	
 
-	getVisibleEdges(g, startPos, nHind, goal, edges, obsticals);
+	MyPoint destination = MyPoint(g[(nHind * 4) + 1].pt.x, g[(nHind * 4) + 1].pt.y);
+
+	//check if the goal is reachable
+	if (!goalIsReachable(destination, obsticals))
+	{
+		std::cout << "goal is unreachable" << std::endl;
+		return path;
+	}
+
+	getVisibleEdges(g, nHind, edges, obsticals);
 	
 	for (int i = 0; i < edges.size(); i++)
 	{
@@ -111,7 +140,7 @@ vector<Point> VisibilityGraph(Graph g, const int nHind,Point startPos, Point goa
 
 	std::vector<float> weigths = calcEdgeWeigths(g, edges);	
 
-	std::vector<Point> path = getShortestPath(g, nHind, edges, weigths, (nHind * 4), (nHind * 4) + 1);
+	path = getShortestPath(g, nHind, edges, weigths, (nHind * 4), (nHind * 4) + 1);
 
 	for (int i = 0; i < path.size(); i++) {
 		//std::cout << path[i].x << "/" << path[i].y << std::endl;
@@ -158,7 +187,7 @@ bool polySegmentIntersect(Point a, Point b, MyPolygon poly)
 		{
 			
 				
-			if (pointsArequal(a, result[j]) || pointsArequal(b, result[j])) {
+			if (pointsArequal(a, result[j],0.01) || pointsArequal(b, result[j], 0.01)) {
 				
 			}
 			else {
@@ -169,10 +198,16 @@ bool polySegmentIntersect(Point a, Point b, MyPolygon poly)
 	}
 }
 
-bool pointsArequal(Point p1, MyPoint p2) {
+bool pointsArequal(Point p1, Point p2,float epsilon)
+{
+	bool xSame = areEqual(p1.x, p2.x, epsilon);
+	bool ySame = areEqual(p1.y, p2.y, epsilon);
 
-	float epsilon = 0.01;	
+	return xSame && ySame;
+}
 
+bool pointsArequal(Point p1, MyPoint p2, float epsilon)
+{
 	bool xSame = areEqual(p1.x, p2.x(), epsilon);
 	bool ySame = areEqual(p1.y, p2.y(), epsilon);
 
@@ -213,39 +248,25 @@ bool checkIfEdgeIsKnown(int indexA, int indexB, std::vector<Edge> lines)
 	return alreadyKnown;
 }
 
-std::vector<Edge> getVisibleEdges(Graph& g, Point startPoint, const int nHind, Point goal, std::vector<Edge>& edges, std::vector<MyPolygon>& poly)
+void getVisibleEdges(Graph& g, const int nHind, std::vector<Edge>& edges, std::vector<MyPolygon>& poly)
 {
-	std::vector<Edge> lines;	
-
 	
 
 	for (int i = 0; i < nHind; i++)
 	{
-		
-		
-
 		//i is the index of an obstrical
 		for (int j = (i*4); j < (i*4) + 4; j++)
-		{
-	
-			
-			Point& a = g[j].pt;
-
-		
-
-			//int k = 4;
-
+		{			
+			Point& a = g[j].pt;	
 			//j iterates through the edges of an obstical
 			for (int k = 0; k < (nHind * 4)+2; k++)
 			{
 				//k goes through all point on the graph
 				Point& b = g[k].pt;
-
 			
 				//make sure we dont add edges that are part of the same obstical
 				if (k >= (i * 4) && k < (i * 4) + 4)
-				{
-					
+				{					
 					//edge is part of the same object
 				}
 				else{
@@ -253,18 +274,14 @@ std::vector<Edge> getVisibleEdges(Graph& g, Point startPoint, const int nHind, P
 					bool lineIsVisible = isVisible(g, a, b,j,k, edges,poly);
 
 					if (lineIsVisible) {
-	
-						
 
 						//check if this combination is already there in reverse order
-						bool alreadyKnown = checkIfEdgeIsKnown(j, k, lines);
+						bool alreadyKnown = checkIfEdgeIsKnown(j, k, edges);
 
 						if (!alreadyKnown)
-						{
-							lines.push_back(Edge(j, k));
+						{						
 							edges.push_back(Edge(j, k));
-						}
-						
+						}						
 					}
 					else {
 					
@@ -272,9 +289,7 @@ std::vector<Edge> getVisibleEdges(Graph& g, Point startPoint, const int nHind, P
 				}
 			}
 		}
-	}
-
-	return lines;
+	}	
 }
 
 /**************************************************************************/
@@ -298,7 +313,6 @@ void write_gnuplot_file(Graph g, string filename)
         myfile << g[ei->m_target].pt.x << " " << g[ei->m_target].pt.y << endl << endl;
         cnt++;
     }
-
     cout << "Number of edges: " << cnt <<  endl;
     myfile.close();
 }

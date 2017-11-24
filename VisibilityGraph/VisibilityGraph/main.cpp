@@ -39,6 +39,10 @@ int main(void)
     Point endpoint(0.3, 0.7, 0.); // End point for the first two obstacles
     //Point endpoint(0.4, 1.0, 0.);   // End point for the three obstacles
 
+	//Point endpoint(0.2, 0.2,0); //unreachable goal
+	//Point endpoint(0.2, 0., 0.);
+
+
     vector<Point> path;             // create a point vector for storing the path
     Graph g(nHind * 4 + 2);         // create a graph with appropriate number of vertices
 
@@ -57,7 +61,7 @@ int main(void)
     // Startzeit
     DWORD dwStart = GetTickCount();
 
-    path = VisibilityGraph(g, nHind, startpoint, endpoint);
+    path = VisibilityGraph(g, nHind);
 
     // Zeit für das Aufstellen des Konfigurationsraumes ausgeben ( in ms )
     DWORD dwElapsed = GetTickCount() - dwStart;
