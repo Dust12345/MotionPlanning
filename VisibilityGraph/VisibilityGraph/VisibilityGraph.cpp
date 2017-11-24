@@ -31,10 +31,10 @@ using namespace std;
 
 float getEdgeWeigth(Edge e, Graph g)
 {
+	// a = sqrt(b²+c²)
 	Point p1 = g[e.first].pt;
 	Point p2 = g[e.second].pt;
 	float d = sqrtf(powf(p1.x - p2.x, 2) + powf(p1.y - p2.y, 2));
-
 	return d;
 }
 
@@ -43,19 +43,22 @@ std::vector<MyPolygon> getObsPolys(Graph g, const int nHind)
 	std::vector<MyPolygon> obsticals;
 	for (int i = 0; i < nHind; i++)
 	{
+		//i iterates through the obsticals
 		MyPolygon poly;	
 		std::vector<MyPoint> points;
 
-		for (int j = i * 4; j < (i * 4) + 4; j++) {
+		for (int j = i * 4; j < (i * 4) + 4; j++)
+		{
+			//j iterates through the points of the obstical
 			points.push_back(MyPoint(g[j].pt.x, g[j].pt.y));
 		}
+
+		//dont forget to add the first point again to close the polygon
 		points.push_back(MyPoint(g[i * 4].pt.x, g[i * 4].pt.y));		
 
 		boost::geometry::assign_points(poly, points);
 		obsticals.push_back(poly);
 	}
-
-
 
 	return obsticals;
 }
@@ -64,17 +67,13 @@ std::vector<Edge> getInitialEdges(Graph g, const int nHind)
 {
 	std::vector<Edge> edges;
 
-	for (int i = 0; i < nHind; i++) {
-		//std::cout << "obstical "<< i<< std::endl;
-
-		for (int j = i * 4; j < (i * 4) + 3; j++) {
+	for (int i = 0; i < nHind; i++)
+	{
+		for (int j = i * 4; j < (i * 4) + 3; j++)
+		{
 			edges.push_back(Edge(j, j + 1));
-			
-
-			//std::cout << g[j].pt.x << "/" << g[j].pt.y << " to " << g[j+1].pt.x << "/" << g[j+1].pt.y << std::endl;
 		}
-
-		//std::cout << g[i * 4].pt.x << "/" << g[i * 4].pt.y << " to " << g[(i * 4) + 3].pt.x << "/" << g[(i * 4) + 3].pt.y << std::endl;
+		//dont forget the last edge, which is formed by the first and the last corner of the obstical
 		edges.push_back(Edge((i * 4) + 3,i * 4));
 	}
 
