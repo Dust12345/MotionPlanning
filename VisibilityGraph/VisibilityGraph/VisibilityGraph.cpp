@@ -131,8 +131,8 @@ vector<Point> VisibilityGraph(Graph g, const int nHind)
 
 	//check if the goal can be reached directly
 	if (isVisible(g[nHind * 4].pt, g[(nHind * 4) + 1].pt, (nHind * 4), (nHind * 4) + 1, edges, obsticals)) {
-		path.push_back(g[(nHind * 4) + 1].pt);
-		return path;
+		//path.push_back(g[(nHind * 4) + 1].pt);
+		//return path;
 	}
 
 	//run the actual visibility graph algo
@@ -173,7 +173,7 @@ bool polySegIntersection(Point a, Point b, MyPolygon poly)
 	//we have to invastigate the intersections points, because intersections can happen directly on the border of an obstical
 	//such an intersections whould be allowed in our case
 
-	if (intersectionPoints.size() > 2)
+	if (intersectionPoints.size() > 1)
 	{
 		//because intersections we allow can only accour at the ends of the segment, so more then two intersections means there was defenetly an obstical in the way
 		return true;
@@ -264,7 +264,7 @@ void getVisibleEdges(Graph& g, const int nHind, std::vector<Edge>& edges, std::v
 					if (isVisible(a, b, j, k, edges, poly)) {
 
 						//check if this combination is already there in reverse order
-						if (checkIfEdgeIsKnown(j, k, edges))
+						if (!checkIfEdgeIsKnown(j, k, edges))
 						{						
 							edges.push_back(Edge(j, k));
 						}						
@@ -305,7 +305,6 @@ void write_gnuplot_file(Graph g, string filename)
 
 std::vector<Point> getShortestPath(Graph g, const int nHind, std::vector<Edge>edges, std::vector<float> weights, int startIndex, int goal)
 {
-
 	std::vector<Point> shortestPath;
 
 	//build ajacency matrix
@@ -318,7 +317,6 @@ std::vector<Point> getShortestPath(Graph g, const int nHind, std::vector<Edge>ed
 	}
 
 	Dijkstra dijkstra;
-
 	std::vector<Dijkstra::weight_t> min_distance;
 	std::vector<Dijkstra::vertex_t> previous;
 	dijkstra.DijkstraComputePaths(startIndex, adjacency_list, min_distance, previous);
