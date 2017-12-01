@@ -138,13 +138,16 @@ vector<Point> VisibilityGraph(Graph g, const int nHind)
 	//run the actual visibility graph algo
 	getVisibleEdges(g, nHind, edges, obsticals);
 
+	//reduce the graph
+	reduceGraph(g, nHind, edges, obsticals, g[(nHind * 4)].pt, g[(nHind * 4) + 1].pt);
+
 	//get the edges weigth
 	std::vector<float> weigths = calcEdgeWeigths(g, edges);	
 
 	//run dijkstra
 	path = getShortestPath(g, nHind, edges, weigths, (nHind * 4), (nHind * 4) + 1);
 
-	write_gnuplot_file(g, "VisibilityGraph.dat");
+	write_gnuplot_file(g, "VisibilityGraph.dat", edges);
 
     return path;
 }
@@ -166,7 +169,6 @@ bool polySegIntersection(Point a, Point b, MyPolygon poly)
 	ls.push_back(p2);
 
 	std::vector<MyPoint> intersectionPoints;	
-
 	//calc the intersection
 	boost::geometry::intersection(ls, poly, intersectionPoints);
 
@@ -269,37 +271,28 @@ void getVisibleEdges(Graph& g, const int nHind, std::vector<Edge>& edges, std::v
 							edges.push_back(Edge(j, k));
 						}						
 					}
-					else {
-					
-					}
+
 				}
 			}
 		}
 	}	
 }
 
-/**************************************************************************/
-// Ausgabe einer Plotdatei für gnuplot:
-// Aufruf in gnuplot: plot 'visibilitygraph.data' using 1:2 with lines
-void write_gnuplot_file(Graph g, string filename)
+void write_gnuplot_file(Graph g, string filename, std::vector<Edge> edges)
 {
     ofstream myfile;
     myfile.open(filename);
 
-    // Iterate through the edges and print them out
-    typedef boost::graph_traits<Graph>::edge_iterator edge_iter;
-    std::pair<edge_iter, edge_iter> ep;
-    edge_iter ei, ei_end;
+	myfile << "set title 'Visibility Graph'" << endl;
+	myfile <<"set size ratio 1.0"<< endl;
+	myfile << "set xrange[0:1]" << endl;
+	myfile << "set yrange[0:1]" << endl;
 
-    int cnt = 0; // edge counter
-
-    for (tie(ei, ei_end) = edges(g); ei != ei_end; ++ei)
-    {
-        myfile << g[ei->m_source].pt.x << " " << g[ei->m_source].pt.y << endl;
-        myfile << g[ei->m_target].pt.x << " " << g[ei->m_target].pt.y << endl << endl;
-        cnt++;
-    }
-    cout << "Number of edges: " << cnt <<  endl;
+	for (int i = 0; i < edges.size();i++)
+	{
+		myfile << g[edges[i].first].pt.x << " " << g[edges[i].first].pt.y << endl;
+		myfile << g[edges[i].second].pt.x << " " << g[edges[i].second].pt.y << endl << endl;
+	}
     myfile.close();
 }
 
@@ -330,4 +323,137 @@ std::vector<Point> getShortestPath(Graph g, const int nHind, std::vector<Edge>ed
 	}
 
 	return shortestPath;
+}
+
+void reduceGraph(Graph& g, const int nHind, std::vector<Edge>& edges, std::vector<MyPolygon>& poly,Point start,Point goal) {
+
+	vector<Edge> edgesToRemove;
+
+	for (int i = 0; i < edges.size(); i++) {
+		int pointIndexStart = edges[i].first, pointIndexEnd = edges[i].second;
+
+		//check if the pointIndexStart and pointIndexEnd are the start or end point
+		if (pointIndexStart != nHind*4 && pointIndexStart != (nHind * 4)+1 && pointIndexEnd != nHind * 4 && pointIndexEnd != (nHind * 4) + 1) {
+			int obsIndexStart = 0, obsIndexEnd = 0;
+
+			if (pointIndexStart < 4) {
+				obsIndexStart = 0;
+			}
+			else {
+				obsIndexStart = pointIndexStart / 4;
+			}
+
+			if (pointIndexEnd < 4) {
+				obsIndexEnd = 0;
+			}
+			else {
+				obsIndexEnd = pointIndexEnd / 4;
+			}
+
+			//check if the edge are not from the same Obs
+			if (obsIndexStart != obsIndexEnd) {
+				bool isSupportLineResult = isSupportingLine(g, pointIndexStart, pointIndexEnd, poly[obsIndexStart], poly[obsIndexEnd], obsIndexStart, obsIndexEnd, 4, 4);
+				bool isSeparatingLineResult = isSeparatingLine(g, pointIndexStart, pointIndexEnd, poly[obsIndexStart], poly[obsIndexEnd], obsIndexStart, obsIndexEnd, 4, 4);
+
+				if (!isSupportLineResult && !isSeparatingLineResult) {				
+					edgesToRemove.push_back(edges[i]);
+				}
+			}
+		}
+	}
+	// delete edges that aren't supporting or separating lines 
+	for (int j = 0; j < edgesToRemove.size();j++) {
+		for (std::_Vector_iterator<std::_Vector_val<std::_Simple_types<Edge>>> it = edges.begin(); it != edges.end();)
+		{
+			if (*it._Ptr == edgesToRemove[j]){
+				it = edges.erase(it);
+				break;
+			}
+			else {
+				++it;
+			}
+
+		}
+	}
+}
+
+
+bool isSupportingLine(Graph g, const int aPointIndex, const int bPointIndex,MyPolygon aObs,MyPolygon bObs, const int ObsIndexA, const int ObsIndexB, const int numberOfPointsOfObsa, const int numberOfPointsOfObsb) {
+	bool intersectionWithObsa = polySegIntersection(g[aPointIndex].pt, g[bPointIndex].pt, aObs);
+	bool intersectionWithObsb = polySegIntersection(g[aPointIndex].pt, g[bPointIndex].pt, bObs);
+
+	if (intersectionWithObsa || intersectionWithObsb) {
+		return false;
+	}
+
+	Point lineStartPoint = g[aPointIndex].pt, lineEndPoint = g[bPointIndex].pt;
+	Point PointFromObsA,PointFromObsB;
+
+	for (int i = 0; i < numberOfPointsOfObsa; i++) {
+		//take the first point of obs a
+
+		for (int j = 0; j < numberOfPointsOfObsb; j++) {
+			//check the point from obs a with all other points in obs b
+
+			PointFromObsA = g[(ObsIndexA * 4) + i].pt;
+			PointFromObsB = g[(ObsIndexB * 4) + j].pt;
+
+			if (!PointFromObsA.equals(lineStartPoint) && !PointFromObsA.equals(lineEndPoint) && !PointFromObsB.equals(lineStartPoint) && !PointFromObsB.equals(lineEndPoint)) {
+				if (!isOnTheSameLine(lineStartPoint, lineEndPoint, PointFromObsA, PointFromObsB)) {
+					return false;
+				}
+			}
+		}
+	}
+
+
+	return true;
+}
+
+bool isSeparatingLine(Graph g, const int aPointIndex, const int bPointIndex, MyPolygon aObs, MyPolygon bObs, const int ObsIndexA, const int ObsIndexB, const int numberOfPointsOfObsa, const int numberOfPointsOfObsb) {
+	
+	bool intersectionWithObsa = polySegIntersection(g[aPointIndex].pt, g[bPointIndex].pt, aObs);
+	bool intersectionWithObsb = polySegIntersection(g[aPointIndex].pt, g[bPointIndex].pt, bObs);
+
+	if (intersectionWithObsa || intersectionWithObsb) {
+		return false;
+	}
+	
+	Point lineStartPoint = g[aPointIndex].pt, lineEndPoint = g[bPointIndex].pt;
+	Point PointFromObsA, PointFromObsB;
+
+	for (int i = 0; i < numberOfPointsOfObsa; i++) {
+		//take the first point of obs a
+
+		for (int j = 0; j < numberOfPointsOfObsb; j++) {
+			//check the point from obs a with all other points in obs b
+
+			PointFromObsA = g[(ObsIndexA * 4) + i].pt;
+			PointFromObsB = g[(ObsIndexB * 4) + j].pt;
+
+			if (!PointFromObsA.equals(lineStartPoint) &&  !PointFromObsA.equals(lineEndPoint) && !PointFromObsB.equals(lineStartPoint) && !PointFromObsB.equals(lineEndPoint)) {
+				if (isOnTheSameLine(lineStartPoint, lineEndPoint, PointFromObsA, PointFromObsB)) {
+					return false;
+				}
+			}
+		}
+	}
+	return true;
+}
+
+bool isOnTheSameLine(Point beginLine, Point endLine, Point a, Point b) {
+
+	double aResult = (a.y - beginLine.y)*(endLine.x - beginLine.x) - (endLine.y - beginLine.y)*(a.x - beginLine.x);
+	double bResult = (b.y - beginLine.y)*(endLine.x - beginLine.x) - (endLine.y - beginLine.y)*(b.x - beginLine.x);
+
+	// sign check
+	if ((aResult >= 0 && bResult >= 0) || (aResult < 0 && bResult < 0)) {
+		return true;
+	}
+
+	if (aResult == 0 || bResult == 0) {
+		return true;
+	}
+
+	return false;
 }

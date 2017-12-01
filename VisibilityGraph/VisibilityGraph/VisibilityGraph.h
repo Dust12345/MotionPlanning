@@ -48,12 +48,12 @@ typedef boost::adjacency_list<boost::listS, boost::vecS, boost::undirectedS, Ver
 typedef boost::graph_traits<Graph>::vertex_descriptor vertex_descriptor;
 typedef boost::graph_traits<Graph>::edge_descriptor edge_descriptor;
 typedef std::pair<int, int> Edge;
-
+typedef boost::geometry::model::linestring<MyPoint> Linestring;
 //returns a path from the start to the goal, path is empty if no such path exists
 std::vector<Point> VisibilityGraph(Graph g, const int nHind);
 
 //writes the graph into a gnupolot file !!!DOES NOT WORK !!!
-void write_gnuplot_file(Graph g, std::string filename);
+void write_gnuplot_file(Graph g, std::string filename, std::vector<Edge> edges);
 
 //returns the obsticals in the graph as polygons
 std::vector<MyPolygon> getObsPolys(Graph g, const int nHind);
@@ -91,6 +91,16 @@ bool checkIfEdgeIsKnown(int indexA, int indexB, std::vector<Edge> lines);
 
 //checks if the given segment intersects with a polygon, allow for hitting the border
 bool isVisible(Point& a, Point& b, int aIndex, int bIndex,std::vector<Edge>& edges, std::vector<MyPolygon>& poly);
+
+void reduceGraph(Graph& g, const int nHind, std::vector<Edge>& edges, std::vector<MyPolygon>& poly, Point start, Point goal);
+
+bool isSupportingLine(Graph g, const int aPointIndex, const int bPointIndex, MyPolygon aObs, MyPolygon bObs, const int ObsIndexA, const int ObsIndexB, const int numberOfPointsOfObsa, const int numberOfPointsOfObsb);
+
+bool isSeparatingLine(Graph g, const int aPointIndex, const int bPointIndex, MyPolygon aObs, MyPolygon bObs, const int ObsIndexA, const int ObsIndexB, const int numberOfPointsOfObsa, const int numberOfPointsOfObsb);
+
+bool isOnTheSameLine(Point beginLine, Point endLine,Point a, Point b);
+
+std::vector<Point> extendLine(Point startPoint, Point endPoint);
 
 #endif /* __VISIBILITYGRAPH_H__ */
 

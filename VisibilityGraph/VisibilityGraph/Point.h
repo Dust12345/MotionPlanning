@@ -520,6 +520,13 @@
             return P.Distance(Pb);
         }
 
+		bool equals(Point a) {
+			if (a.x == x && a.y == y && a.z == z) {
+				return true;
+			}
+			return false;
+		}
+
 //      private:
 
     };
