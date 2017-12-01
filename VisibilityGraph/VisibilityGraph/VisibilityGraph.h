@@ -50,7 +50,7 @@ typedef boost::graph_traits<Graph>::edge_descriptor edge_descriptor;
 typedef std::pair<int, int> Edge;
 typedef boost::geometry::model::linestring<MyPoint> Linestring;
 //returns a path from the start to the goal, path is empty if no such path exists
-std::vector<Point> VisibilityGraph(Graph g, const int nHind);
+std::vector<Point> VisibilityGraph(Graph g, const int nHind, bool reduce);
 
 //writes the graph into a gnupolot file !!!DOES NOT WORK !!!
 void write_gnuplot_file(Graph g, std::string filename, std::vector<Edge> edges);
@@ -92,15 +92,17 @@ bool checkIfEdgeIsKnown(int indexA, int indexB, std::vector<Edge> lines);
 //checks if the given segment intersects with a polygon, allow for hitting the border
 bool isVisible(Point& a, Point& b, int aIndex, int bIndex,std::vector<Edge>& edges, std::vector<MyPolygon>& poly);
 
+//reduce edges of the graph with the supporting/separating method
 void reduceGraph(Graph& g, const int nHind, std::vector<Edge>& edges, std::vector<MyPolygon>& poly, Point start, Point goal);
 
-bool isSupportingLine(Graph g, const int aPointIndex, const int bPointIndex, MyPolygon aObs, MyPolygon bObs, const int ObsIndexA, const int ObsIndexB, const int numberOfPointsOfObsa, const int numberOfPointsOfObsb);
+//checks if the given line(Edge) is a supporting line between two obs
+bool isSupportingLine(Graph g, const int aPointIndex, const int bPointIndex, const int ObsIndexA, const int ObsIndexB, const int numberOfPointsOfObsa, const int numberOfPointsOfObsb, const std::vector<int> ObsNodeBegin);
 
-bool isSeparatingLine(Graph g, const int aPointIndex, const int bPointIndex, MyPolygon aObs, MyPolygon bObs, const int ObsIndexA, const int ObsIndexB, const int numberOfPointsOfObsa, const int numberOfPointsOfObsb);
+//checks if the given line(edge) is a separating line between two obs
+bool isSeparatingLine(Graph g, const int aPointIndex, const int bPointIndex, const int ObsIndexA, const int ObsIndexB, const int numberOfPointsOfObsa, const int numberOfPointsOfObsb, const std::vector<int> ObsNodeBegin);
 
+//checks if the given two points are on the same stie of the given line
 bool isOnTheSameLine(Point beginLine, Point endLine,Point a, Point b);
-
-std::vector<Point> extendLine(Point startPoint, Point endPoint);
 
 #endif /* __VISIBILITYGRAPH_H__ */
 

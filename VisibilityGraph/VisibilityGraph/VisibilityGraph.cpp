@@ -105,7 +105,7 @@ bool goalIsReachable(MyPoint goal, std::vector<MyPolygon> obsticals)
 	return true;
 }
 
-vector<Point> VisibilityGraph(Graph g, const int nHind)
+vector<Point> VisibilityGraph(Graph g, const int nHind, bool reduce)
 {
 	std::vector<Point> path;
 
@@ -139,7 +139,9 @@ vector<Point> VisibilityGraph(Graph g, const int nHind)
 	getVisibleEdges(g, nHind, edges, obsticals);
 
 	//reduce the graph
-	reduceGraph(g, nHind, edges, obsticals, g[(nHind * 4)].pt, g[(nHind * 4) + 1].pt);
+	if (reduce) {
+		reduceGraph(g, nHind, edges, obsticals, g[(nHind * 4)].pt, g[(nHind * 4) + 1].pt);
+	}
 
 	//get the edges weigth
 	std::vector<float> weigths = calcEdgeWeigths(g, edges);	
@@ -328,6 +330,18 @@ std::vector<Point> getShortestPath(Graph g, const int nHind, std::vector<Edge>ed
 void reduceGraph(Graph& g, const int nHind, std::vector<Edge>& edges, std::vector<MyPolygon>& poly,Point start,Point goal) {
 
 	vector<Edge> edgesToRemove;
+	vector<int>ObsNodeBegin;
+
+	for (int y = 0; y < poly.size();y++) {
+
+		if (y == 0) {
+			ObsNodeBegin.push_back(0);
+		}
+		else {
+			ObsNodeBegin.push_back(boost::geometry::num_points(poly[y])-1+ObsNodeBegin[y - 1]);
+		}
+		
+	}
 
 	for (int i = 0; i < edges.size(); i++) {
 		int pointIndexStart = edges[i].first, pointIndexEnd = edges[i].second;
@@ -352,8 +366,8 @@ void reduceGraph(Graph& g, const int nHind, std::vector<Edge>& edges, std::vecto
 
 			//check if the edge are not from the same Obs
 			if (obsIndexStart != obsIndexEnd) {
-				bool isSupportLineResult = isSupportingLine(g, pointIndexStart, pointIndexEnd, poly[obsIndexStart], poly[obsIndexEnd], obsIndexStart, obsIndexEnd, 4, 4);
-				bool isSeparatingLineResult = isSeparatingLine(g, pointIndexStart, pointIndexEnd, poly[obsIndexStart], poly[obsIndexEnd], obsIndexStart, obsIndexEnd, 4, 4);
+				bool isSupportLineResult = isSupportingLine(g, pointIndexStart, pointIndexEnd, obsIndexStart, obsIndexEnd, boost::geometry::num_points(poly[obsIndexStart]) - 1, boost::geometry::num_points(poly[obsIndexEnd]) - 1, ObsNodeBegin);
+				bool isSeparatingLineResult = isSeparatingLine(g, pointIndexStart, pointIndexEnd,obsIndexStart, obsIndexEnd, boost::geometry::num_points(poly[obsIndexStart]) - 1, boost::geometry::num_points(poly[obsIndexEnd]) - 1, ObsNodeBegin);
 
 				if (!isSupportLineResult && !isSeparatingLineResult) {				
 					edgesToRemove.push_back(edges[i]);
@@ -378,14 +392,7 @@ void reduceGraph(Graph& g, const int nHind, std::vector<Edge>& edges, std::vecto
 }
 
 
-bool isSupportingLine(Graph g, const int aPointIndex, const int bPointIndex,MyPolygon aObs,MyPolygon bObs, const int ObsIndexA, const int ObsIndexB, const int numberOfPointsOfObsa, const int numberOfPointsOfObsb) {
-	bool intersectionWithObsa = polySegIntersection(g[aPointIndex].pt, g[bPointIndex].pt, aObs);
-	bool intersectionWithObsb = polySegIntersection(g[aPointIndex].pt, g[bPointIndex].pt, bObs);
-
-	if (intersectionWithObsa || intersectionWithObsb) {
-		return false;
-	}
-
+bool isSupportingLine(Graph g, const int aPointIndex, const int bPointIndex, const int ObsIndexA, const int ObsIndexB, const int numberOfPointsOfObsa, const int numberOfPointsOfObsb,const vector<int>ObsNodeBegin) {
 	Point lineStartPoint = g[aPointIndex].pt, lineEndPoint = g[bPointIndex].pt;
 	Point PointFromObsA,PointFromObsB;
 
@@ -395,8 +402,8 @@ bool isSupportingLine(Graph g, const int aPointIndex, const int bPointIndex,MyPo
 		for (int j = 0; j < numberOfPointsOfObsb; j++) {
 			//check the point from obs a with all other points in obs b
 
-			PointFromObsA = g[(ObsIndexA * 4) + i].pt;
-			PointFromObsB = g[(ObsIndexB * 4) + j].pt;
+			PointFromObsA = g[ObsNodeBegin[ObsIndexA] + i].pt;
+			PointFromObsB = g[ObsNodeBegin[ObsIndexB] + j].pt;
 
 			if (!PointFromObsA.equals(lineStartPoint) && !PointFromObsA.equals(lineEndPoint) && !PointFromObsB.equals(lineStartPoint) && !PointFromObsB.equals(lineEndPoint)) {
 				if (!isOnTheSameLine(lineStartPoint, lineEndPoint, PointFromObsA, PointFromObsB)) {
@@ -410,14 +417,7 @@ bool isSupportingLine(Graph g, const int aPointIndex, const int bPointIndex,MyPo
 	return true;
 }
 
-bool isSeparatingLine(Graph g, const int aPointIndex, const int bPointIndex, MyPolygon aObs, MyPolygon bObs, const int ObsIndexA, const int ObsIndexB, const int numberOfPointsOfObsa, const int numberOfPointsOfObsb) {
-	
-	bool intersectionWithObsa = polySegIntersection(g[aPointIndex].pt, g[bPointIndex].pt, aObs);
-	bool intersectionWithObsb = polySegIntersection(g[aPointIndex].pt, g[bPointIndex].pt, bObs);
-
-	if (intersectionWithObsa || intersectionWithObsb) {
-		return false;
-	}
+bool isSeparatingLine(Graph g, const int aPointIndex, const int bPointIndex, const int ObsIndexA, const int ObsIndexB, const int numberOfPointsOfObsa, const int numberOfPointsOfObsb, const vector<int>ObsNodeBegin) {
 	
 	Point lineStartPoint = g[aPointIndex].pt, lineEndPoint = g[bPointIndex].pt;
 	Point PointFromObsA, PointFromObsB;
@@ -428,8 +428,8 @@ bool isSeparatingLine(Graph g, const int aPointIndex, const int bPointIndex, MyP
 		for (int j = 0; j < numberOfPointsOfObsb; j++) {
 			//check the point from obs a with all other points in obs b
 
-			PointFromObsA = g[(ObsIndexA * 4) + i].pt;
-			PointFromObsB = g[(ObsIndexB * 4) + j].pt;
+			PointFromObsA = g[ObsNodeBegin[ObsIndexA] + i].pt;
+			PointFromObsB = g[ObsNodeBegin[ObsIndexB] + j].pt;
 
 			if (!PointFromObsA.equals(lineStartPoint) &&  !PointFromObsA.equals(lineEndPoint) && !PointFromObsB.equals(lineStartPoint) && !PointFromObsB.equals(lineEndPoint)) {
 				if (isOnTheSameLine(lineStartPoint, lineEndPoint, PointFromObsA, PointFromObsB)) {

@@ -65,7 +65,7 @@ int main(void)
     // Startzeit
     DWORD dwStart = GetTickCount();
 
-    path = VisibilityGraph(g, nHind);
+    path = VisibilityGraph(g, nHind, true);
 
     // Zeit für das Aufstellen des Konfigurationsraumes ausgeben ( in ms )
     DWORD dwElapsed = GetTickCount() - dwStart;
