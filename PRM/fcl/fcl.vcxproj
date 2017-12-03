@@ -1,0 +1,317 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="fcl\articulated_model\joint.h" />
+    <ClInclude Include="fcl\articulated_model\joint_config.h" />
+    <ClInclude Include="fcl\articulated_model\link.h" />
+    <ClInclude Include="fcl\articulated_model\model.h" />
+    <ClInclude Include="fcl\articulated_model\model_config.h" />
+    <ClInclude Include="fcl\broadphase\broadphase.h" />
+    <ClInclude Include="fcl\broadphase\broadphase_bruteforce.h" />
+    <ClInclude Include="fcl\broadphase\broadphase_dynamic_AABB_tree.h" />
+    <ClInclude Include="fcl\broadphase\broadphase_dynamic_AABB_tree_array.h" />
+    <ClInclude Include="fcl\broadphase\broadphase_interval_tree.h" />
+    <ClInclude Include="fcl\broadphase\broadphase_SaP.h" />
+    <ClInclude Include="fcl\broadphase\broadphase_spatialhash.h" />
+    <ClInclude Include="fcl\broadphase\broadphase_spatialhash.hxx" />
+    <ClInclude Include="fcl\broadphase\broadphase_SSaP.h" />
+    <ClInclude Include="fcl\broadphase\hash.h" />
+    <ClInclude Include="fcl\broadphase\hierarchy_tree.h" />
+    <ClInclude Include="fcl\broadphase\hierarchy_tree.hxx" />
+    <ClInclude Include="fcl\broadphase\interval_tree.h" />
+    <ClInclude Include="fcl\broadphase\morton.h" />
+    <ClInclude Include="fcl\BVH\BVH_front.h" />
+    <ClInclude Include="fcl\BVH\BVH_internal.h" />
+    <ClInclude Include="fcl\BVH\BVH_model.h" />
+    <ClInclude Include="fcl\BVH\BVH_utility.h" />
+    <ClInclude Include="fcl\BVH\BV_fitter.h" />
+    <ClInclude Include="fcl\BVH\BV_splitter.h" />
+    <ClInclude Include="fcl\BV\AABB.h" />
+    <ClInclude Include="fcl\BV\BV.h" />
+    <ClInclude Include="fcl\BV\BV_node.h" />
+    <ClInclude Include="fcl\BV\kDOP.h" />
+    <ClInclude Include="fcl\BV\kIOS.h" />
+    <ClInclude Include="fcl\BV\OBB.h" />
+    <ClInclude Include="fcl\BV\OBBRSS.h" />
+    <ClInclude Include="fcl\BV\RSS.h" />
+    <ClInclude Include="fcl\ccd\conservative_advancement.h" />
+    <ClInclude Include="fcl\ccd\interpolation\interpolation.h" />
+    <ClInclude Include="fcl\ccd\interpolation\interpolation_factory.h" />
+    <ClInclude Include="fcl\ccd\interpolation\interpolation_linear.h" />
+    <ClInclude Include="fcl\ccd\interval.h" />
+    <ClInclude Include="fcl\ccd\interval_matrix.h" />
+    <ClInclude Include="fcl\ccd\interval_vector.h" />
+    <ClInclude Include="fcl\ccd\motion.h" />
+    <ClInclude Include="fcl\ccd\motion_base.h" />
+    <ClInclude Include="fcl\ccd\simplex.h" />
+    <ClInclude Include="fcl\ccd\support.h" />
+    <ClInclude Include="fcl\ccd\taylor_matrix.h" />
+    <ClInclude Include="fcl\ccd\taylor_model.h" />
+    <ClInclude Include="fcl\ccd\taylor_vector.h" />
+    <ClInclude Include="fcl\collision.h" />
+    <ClInclude Include="fcl\collision_data.h" />
+    <ClInclude Include="fcl\collision_func_matrix.h" />
+    <ClInclude Include="fcl\collision_node.h" />
+    <ClInclude Include="fcl\collision_object.h" />
+    <ClInclude Include="fcl\config.h" />
+    <ClInclude Include="fcl\continuous_collision.h" />
+    <ClInclude Include="fcl\data_types.h" />
+    <ClInclude Include="fcl\deprecated.h" />
+    <ClInclude Include="fcl\distance.h" />
+    <ClInclude Include="fcl\distance_func_matrix.h" />
+    <ClInclude Include="fcl\exception.h" />
+    <ClInclude Include="fcl\intersect.h" />
+    <ClInclude Include="fcl\learning\classifier.h" />
+    <ClInclude Include="fcl\math\constants.h" />
+    <ClInclude Include="fcl\math\math_details.h" />
+    <ClInclude Include="fcl\math\matrix_3f.h" />
+    <ClInclude Include="fcl\math\sampling.h" />
+    <ClInclude Include="fcl\math\transform.h" />
+    <ClInclude Include="fcl\math\vec_3f.h" />
+    <ClInclude Include="fcl\math\vec_nf.h" />
+    <ClInclude Include="fcl\narrowphase\gjk.h" />
+    <ClInclude Include="fcl\narrowphase\gjk_libccd.h" />
+    <ClInclude Include="fcl\narrowphase\narrowphase.h" />
+    <ClInclude Include="fcl\octree.h" />
+    <ClInclude Include="fcl\profile.h" />
+    <ClInclude Include="fcl\shape\geometric_shapes.h" />
+    <ClInclude Include="fcl\shape\geometric_shapes_utility.h" />
+    <ClInclude Include="fcl\shape\geometric_shape_to_BVH_model.h" />
+    <ClInclude Include="fcl\traversal\traversal_node_base.h" />
+    <ClInclude Include="fcl\traversal\traversal_node_bvhs.h" />
+    <ClInclude Include="fcl\traversal\traversal_node_bvh_shape.h" />
+    <ClInclude Include="fcl\traversal\traversal_node_octree.h" />
+    <ClInclude Include="fcl\traversal\traversal_node_setup.h" />
+    <ClInclude Include="fcl\traversal\traversal_node_shapes.h" />
+    <ClInclude Include="fcl\traversal\traversal_recurse.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\articulated_model\joint.cpp" />
+    <ClCompile Include="src\articulated_model\joint_config.cpp" />
+    <ClCompile Include="src\articulated_model\link.cpp" />
+    <ClCompile Include="src\articulated_model\model.cpp" />
+    <ClCompile Include="src\articulated_model\model_config.cpp" />
+    <ClCompile Include="src\broadphase\broadphase_bruteforce.cpp" />
+    <ClCompile Include="src\broadphase\broadphase_dynamic_AABB_tree.cpp" />
+    <ClCompile Include="src\broadphase\broadphase_dynamic_AABB_tree_array.cpp" />
+    <ClCompile Include="src\broadphase\broadphase_interval_tree.cpp" />
+    <ClCompile Include="src\broadphase\broadphase_SaP.cpp" />
+    <ClCompile Include="src\broadphase\broadphase_SSaP.cpp" />
+    <ClCompile Include="src\broadphase\hierarchy_tree.cpp" />
+    <ClCompile Include="src\broadphase\interval_tree.cpp" />
+    <ClCompile Include="src\BVH\BVH_model.cpp" />
+    <ClCompile Include="src\BVH\BVH_utility.cpp" />
+    <ClCompile Include="src\BVH\BV_fitter.cpp" />
+    <ClCompile Include="src\BVH\BV_splitter.cpp" />
+    <ClCompile Include="src\BV\AABB.cpp" />
+    <ClCompile Include="src\BV\kDOP.cpp" />
+    <ClCompile Include="src\BV\kIOS.cpp" />
+    <ClCompile Include="src\BV\OBB.cpp" />
+    <ClCompile Include="src\BV\OBBRSS.cpp" />
+    <ClCompile Include="src\BV\RSS.cpp" />
+    <ClCompile Include="src\ccd\conservative_advancement.cpp" />
+    <ClCompile Include="src\ccd\interpolation\interpolation.cpp" />
+    <ClCompile Include="src\ccd\interpolation\interpolation_factory.cpp" />
+    <ClCompile Include="src\ccd\interpolation\interpolation_linear.cpp" />
+    <ClCompile Include="src\ccd\interval.cpp" />
+    <ClCompile Include="src\ccd\interval_matrix.cpp" />
+    <ClCompile Include="src\ccd\interval_vector.cpp" />
+    <ClCompile Include="src\ccd\motion.cpp" />
+    <ClCompile Include="src\ccd\taylor_matrix.cpp" />
+    <ClCompile Include="src\ccd\taylor_model.cpp" />
+    <ClCompile Include="src\ccd\taylor_vector.cpp" />
+    <ClCompile Include="src\collision.cpp" />
+    <ClCompile Include="src\collision_data.cpp" />
+    <ClCompile Include="src\collision_func_matrix.cpp" />
+    <ClCompile Include="src\collision_node.cpp" />
+    <ClCompile Include="src\continuous_collision.cpp" />
+    <ClCompile Include="src\distance.cpp" />
+    <ClCompile Include="src\distance_func_matrix.cpp" />
+    <ClCompile Include="src\intersect.cpp" />
+    <ClCompile Include="src\math\sampling.cpp" />
+    <ClCompile Include="src\math\transform.cpp" />
+    <ClCompile Include="src\narrowphase\gjk.cpp" />
+    <ClCompile Include="src\narrowphase\gjk_libccd.cpp" />
+    <ClCompile Include="src\narrowphase\narrowphase.cpp" />
+    <ClCompile Include="src\profile.cpp" />
+    <ClCompile Include="src\shape\geometric_shapes.cpp" />
+    <ClCompile Include="src\shape\geometric_shapes_utility.cpp" />
+    <ClCompile Include="src\traversal\traversal_node_base.cpp" />
+    <ClCompile Include="src\traversal\traversal_node_bvhs.cpp" />
+    <ClCompile Include="src\traversal\traversal_node_setup.cpp" />
+    <ClCompile Include="src\traversal\traversal_recurse.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{1F21A0D4-FD3D-42CD-84CD-706CA6443354}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>fcl</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(PlatformShortName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)$(PlatformShortName)\$(Configuration)\obj\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(PlatformShortName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)$(PlatformShortName)\$(Configuration)\obj\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\obj\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\obj\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir);$(SolutionDir)libccd</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <DisableSpecificWarnings>4065;4146;4267;4244;4305;4800</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir);$(SolutionDir)libccd</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <DisableSpecificWarnings>4065;4146;4267;4244;4305;4800</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir);$(SolutionDir)libccd</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <DisableSpecificWarnings>4065;4146;4267;4244;4305;4800</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir);$(SolutionDir)libccd</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <DisableSpecificWarnings>4065;4146;4267;4244;4305;4800</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
