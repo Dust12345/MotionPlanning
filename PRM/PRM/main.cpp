@@ -25,9 +25,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	qStart << 0., 0., 0., 0., 0.;
 	qGoal << .6, .9, DEG2RAD(-90.), DEG2RAD(-180.), DEG2RAD(180.);
 
-	
+	PRM::PRMMetrics metrics;
 	PRM prm;
-	path= prm.getPath(cell,qStart,qGoal);
+	path= prm.getPath(cell,qStart,qGoal, metrics);
 
 	/*Eigen::VectorXd segment(qGoal - qStart), delta(5);
 	delta = segment.normalized() * stepsize;

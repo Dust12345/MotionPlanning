@@ -2,12 +2,13 @@
 #include "PRM.h"
 #include "KDT.h"
 #include "Dijkstra.h"
+#include "time.h"
 
 PRM::PRM()
 {
-	initSampleSize = 5000;
-	k = 20;
-	resamplePointNumbers = 30;
+	initSampleSize = 1500;
+	k = 10;
+	resamplePointNumbers = 15;
 }
 
 std::vector<PRM::Edge> PRM::checkConnections(WormCell& mw, std::vector<Eigen::Vector5d>& samplePoints, KDT::nodeKnn node, PRM::NodeAttemptPair& metric)
@@ -64,7 +65,7 @@ bool PRM::canConnect(WormCell& mw, Eigen::Vector5d a, Eigen::Vector5d b)
 		checks = 3;
 	}
 
-	checks = 50;
+	checks = 10;
 
 	//bool result = mw.CheckMotion(a, b, checks);
 
@@ -132,10 +133,12 @@ std::vector<PRM::Edge> PRM::connectionTesting(WormCell& mw, std::vector<PRM::Nod
 void PRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, int sampleSize, Eigen::Vector5d base, std::vector<Eigen::Vector5d>& samples)
 {
 	
+	int added = 0;
+
 	while (true)
 	{
 		//check if we are done
-		if (samples.size() >= sampleSize)
+		if (added >= sampleSize)
 		{
 			//get enough sample points
 			return;
@@ -147,6 +150,7 @@ void PRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distri
 			//check if the sample point is in free space
 			if (mw.CheckPosition(sample))
 			{
+				added++;
 				//point is free
 				samples.push_back(sample);
 			}
@@ -234,7 +238,8 @@ std::vector<PRM::Edge> PRM::reSample(WormCell& mw, std::vector<Eigen::Vector5d>&
 		//do a simple threshold check
 		if (nodeFailVct[i].failedAttemps >= k / 2)
 		{
-			double range = sqrt(nodeFailVct[i].avrgDist);
+			//double range = sqrt(nodeFailVct[i].avrgDist);
+			double range = 0.7;
 			
 			std::uniform_real_distribution<double> dis((range/2)*-1, range / 2);
 
@@ -250,14 +255,14 @@ std::vector<PRM::Edge> PRM::reSample(WormCell& mw, std::vector<Eigen::Vector5d>&
 
 }
 
-std::vector<Eigen::VectorXd> PRM::getPath(WormCell& mw, Eigen::VectorXd start, Eigen::VectorXd goal)
+std::vector<Eigen::VectorXd> PRM::getPath(WormCell& mw, Eigen::VectorXd start, Eigen::VectorXd goal, PRM::PRMMetrics& prmMetrics)
 {
+	clock_t clockStart = clock();	
+
+	
+
 	std::mt19937_64 rng(0);
 	std::uniform_real_distribution<double> dis(0, 1.0);
-
-	
-
-	
 
 	std::cout << "Starting init sample" << std::endl;
 	std::vector<Eigen::Vector5d> initSampels;
@@ -285,18 +290,22 @@ std::vector<Eigen::VectorXd> PRM::getPath(WormCell& mw, Eigen::VectorXd start, E
 
 	std::vector<Eigen::VectorXd> p;
 
-	for (int i = 0; i < path.size(); i++)
+	//path of size one means dijstra found no path
+	if (path.size() > 1)
 	{
-		std::cout << "-----" << std::endl;
-		std::cout << path[i] << std::endl;
-		std::cout << "-----"<< std::endl;
-		p.push_back(path[i]);
+		for (int i = 0; i < path.size(); i++)
+		{
+			std::cout << "-----" << std::endl;
+			std::cout << path[i] << std::endl;
+			std::cout << "-----" << std::endl;
+			p.push_back(path[i]);
+		}
 	}
-
-	while (true) {
-
-	}
-
+	
+	prmMetrics.numberOfNodes = initSampels.size();
+	prmMetrics.numberOfEdges = edges.size();
+	double t = (clock() - clockStart) / CLOCKS_PER_SEC;
+	prmMetrics.runtime = t;
 	return p;
 }
 

@@ -43,10 +43,17 @@ private:
 
 public:
 
+	struct PRMMetrics {
+		int numberOfNodes;
+		int numberOfEdges;
+		int numberOfNN;
+		double runtime;
+		int numberCC;
+	};
 
 	PRM();
 	~PRM();
 
-	std::vector<Eigen::VectorXd> getPath(WormCell& mw, Eigen::VectorXd start, Eigen::VectorXd goal);
+	std::vector<Eigen::VectorXd> getPath(WormCell& mw, Eigen::VectorXd start, Eigen::VectorXd goal, PRM::PRMMetrics& prmMetrics);
 };
 
