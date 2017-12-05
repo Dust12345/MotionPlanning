@@ -4,3 +4,6 @@
 boost*/
 x86*/
 x64*/
+fcl*/
+Eigen*/
+libccd*/
