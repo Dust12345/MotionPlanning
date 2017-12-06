@@ -51,9 +51,9 @@ public:
 		int numberCC;
 	};
 
-	PRM();
+	PRM(int initSampleSize, int k, int resamplePointNumbers);
 	~PRM();
-
+	void printResult(std::vector<Eigen::VectorXd> path, PRM::PRMMetrics metrics, bool printPath, bool printMetrics);
 	std::vector<Eigen::VectorXd> getPath(WormCell& mw, Eigen::VectorXd start, Eigen::VectorXd goal, PRM::PRMMetrics& prmMetrics);
 };
 

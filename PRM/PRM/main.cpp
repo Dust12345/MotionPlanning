@@ -20,14 +20,8 @@ int _tmain(int argc, _TCHAR* argv[])
 #define TEST_CASE 0
 #ifdef TEST_CASE
 #if TEST_CASE == 0
-	// Example
-	cout << "Example" << endl;
 	qStart << 0., 0., 0., 0., 0.;
 	qGoal << .6, .9, DEG2RAD(-90.), DEG2RAD(-180.), DEG2RAD(180.);
-
-	PRM::PRMMetrics metrics;
-	PRM prm;
-	path= prm.getPath(cell,qStart,qGoal, metrics);
 
 	/*Eigen::VectorXd segment(qGoal - qStart), delta(5);
 	delta = segment.normalized() * stepsize;
@@ -35,32 +29,39 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	do
 	{
-		if (!cell.CheckPosition(qStart))
-		{
-			for (int i = 0; i < 10; ++i)
-			{
-				path.push_back(qStart);
-				qStart += delta * .1f;
-			}
-		}
-		else
-		{
-			path.push_back(qStart);
-			qStart += delta;
-		}
+	if (!cell.CheckPosition(qStart))
+	{
+	for (int i = 0; i < 10; ++i)
+	{
+	path.push_back(qStart);
+	qStart += delta * .1f;
+	}
+	}
+	else
+	{
+	path.push_back(qStart);
+	qStart += delta;
+	}
 	} while (--steps > 0);
 
 	path.push_back(qGoal);
 	reverse(path.begin(), path.end());*/
 
-	
+	// 1. step: building up a graph g consisting of nNodes vertices
+	//cout << "1. Step: building " << nNodes << " nodes for the graph" << endl;
 
-	write_easyrob_program_file(path, "example.prg", false);
-	path.clear();
+	// 2. step: building edges for the graph, if the connection of 2 nodes are in free space
+	//cout << "2. Step: buildung edges for the graph" << endl;
 
-	while (true) {
+	// 3. Step: connecting start configuration to graph
+	//cout << "3. Step: connecting start configuration to graph" << endl;
 
-	}
+	// 4. Step: connecting goal configuration to graph
+	//cout << "4. Step: connecting goal configuration to graph" << endl;
+
+	// 5. Step: searching for shortest path
+	//cout << "5. Step: searching for shortest path" << endl;
+
 	// !Example
 #elif TEST_CASE == 1
 	cout << "Test case 1" << endl;
@@ -104,22 +105,17 @@ int _tmain(int argc, _TCHAR* argv[])
 	qGoal << .6, .95, DEG2RAD(-90.f), 0., 0.;
 #endif
 #endif
+	const int nNodes = 1500;
 
-    const int nNodes = 25000;
-    // 1. step: building up a graph g consisting of nNodes vertices
-    cout << "1. Step: building " << nNodes << " nodes for the graph" << endl;
+	PRM::PRMMetrics metrics;
+	PRM prm(nNodes,10,15);
+	path = prm.getPath(cell, qStart, qGoal, metrics);
 
-    // 2. step: building edges for the graph, if the connection of 2 nodes are in free space
-    cout << "2. Step: buildung edges for the graph" << endl;
+	write_easyrob_program_file(path, "example.prg", false);
+	prm.printResult(path, metrics, true, true);
 
-    // 3. Step: connecting start configuration to graph
-    cout << "3. Step: connecting start configuration to graph" << endl;
-
-    // 4. Step: connecting goal configuration to graph
-    cout << "4. Step: connecting goal configuration to graph" << endl;
-
-    // 5. Step: searching for shortest path
-    cout << "5. Step: searching for shortest path" << endl;
+	path.clear();
 
     return EXIT_SUCCESS;
 }
+

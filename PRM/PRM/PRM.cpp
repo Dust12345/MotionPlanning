@@ -4,11 +4,11 @@
 #include "Dijkstra.h"
 #include "time.h"
 
-PRM::PRM()
+PRM::PRM(const int initSampleSize,const int k,const int resamplePointNumbers)
 {
-	initSampleSize = 1500;
-	k = 10;
-	resamplePointNumbers = 15;
+	this->initSampleSize = initSampleSize;
+	this->k = k;
+	this->resamplePointNumbers = resamplePointNumbers;
 }
 
 std::vector<PRM::Edge> PRM::checkConnections(WormCell& mw, std::vector<Eigen::Vector5d>& samplePoints, KDT::nodeKnn node, PRM::NodeAttemptPair& metric)
@@ -266,8 +266,8 @@ std::vector<Eigen::VectorXd> PRM::getPath(WormCell& mw, Eigen::VectorXd start, E
 
 	std::cout << "Starting init sample" << std::endl;
 	std::vector<Eigen::Vector5d> initSampels;
-	initSampels.push_back(start);
 	initSampels.push_back(goal);
+	initSampels.push_back(start);
 
 	getSample(mw, rng, dis, initSampleSize, initSampels);
 	std::vector<PRM::NodeAttemptPair> nodeFailVct;	
@@ -295,9 +295,6 @@ std::vector<Eigen::VectorXd> PRM::getPath(WormCell& mw, Eigen::VectorXd start, E
 	{
 		for (int i = 0; i < path.size(); i++)
 		{
-			std::cout << "-----" << std::endl;
-			std::cout << path[i] << std::endl;
-			std::cout << "-----" << std::endl;
 			p.push_back(path[i]);
 		}
 	}
@@ -307,6 +304,26 @@ std::vector<Eigen::VectorXd> PRM::getPath(WormCell& mw, Eigen::VectorXd start, E
 	double t = (clock() - clockStart) / CLOCKS_PER_SEC;
 	prmMetrics.runtime = t;
 	return p;
+}
+
+void PRM::printResult(std::vector<Eigen::VectorXd> path, PRM::PRMMetrics metrics, bool printPath,bool printMetrics) {
+	if (path.size() > 1 && printPath)
+	{
+		for (int i = 0; i < path.size(); i++)
+		{
+			std::cout << "---------------------------------------------" << std::endl;
+			std::cout << path[i] << std::endl;
+			std::cout << "---------------------------------------------" << std::endl;
+
+		}
+	}
+
+	if (printMetrics) {
+		std::cout << "------- Metric -------" << std::endl;
+		std::cout << "Number of nodes: " << metrics.numberOfNodes << std::endl;
+		std::cout << "Number of edges: " << metrics.numberOfEdges << std::endl;
+		std::cout << "Runtime: " << metrics.runtime << "sec" << std::endl;
+	}
 }
 
 PRM::~PRM()
