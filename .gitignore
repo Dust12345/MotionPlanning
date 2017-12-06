@@ -4,4 +4,6 @@
 boost*/
 x86*/
 x64*/
-PRM/Eigen
+fcl*/
+Eigen*/
+libccd*/

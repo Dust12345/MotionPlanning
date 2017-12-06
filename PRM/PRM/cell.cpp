@@ -30,6 +30,19 @@ std::vector<fcl::Transform3f> MyWorm::ForwardKinematic(const Eigen::Vector5d &q)
     return transforms;
 }
 
+Eigen::Vector5d MyWorm::Random(Eigen::Vector5d base,std::mt19937_64 &rng, std::uniform_real_distribution<double>& unif)
+{
+	Eigen::Vector5d q;
+
+	q(0) = base[0] + unif(rng);
+	q(1) = base[1] + unif(rng);
+	q(2) = base[2] + M_PI * (2. * unif(rng) - 1.);
+	q(3) = base[3] + M_PI * (2. * unif(rng) - 1.);
+	q(4) = base[4] + M_PI * (2. * unif(rng) - 1.);
+
+	return q;
+}
+
 Eigen::Vector5d MyWorm::Random(std::mt19937_64 &rng, std::uniform_real_distribution<double>& unif)
 {
     Eigen::Vector5d q;

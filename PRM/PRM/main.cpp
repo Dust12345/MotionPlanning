@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <iostream>
 #include "cell.h"
+#include "PRM.h"
 
 using namespace std;
 namespace bg = boost::geometry;
@@ -24,7 +25,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	qStart << 0., 0., 0., 0., 0.;
 	qGoal << .6, .9, DEG2RAD(-90.), DEG2RAD(-180.), DEG2RAD(180.);
 
-	Eigen::VectorXd segment(qGoal - qStart), delta(5);
+	PRM::PRMMetrics metrics;
+	PRM prm;
+	path= prm.getPath(cell,qStart,qGoal, metrics);
+
+	/*Eigen::VectorXd segment(qGoal - qStart), delta(5);
 	delta = segment.normalized() * stepsize;
 	int steps = int(segment.norm() / stepsize);
 
@@ -46,9 +51,16 @@ int _tmain(int argc, _TCHAR* argv[])
 	} while (--steps > 0);
 
 	path.push_back(qGoal);
-	reverse(path.begin(), path.end());
+	reverse(path.begin(), path.end());*/
+
+	
+
 	write_easyrob_program_file(path, "example.prg", false);
 	path.clear();
+
+	while (true) {
+
+	}
 	// !Example
 #elif TEST_CASE == 1
 	cout << "Test case 1" << endl;

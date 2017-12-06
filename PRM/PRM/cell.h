@@ -45,6 +45,7 @@ public:
 
     static std::vector<fcl::Transform3f> ForwardKinematic(const Eigen::Vector5d &q);
     static Eigen::Vector5d Random(std::mt19937_64 &rng, std::uniform_real_distribution<double> &unif);
+	static Eigen::Vector5d Random(Eigen::Vector5d base, std::mt19937_64 &rng, std::uniform_real_distribution<double>& unif);
     static bool IsInsideRange(const Eigen::Vector5d &q);
 
     void operator()(boxv_t &obj_robot);
