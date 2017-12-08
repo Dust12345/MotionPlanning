@@ -333,7 +333,7 @@ namespace nanoflann
 			size_t d = 0;
 
 			/* Process 4 items with each loop for efficiency. */
-			while (a < lastgroup) {
+			/*while (a < lastgroup) {
 				const DistanceType diff0 = a[0] - data_source.kdtree_get_pt(b_idx,d++);
 				const DistanceType diff1 = a[1] - data_source.kdtree_get_pt(b_idx,d++);
 				const DistanceType diff2 = a[2] - data_source.kdtree_get_pt(b_idx,d++);
@@ -343,12 +343,46 @@ namespace nanoflann
 				if ((worst_dist > 0) && (result > worst_dist)) {
 					return result;
 				}
-			}
+			}*/
 			/* Process last 0-3 components.  Not needed for standard vector lengths. */
-			while (a < last) {
+			/*while (a < last) {
 				const DistanceType diff0 = *a++ - data_source.kdtree_get_pt(b_idx, d++);
 				result += diff0 * diff0;
+			}*/
+
+			//out custom code, super hacky
+
+			//first the eurlid between tw
+			result = sqrt(pow(a[0] + data_source.kdtree_get_pt(b_idx, 0), 2)+ pow(a[1] + data_source.kdtree_get_pt(b_idx, 1), 2));
+
+			float pi = 3.14159265358979323846;
+
+			for (int i = 2; i < 5; i++) {
+				double d1 = std::abs(a[i] - data_source.kdtree_get_pt(b_idx, i));
+
+				double wrapDist = 0;
+
+				if (a[i] < data_source.kdtree_get_pt(b_idx, i)) {
+					double a = std::abs((pi*-1) - a[i]);
+					double b = std::abs((pi) -data_source.kdtree_get_pt(b_idx, i));
+					wrapDist = a + b;
+				}
+				else
+				{
+					double a = std::abs((pi*-1) - data_source.kdtree_get_pt(b_idx, i));
+					double b = std::abs((pi)-a[i]);
+					wrapDist = a + b;
+				}
+
+				if (wrapDist < d1) {
+					result += wrapDist;
+				}
+				else {
+					result += d1;
+				}
+
 			}
+			a = a + 5;
 			return result;
 		}
 

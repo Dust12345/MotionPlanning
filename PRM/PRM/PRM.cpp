@@ -4,11 +4,12 @@
 #include "Dijkstra.h"
 #include "time.h"
 
-PRM::PRM(const int initSampleSize,const int k,const int resamplePointNumbers)
+PRM::PRM(const int initSampleSize,const int k,const int resamplePointNumbers, int ccLowThreshold)
 {
 	this->initSampleSize = initSampleSize;
 	this->k = k;
 	this->resamplePointNumbers = resamplePointNumbers;
+	this->ccLowThreshold = ccLowThreshold;
 }
 
 std::vector<PRM::Edge> PRM::checkConnections(WormCell& mw, std::vector<Eigen::Vector5d>& samplePoints, KDT::nodeKnn node, PRM::NodeAttemptPair& metric)
@@ -98,18 +99,6 @@ std::vector<PRM::Edge> PRM::connectionTesting(WormCell& mw, std::vector<PRM::Nod
 
 	kdTree.getKNN(samplePoints, nodeNNVct, startIndex,k);
 
-
-	/*for (int h = 0; h < nodeNNVct.size(); h++)
-	{	
-		std::cout << "----" << std::endl;
-		std::cout << nodeNNVct[h].index << std::endl;
-		for (int o = 0; o < nodeNNVct[h].nn.size(); o++) {
-			std::cout << nodeNNVct[h].nn[o] << std::endl;
-		}
-
-	}*/
-
-
 	for (int i = 0; i < nodeNNVct.size(); i++)
 	{
 		PRM::NodeAttemptPair metric;
@@ -134,11 +123,12 @@ void PRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distri
 {
 	
 	int added = 0;
+	int maxTries = sampleSize * 25;
 
 	while (true)
 	{
 		//check if we are done
-		if (added >= sampleSize)
+		if (added > sampleSize||added >= maxTries)
 		{
 			//get enough sample points
 			return;
@@ -161,8 +151,41 @@ void PRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distri
 
 double PRM::calcWeigth(Eigen::Vector5d a, Eigen::Vector5d b)
 {
+	//dist calculation with correct wrapping for rotations
+	double result = sqrt(pow(a[0] + b[0], 2) + pow(a[1] + b[1], 2));
+
+	float pi = 3.14159265358979323846;
+
+	for (int i = 2; i < 5; i++) {
+		double noWrapDist = std::abs(a[i] - b[i]);
+
+		double wrapDist = 0;
+
+		if (a[i] < b[i]) {
+			double d1 = std::abs((pi*-1) - a[i]);
+			double d2 = std::abs((pi)-b[i]);
+			wrapDist = d1 + d2;
+		}
+		else
+		{
+			double d1 = std::abs((pi*-1) - b[i]);
+			double d2 = std::abs((pi)-a[i]);
+			wrapDist = d1 + d2;
+		}
+
+		if (wrapDist < noWrapDist) {
+			result += wrapDist;
+		}
+		else {
+			result += noWrapDist;
+		}
+
+	}
+
+	return result;
+
 	//try simple euklid
-	return vec5Distance(a, b);
+	//return vec5Distance(a, b);
 }
 
 std::vector<Eigen::Vector5d> PRM::getShortestPath(std::vector<PRM::Edge>edges, std::vector<Eigen::Vector5d>& samplePoint)
@@ -189,8 +212,8 @@ std::vector<Eigen::Vector5d> PRM::getShortestPath(std::vector<PRM::Edge>edges, s
 	Dijkstra dijkstra;
 	std::vector<Dijkstra::weight_t> min_distance;
 	std::vector<Dijkstra::vertex_t> previous;
-	dijkstra.DijkstraComputePaths(0, adjacency_list, min_distance, previous);
-	std::list<Dijkstra::vertex_t> path = dijkstra.DijkstraGetShortestPathTo(1, previous);
+	dijkstra.DijkstraComputePaths(samplePoint.size()-2, adjacency_list, min_distance, previous);
+	std::list<Dijkstra::vertex_t> path = dijkstra.DijkstraGetShortestPathTo(samplePoint.size() - 1, previous);
 
 	//convert the path into the format we want
 	for (std::list<int>::iterator it = path.begin(); it != path.end(); ++it)
@@ -205,11 +228,12 @@ std::vector<Eigen::Vector5d> PRM::getShortestPath(std::vector<PRM::Edge>edges, s
 
 void PRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis,int sampleSize, std::vector<Eigen::Vector5d>& samples)
 {
-	
+	int added = 0;
+	int maxTries = sampleSize * 25;
 	while (true)
 	{
 		//check if we are done
-		if (samples.size() >= sampleSize)
+		if (added > sampleSize||added >= maxTries)
 		{
 			//get enough sample points
 			return;
@@ -224,6 +248,7 @@ void PRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distri
 				std::cout << samples.size() << "/" << sampleSize << std::endl;
 				//point is free
 				samples.push_back(sample);
+				added++;
 			}
 		}
 	}
@@ -235,11 +260,12 @@ std::vector<PRM::Edge> PRM::reSample(WormCell& mw, std::vector<Eigen::Vector5d>&
 
 	for (int i = 0; i < nodeFailVct.size(); i++)
 	{
+		
 		//do a simple threshold check
 		if (nodeFailVct[i].failedAttemps >= k / 2)
 		{
 			//double range = sqrt(nodeFailVct[i].avrgDist);
-			double range = 0.7;
+			double range = 0.5;
 			
 			std::uniform_real_distribution<double> dis((range/2)*-1, range / 2);
 
@@ -249,6 +275,7 @@ std::vector<PRM::Edge> PRM::reSample(WormCell& mw, std::vector<Eigen::Vector5d>&
 		}
 	}
 
+	std::cout << "Testing connections again" << std::endl;
 	std::vector<PRM::Edge> edges = connectionTesting(mw, nodeFailVct, samplePoints, initSampleSize);
 
 	return edges;
@@ -262,32 +289,47 @@ std::vector<Eigen::VectorXd> PRM::getPath(WormCell& mw, Eigen::VectorXd start, E
 	
 
 	std::mt19937_64 rng(0);
-	std::uniform_real_distribution<double> dis(0, 1.0);
+	std::uniform_real_distribution<double> dis(0, 1);
 
 	std::cout << "Starting init sample" << std::endl;
 	std::vector<Eigen::Vector5d> initSampels;
-	initSampels.push_back(goal);
-	initSampels.push_back(start);
 
 	getSample(mw, rng, dis, initSampleSize, initSampels);
 	std::vector<PRM::NodeAttemptPair> nodeFailVct;	
-
+	
 	std::cout << "getting connection" << std::endl;
 	std::vector<PRM::Edge> edges = connectionTesting(mw, nodeFailVct, initSampels,0);
 
-	std::cout << "resample" << std::endl;
-	std::vector<PRM::Edge> newEdges = reSample(mw, initSampels,nodeFailVct);
+	while (true)
+	{
+		int numberOfCC = getConectedComponentNumber(edges);
 
-	for (int i = 0; i < newEdges.size(); i++) {
+
+		if (numberOfCC <= ccLowThreshold) {
+			break;
+		}
+		std::cout << "resample" << std::endl;
+		std::vector<PRM::Edge> newEdges = reSample(mw, initSampels, nodeFailVct);
+
+		for (int i = 0; i < newEdges.size(); i++)
+		{
+			edges.push_back(newEdges[i]);
+		}
+	}
+
+
+	std::cout << "adding start and goal to the graph" << std::endl;
+	//add the start and goal to the graph
+	initSampels.push_back(goal);
+	initSampels.push_back(start);
+	std::vector<PRM::Edge> newEdges = connectionTesting(mw, nodeFailVct, initSampels, initSampels.size()-2);
+	for (int i = 0; i < newEdges.size(); i++)
+	{
 		edges.push_back(newEdges[i]);
 	}
 
-	std::cout << "number of Edges: " << edges.size() << std::endl;
-
-	std::vector<Eigen::Vector5d> path = getShortestPath(edges, initSampels);
-
-	//convert the path
-
+	std::cout << "calculating the shortest path" << std::endl;
+	std::vector<Eigen::Vector5d> path = getShortestPath(edges, initSampels);	
 	std::vector<Eigen::VectorXd> p;
 
 	//path of size one means dijstra found no path
@@ -298,12 +340,98 @@ std::vector<Eigen::VectorXd> PRM::getPath(WormCell& mw, Eigen::VectorXd start, E
 			p.push_back(path[i]);
 		}
 	}
+	int numberOfCC = getConectedComponentNumber(edges);
 	
+	prmMetrics.numberOfNN = k;
+	prmMetrics.numberCC = numberOfCC;
 	prmMetrics.numberOfNodes = initSampels.size();
 	prmMetrics.numberOfEdges = edges.size();
 	double t = (clock() - clockStart) / CLOCKS_PER_SEC;
 	prmMetrics.runtime = t;
 	return p;
+}
+
+bool PRM::inCC(PRM::CC cc, int nodeIndex)
+{
+	for (int i = 0; i < cc.nodesInCC.size(); i++)
+	{
+		if (cc.nodesInCC[i] == nodeIndex) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void PRM::checkEdge(std::vector<PRM::CC> & cc, PRM::Edge& edge)
+{
+	int indexA = edge.first;
+	int indexB = edge.second;
+	int ccIndexA = -1;
+	int ccIndexB = -1;
+
+	for (int i = 0; i < cc.size(); i++)
+	{
+		if (inCC(cc[i], indexA)){
+			ccIndexA = i;
+			break;
+		}
+	}
+
+	for (int i = 0; i < cc.size(); i++)
+	{
+		if (inCC(cc[i], indexB)) {
+			ccIndexB = i;
+			break;
+		}
+	}
+
+	//there are four cases
+	//1. edge is in no component => create a new one
+	//2. one end of the edge belongs to a CC => add the other end to the CC
+	//3. both ends of the edge belong to different CC => combine both CC into one
+	//4. both ends belong to the same CC => nothing to do
+
+	if (ccIndexA == -1 && ccIndexB == -1)
+	{
+		//case 1
+		CC newCC;
+		newCC.nodesInCC.push_back(indexA);
+		newCC.nodesInCC.push_back(indexB);
+		cc.push_back(newCC);
+	}
+	else if (ccIndexA == -1 && ccIndexB != -1)
+	{
+		//case 2
+		cc[ccIndexB].nodesInCC.push_back(indexA);
+
+	}
+	else if (ccIndexB == -1 && ccIndexA != -1)
+	{
+		//case 2, but with the other end beeing connected
+		cc[ccIndexA].nodesInCC.push_back(indexB);
+	}
+	else if (ccIndexB != ccIndexA) {
+		//add A to B
+		for (int j = 0; j < cc[ccIndexA].nodesInCC.size(); j++)
+		{
+			cc[ccIndexB].nodesInCC.push_back(cc[ccIndexA].nodesInCC[j]);
+		}
+
+		//remove A
+		cc.erase(cc.begin() + ccIndexA);
+	}
+}
+
+int PRM::getConectedComponentNumber(std::vector<PRM::Edge>& edges)
+{
+	std::vector<PRM::CC> connectedComp;
+
+	for (int i = 0; i < edges.size(); i++)
+	{
+		checkEdge(connectedComp, edges[i]);
+	}
+
+	return connectedComp.size();
 }
 
 void PRM::printResult(std::vector<Eigen::VectorXd> path, PRM::PRMMetrics metrics, bool printPath,bool printMetrics) {
@@ -322,6 +450,8 @@ void PRM::printResult(std::vector<Eigen::VectorXd> path, PRM::PRMMetrics metrics
 		std::cout << "------- Metric -------" << std::endl;
 		std::cout << "Number of nodes: " << metrics.numberOfNodes << std::endl;
 		std::cout << "Number of edges: " << metrics.numberOfEdges << std::endl;
+		std::cout << "Number of nearest neighbours: " << metrics.numberOfNN << std::endl;
+		std::cout << "Number of connected components: " << metrics.numberCC << std::endl;
 		std::cout << "Runtime: " << metrics.runtime << "sec" << std::endl;
 	}
 }

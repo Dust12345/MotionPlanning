@@ -52,7 +52,6 @@ Eigen::Vector5d MyWorm::Random(std::mt19937_64 &rng, std::uniform_real_distribut
     q(2) = M_PI * (2. * unif(rng) - 1.);
     q(3) = M_PI * (2. * unif(rng) - 1.);
     q(4) = M_PI * (2. * unif(rng) - 1.);
-
     return q;
 }
 

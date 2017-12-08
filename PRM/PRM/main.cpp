@@ -107,12 +107,16 @@ int _tmain(int argc, _TCHAR* argv[])
 #endif
 	const int nNodes = 1500;
 
+	//unter 1200 und 15, 15 geht nicht
+	
+
 	PRM::PRMMetrics metrics;
-	PRM prm(nNodes,10,15);
+	PRM prm(nNodes,15,15,15);
 	path = prm.getPath(cell, qStart, qGoal, metrics);
 
 	write_easyrob_program_file(path, "example.prg", false);
 	prm.printResult(path, metrics, true, true);
+
 
 	path.clear();
 

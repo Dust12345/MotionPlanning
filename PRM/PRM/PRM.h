@@ -20,12 +20,26 @@ private:
 
 	};
 
+	struct CC
+	{
+		public:
+			std::vector<int> nodesInCC;
+
+	};
+
 	double vec5Distance(Eigen::Vector5d a, Eigen::Vector5d b);
 
 	//algo params
 	int initSampleSize;
 	int k;
 	int resamplePointNumbers;
+	int ccLowThreshold;
+
+	int getConectedComponentNumber(std::vector<Edge>& edges);
+
+	bool inCC(CC cc, int nodeIndex);
+
+	void checkEdge(std::vector<CC>& cc, Edge& edge);
 
 	void getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, int sampleSize, std::vector<Eigen::Vector5d>& samples);
 	void getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, int sampleSize, Eigen::Vector5d base, std::vector<Eigen::Vector5d>& samples);
@@ -41,6 +55,8 @@ private:
 
 	std::vector<Eigen::Vector5d> getShortestPath(std::vector<Edge>edges, std::vector<Eigen::Vector5d>& samplePoint);
 
+	
+
 public:
 
 	struct PRMMetrics {
@@ -51,7 +67,7 @@ public:
 		int numberCC;
 	};
 
-	PRM(int initSampleSize, int k, int resamplePointNumbers);
+	PRM(int initSampleSize, int k, int resamplePointNumbers, int ccLowThreshold);
 	~PRM();
 	void printResult(std::vector<Eigen::VectorXd> path, PRM::PRMMetrics metrics, bool printPath, bool printMetrics);
 	std::vector<Eigen::VectorXd> getPath(WormCell& mw, Eigen::VectorXd start, Eigen::VectorXd goal, PRM::PRMMetrics& prmMetrics);
