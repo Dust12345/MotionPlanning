@@ -17,7 +17,7 @@ int _tmain(int argc, _TCHAR* argv[])
     knn_rtree_t rtree;
     const float stepsize = .025f;
 
-#define TEST_CASE 0
+#define TEST_CASE 3
 #ifdef TEST_CASE
 #if TEST_CASE == 0
 	qStart << 0., 0., 0., 0., 0.;
@@ -105,13 +105,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	qGoal << .6, .95, DEG2RAD(-90.f), 0., 0.;
 #endif
 #endif
-	const int nNodes = 1500;
+	const int nNodes = 2500;
 
 	//unter 1200 und 15, 15 geht nicht
 	
 
 	PRM::PRMMetrics metrics;
-	PRM prm(nNodes,15,15,15);
+	PRM prm(nNodes,12,15,20);
 	path = prm.getPath(cell, qStart, qGoal, metrics);
 
 	write_easyrob_program_file(path, "example.prg", false);

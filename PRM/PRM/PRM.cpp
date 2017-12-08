@@ -66,7 +66,7 @@ bool PRM::canConnect(WormCell& mw, Eigen::Vector5d a, Eigen::Vector5d b)
 		checks = 3;
 	}
 
-	checks = 10;
+	checks = 30;
 
 	//bool result = mw.CheckMotion(a, b, checks);
 
@@ -152,7 +152,7 @@ void PRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distri
 double PRM::calcWeigth(Eigen::Vector5d a, Eigen::Vector5d b)
 {
 	//dist calculation with correct wrapping for rotations
-	double result = sqrt(pow(a[0] + b[0], 2) + pow(a[1] + b[1], 2));
+	/*double result = sqrt(pow(a[0] + b[0], 2) + pow(a[1] + b[1], 2));
 
 	float pi = 3.14159265358979323846;
 
@@ -182,10 +182,10 @@ double PRM::calcWeigth(Eigen::Vector5d a, Eigen::Vector5d b)
 
 	}
 
-	return result;
+	return result;*/
 
 	//try simple euklid
-	//return vec5Distance(a, b);
+	return vec5Distance(a, b);
 }
 
 std::vector<Eigen::Vector5d> PRM::getShortestPath(std::vector<PRM::Edge>edges, std::vector<Eigen::Vector5d>& samplePoint)
@@ -265,7 +265,7 @@ std::vector<PRM::Edge> PRM::reSample(WormCell& mw, std::vector<Eigen::Vector5d>&
 		if (nodeFailVct[i].failedAttemps >= k / 2)
 		{
 			//double range = sqrt(nodeFailVct[i].avrgDist);
-			double range = 0.5;
+			double range = 0.7;
 			
 			std::uniform_real_distribution<double> dis((range/2)*-1, range / 2);
 
