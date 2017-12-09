@@ -17,7 +17,7 @@ int _tmain(int argc, _TCHAR* argv[])
     knn_rtree_t rtree;
     const float stepsize = .025f;
 
-#define TEST_CASE 3
+#define TEST_CASE 0
 #ifdef TEST_CASE
 #if TEST_CASE == 0
 	qStart << 0., 0., 0., 0., 0.;
@@ -105,10 +105,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	qGoal << .6, .95, DEG2RAD(-90.f), 0., 0.;
 #endif
 #endif
-	const int nNodes = 2500;
-	int k = 12;
-	int resamplePointNumbers = 15;
-	int ccLowThreshold = 20;
+	const int nNodes = 1800;
+	int k = 13;
+	int resamplePointNumbers = 13;
+	int ccLowThreshold = 30;
 	//unter 1200 und 15, 15 geht nicht
 	
 
@@ -122,6 +122,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	path.clear();
 
+	
     return EXIT_SUCCESS;
 }
 

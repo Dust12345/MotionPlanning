@@ -62,18 +62,8 @@ double PRM::vec5Distance(Eigen::Vector5d a, Eigen::Vector5d b)
 
 bool PRM::canConnect(WormCell& mw, Eigen::Vector5d a, Eigen::Vector5d b)
 {
-	//first check the distance between the two points and, based on that, decide how many check we want to do
-	double dist = vec5Distance(a, b);
-	int checkPerOneUnit = 20;
-
-	int checks = dist*checkPerOneUnit;
-
-	//do at least 3
-	if (checks <= 0) {
-		checks = 3;
-	}
-
-	checks = 30;
+	//how many collision checks will be done
+	int checks = 10;
 	
 
 	//simple but not efficent way to check
@@ -128,7 +118,7 @@ void PRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distri
 	
 	int added = 0;
 	//to prevent an endless loop, we stop at some point no matter what
-	int maxTries = sampleSize * 25;
+	int maxTries = sampleSize * 50;
 
 	while (true)
 	{
@@ -157,7 +147,7 @@ void PRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distri
 double PRM::calcWeigth(Eigen::Vector5d a, Eigen::Vector5d b)
 {
 	//dist calculation with correct wrapping for rotations
-	/*double result = sqrt(pow(a[0] + b[0], 2) + pow(a[1] + b[1], 2));
+	double result = sqrt(pow(a[0] + b[0], 2) + pow(a[1] + b[1], 2));
 
 	float pi = 3.14159265358979323846;
 
@@ -187,10 +177,8 @@ double PRM::calcWeigth(Eigen::Vector5d a, Eigen::Vector5d b)
 
 	}
 
-	return result;*/
+	return result;
 
-	//try simple euklid
-	return vec5Distance(a, b);
 }
 
 std::vector<Eigen::Vector5d> PRM::getShortestPath(std::vector<PRM::Edge>edges, std::vector<Eigen::Vector5d>& samplePoint)
@@ -275,9 +263,19 @@ std::vector<PRM::Edge> PRM::reSample(WormCell& mw, std::vector<Eigen::Vector5d>&
 		{
 			//the range in which the new samples should be created
 			//double range = sqrt(nodeFailVct[i].avrgDist);
-			double range = 0.7;
-			
-			std::uniform_real_distribution<double> dis((range/2)*-1, range / 2);
+			double range = 0.6;
+			double min = (range / 2)*-1;
+			double max = range / 2;
+
+			if (min < 0) {
+				min = 0;
+			}
+
+			if (max > 1) {
+				max = 1;
+			}
+
+			std::uniform_real_distribution<double> dis(min,max );
 
 			//the base point around which the new samples should be created
 			Eigen::Vector5d base = samplePoints[nodeFailVct[i].index];
@@ -311,7 +309,7 @@ std::vector<Eigen::VectorXd> PRM::getPath(WormCell& mw, Eigen::VectorXd start, E
 	getSample(mw, rng, dis, initSampleSize, configurationsPoints);
 	std::vector<PRM::NodeAttemptPair> nodeFailVct;	
 	
-	std::cout << "getting connection" << std::endl;
+	std::cout << "checking connection" << std::endl;
 	//test the connectifity of the sample points
 	std::vector<PRM::Edge> edges = connectionTesting(mw, nodeFailVct, configurationsPoints,0);
 
@@ -319,7 +317,7 @@ std::vector<Eigen::VectorXd> PRM::getPath(WormCell& mw, Eigen::VectorXd start, E
 	while (true)
 	{
 		//resample
-		std::cout << "resample" << std::endl;
+		std::cout << "resampling points" << std::endl;
 		std::vector<PRM::Edge> newEdges = reSample(mw, configurationsPoints, nodeFailVct);
 
 		//add the edges we got from the resampling to the ones we already know
@@ -335,10 +333,27 @@ std::vector<Eigen::VectorXd> PRM::getPath(WormCell& mw, Eigen::VectorXd start, E
 			break;
 		}
 	}
-
-
 	std::cout << "adding start and goal to the graph" << std::endl;
 	//add the start and goal to the graph
+	std::vector<Eigen::VectorXd> p;
+
+	//check if start and goal are within the boundry
+	if (goal[0] < 0 || goal[0]>1|| goal[1] < 0 || goal[1]>1
+		|| start[0] < 0 || start[0]>1 || start[1] < 0 || start[1]>1)
+	{
+		std::cout << "unreachable goal or start" << std::endl;
+	
+
+		prmMetrics.numberOfNN = k;
+		prmMetrics.numberCC = getConectedComponentNumber(edges);
+		prmMetrics.numberOfNodes = configurationsPoints.size();
+		prmMetrics.numberOfEdges = edges.size();
+		double t = (clock() - clockStart) / CLOCKS_PER_SEC;
+		prmMetrics.runtime = t;
+		return p;
+	}
+
+	
 	configurationsPoints.push_back(goal);
 	configurationsPoints.push_back(start);
 	std::vector<PRM::Edge> newEdges = connectionTesting(mw, nodeFailVct, configurationsPoints, configurationsPoints.size()-2);
@@ -349,7 +364,9 @@ std::vector<Eigen::VectorXd> PRM::getPath(WormCell& mw, Eigen::VectorXd start, E
 
 	std::cout << "calculating the shortest path" << std::endl;
 	std::vector<Eigen::Vector5d> path = getShortestPath(edges, configurationsPoints);	
-	std::vector<Eigen::VectorXd> p;
+	
+
+	
 
 	//path of size one means dijstra found no path
 	if (path.size() > 1)
@@ -358,6 +375,9 @@ std::vector<Eigen::VectorXd> PRM::getPath(WormCell& mw, Eigen::VectorXd start, E
 		{
 			p.push_back(path[i]);
 		}
+	}
+	else {
+		std::cout << "No path found" << std::endl;
 	}
 	int numberOfCC = getConectedComponentNumber(edges);
 	

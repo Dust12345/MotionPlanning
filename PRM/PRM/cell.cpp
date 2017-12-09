@@ -46,9 +46,8 @@ Eigen::Vector5d MyWorm::Random(Eigen::Vector5d base,std::mt19937_64 &rng, std::u
 Eigen::Vector5d MyWorm::Random(std::mt19937_64 &rng, std::uniform_real_distribution<double>& unif)
 {
     Eigen::Vector5d q;
-
-    q(0) = unif(rng);
-    q(1) = unif(rng);
+	q(0) = unif(rng);
+	q(1) = unif(rng);
     q(2) = M_PI * (2. * unif(rng) - 1.);
     q(3) = M_PI * (2. * unif(rng) - 1.);
     q(4) = M_PI * (2. * unif(rng) - 1.);
