@@ -106,12 +106,14 @@ int _tmain(int argc, _TCHAR* argv[])
 #endif
 #endif
 	const int nNodes = 2500;
-
+	int k = 12;
+	int resamplePointNumbers = 15;
+	int ccLowThreshold = 20;
 	//unter 1200 und 15, 15 geht nicht
 	
 
 	PRM::PRMMetrics metrics;
-	PRM prm(nNodes,12,15,20);
+	PRM prm(nNodes,k, resamplePointNumbers, ccLowThreshold);
 	path = prm.getPath(cell, qStart, qGoal, metrics);
 
 	write_easyrob_program_file(path, "example.prg", false);

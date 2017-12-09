@@ -8,6 +8,7 @@ class KDT
 {
 public:
 
+	//compines the index of a node and the indicies of its nearest neigtbors
 	struct nodeKnn {
 	public:
 		int index;
@@ -16,11 +17,15 @@ public:
 
 	};
 	
+	//an element that represents a vector5 in the k-d tree
 	struct Element {	
+		
+		//default constructor
 		Element() {
 
 		}
 
+		//constructor which takes the values of a vec5
 		Element(Eigen::Vector5d vct,int elementIndex)
 		{
 			index = elementIndex;
@@ -31,11 +36,14 @@ public:
 			values.push_back(vct[4]);
 
 		}
+		//the values of the element
 		std::vector<double> values;
+		//the index if this elements in the vector5 vector
 		int index;
 		
 	};
 
+	//represents the set of all points in the confifguration space
 	struct PointCloud
 	{
 
@@ -82,6 +90,7 @@ public:
 	KDT();
 	~KDT();
 
+	//builds the k-d tree and returns the k nearest neigtbors of all nodes
 	void getKNN(std::vector<Eigen::Vector5d> vct,std::vector<nodeKnn>& nodeNNVct,int startIndex, int k);
 };
 
