@@ -60,33 +60,25 @@ double PRM::vec5Distance(Eigen::Vector5d a, Eigen::Vector5d b)
 	return length;
 }
 
-bool PRM::canConnect(WormCell& mw, Eigen::Vector5d a, Eigen::Vector5d b)
-{
+bool PRM::canConnect(WormCell& mw, Eigen::Vector5d a, Eigen::Vector5d b){
 	//how many collision checks will be done
 	int checks = 10;
-	
-
 	//simple but not efficent way to check
 	Eigen::Vector5d c = a - b;
 
 	c = c / (checks-1);
 
-	for (int i = 0; i < (checks - 1); i++)
-	{
+	for (int i = 0; i < (checks - 1); i++){
 		Eigen::Vector5d d = b + (c*i);
 
-		if(!mw.CheckPosition(d))
-		{
+		if(!mw.CheckPosition(d)){
 			return false;
-		}
-		
+		}	
 	}
 	return true;
-	
 }
 
-std::vector<PRM::Edge> PRM::connectionTesting(WormCell& mw, std::vector<PRM::NodeAttemptPair>& nodeFailVct, std::vector<Eigen::Vector5d>& samplePoints,int startIndex)
-{
+std::vector<PRM::Edge> PRM::connectionTesting(WormCell& mw, std::vector<PRM::NodeAttemptPair>& nodeFailVct, std::vector<Eigen::Vector5d>& samplePoints,int startIndex){
 	std::vector<PRM::Edge> edges;
 	KDT kdTree;
 	std::vector<KDT::nodeKnn> nodeNNVct;
@@ -94,37 +86,29 @@ std::vector<PRM::Edge> PRM::connectionTesting(WormCell& mw, std::vector<PRM::Nod
 	//get the nearest neigtbors for all nodes
 	kdTree.getKNN(samplePoints, nodeNNVct, startIndex,k);
 
-	for (int i = 0; i < nodeNNVct.size(); i++)
-	{
+	for (int i = 0; i < nodeNNVct.size(); i++){
 		//for each node, check the connectifity to its NN
 		PRM::NodeAttemptPair metric;
 		metric.avrgDist = nodeNNVct[i].avrgDist;
 		std::vector<Edge> edgesForNode = checkConnections(mw, samplePoints, nodeNNVct[i], metric);
 		nodeFailVct.push_back(metric);
 		
-		
 		//add the adges
-		for (int j = 0; j < edgesForNode.size(); j++)
-		{			
+		for (int j = 0; j < edgesForNode.size(); j++){			
 			edges.push_back(edgesForNode[j]);
 		}
 	}
-
 	return edges;
 }
 
-void PRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, int sampleSize, Eigen::Vector5d base, std::vector<Eigen::Vector5d>& samples)
-{
-	
+void PRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, int sampleSize, Eigen::Vector5d base, std::vector<Eigen::Vector5d>& samples){
 	int added = 0;
 	//to prevent an endless loop, we stop at some point no matter what
 	int maxTries = sampleSize * 50;
 
-	while (true)
-	{
+	while (true){
 		//check if we are done
-		if (added > sampleSize||added >= maxTries)
-		{
+		if (added > sampleSize||added >= maxTries){
 			//get enough sample points
 			return;
 		}
@@ -133,8 +117,7 @@ void PRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distri
 			Eigen::Vector5d sample = MyWorm::Random(base,rng, dis);
 
 			//check if the sample point is in free space
-			if (mw.CheckPosition(sample))
-			{
+			if (mw.CheckPosition(sample)){
 				//point is free
 				samples.push_back(sample);
 				added++;
@@ -251,16 +234,12 @@ void PRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distri
 	}
 }
 
-std::vector<PRM::Edge> PRM::reSample(WormCell& mw, std::vector<Eigen::Vector5d>& samplePoints, std::vector<PRM::NodeAttemptPair> nodeFailVct)
-{
+std::vector<PRM::Edge> PRM::reSample(WormCell& mw, std::vector<Eigen::Vector5d>& samplePoints, std::vector<PRM::NodeAttemptPair> nodeFailVct){
 	std::mt19937_64 rng(0);
 
-	for (int i = 0; i < nodeFailVct.size(); i++)
-	{
-		
+	for (int i = 0; i < nodeFailVct.size(); i++){
 		//do a simple threshold check
-		if (nodeFailVct[i].failedAttemps >= k / 2)
-		{
+		if (nodeFailVct[i].failedAttemps >= k / 2){
 			//the range in which the new samples should be created
 			//double range = sqrt(nodeFailVct[i].avrgDist);
 			double range = 0.6;
@@ -283,14 +262,12 @@ std::vector<PRM::Edge> PRM::reSample(WormCell& mw, std::vector<Eigen::Vector5d>&
 			getSample(mw, rng, dis, resamplePointNumbers,base, samplePoints);
 		}
 	}
-
 	std::cout << "Testing connections again" << std::endl;
 
 	//test the new samples for their connectifity
 	std::vector<PRM::Edge> edges = connectionTesting(mw, nodeFailVct, samplePoints, initSampleSize);
 
 	return edges;
-
 }
 
 std::vector<Eigen::VectorXd> PRM::getPath(WormCell& mw, Eigen::VectorXd start, Eigen::VectorXd goal, PRM::PRMMetrics& prmMetrics)
@@ -467,16 +444,13 @@ void PRM::addEdgeToCCs(std::vector<PRM::CC> & cc, PRM::Edge& edge)
 	}
 }
 
-int PRM::getConectedComponentNumber(std::vector<PRM::Edge>& edges)
-{
+int PRM::getConectedComponentNumber(std::vector<PRM::Edge>& edges){
 	std::vector<PRM::CC> connectedComp;
 
 	//add all edges to the CCs
-	for (int i = 0; i < edges.size(); i++)
-	{
+	for (int i = 0; i < edges.size(); i++){
 		addEdgeToCCs(connectedComp, edges[i]);
 	}
-
 	//the number of CCs is simply the size of the vector
 	return connectedComp.size();
 }

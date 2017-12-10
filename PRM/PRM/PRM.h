@@ -6,11 +6,9 @@
 
 //incapsulates the prm functionality
 class PRM
-{
-	//defines an edge, with the ints beeing the indecies of the points
+{	
+protected:
 	typedef std::pair<int, int> Edge;
-	
-private:
 
 	//combined the index of a point and the number of failed connection attempts
 	struct NodeAttemptPair
@@ -44,7 +42,6 @@ private:
 
 	//check if the connected component contains the given node
 	bool inCC(CC cc, int nodeIndex);
-
 	//takes the edge and adds it to the vector of connected components
 	//if this means adding a new CC, compining two CCs or something else, depends on the edge itself
 	void addEdgeToCCs(std::vector<CC>& cc, Edge& edge);
@@ -54,7 +51,6 @@ private:
 	
 	//creates random vectors within the given distribution around the given base vector, all sampels are valid configurations and do not collide with an obstical
 	void getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, int sampleSize, Eigen::Vector5d base, std::vector<Eigen::Vector5d>& samples);
-
 	//checks which points are connected and returns the edges between the points
 	std::vector<Edge> connectionTesting(WormCell& mw, std::vector<NodeAttemptPair>& nodeFailVct, std::vector<Eigen::Vector5d>& samplePoints, int startIndex);
 
@@ -90,7 +86,6 @@ public:
 	
 	//destructor
 	~PRM();
-	
 	//prints the collected metrecies
 	void printResult(std::vector<Eigen::VectorXd> path, PRM::PRMMetrics metrics, bool printPath, bool printMetrics);
 	

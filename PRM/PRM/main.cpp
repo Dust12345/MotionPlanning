@@ -2,6 +2,7 @@
 #include <iostream>
 #include "cell.h"
 #include "PRM.h"
+#include "OBPRM.h"
 
 using namespace std;
 namespace bg = boost::geometry;
@@ -23,46 +24,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	qStart << 0., 0., 0., 0., 0.;
 	qGoal << .6, .9, DEG2RAD(-90.), DEG2RAD(-180.), DEG2RAD(180.);
 
-	/*Eigen::VectorXd segment(qGoal - qStart), delta(5);
-	delta = segment.normalized() * stepsize;
-	int steps = int(segment.norm() / stepsize);
-
-	do
-	{
-	if (!cell.CheckPosition(qStart))
-	{
-	for (int i = 0; i < 10; ++i)
-	{
-	path.push_back(qStart);
-	qStart += delta * .1f;
-	}
-	}
-	else
-	{
-	path.push_back(qStart);
-	qStart += delta;
-	}
-	} while (--steps > 0);
-
-	path.push_back(qGoal);
-	reverse(path.begin(), path.end());*/
-
-	// 1. step: building up a graph g consisting of nNodes vertices
-	//cout << "1. Step: building " << nNodes << " nodes for the graph" << endl;
-
-	// 2. step: building edges for the graph, if the connection of 2 nodes are in free space
-	//cout << "2. Step: buildung edges for the graph" << endl;
-
-	// 3. Step: connecting start configuration to graph
-	//cout << "3. Step: connecting start configuration to graph" << endl;
-
-	// 4. Step: connecting goal configuration to graph
-	//cout << "4. Step: connecting goal configuration to graph" << endl;
-
-	// 5. Step: searching for shortest path
-	//cout << "5. Step: searching for shortest path" << endl;
-
-	// !Example
 #elif TEST_CASE == 1
 	cout << "Test case 1" << endl;
 	qStart << .6, .1, 0., 0., 0.;
@@ -111,18 +72,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	int ccLowThreshold = 30;
 	//unter 1200 und 15, 15 geht nicht
 	
-
-	PRM::PRMMetrics metrics;
+	PRM::PRMMetrics prmMetrics;
 	PRM prm(nNodes,k, resamplePointNumbers, ccLowThreshold);
-	path = prm.getPath(cell, qStart, qGoal, metrics);
-
-	write_easyrob_program_file(path, "example.prg", false);
-	prm.printResult(path, metrics, true, true);
-
-
+	path = prm.getPath(cell, qStart, qGoal, prmMetrics);
+	write_easyrob_program_file(path, "prm.prg", false);
+	prm.printResult(path, prmMetrics, true, true);
 	path.clear();
 
-	
     return EXIT_SUCCESS;
 }
 
