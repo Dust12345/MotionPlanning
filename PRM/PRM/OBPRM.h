@@ -10,8 +10,12 @@ class OBPRM : public PRM
 	typedef std::pair<int, int> Edge;
 
 private:
-	void getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, int sampleSize, Eigen::Vector5d base, std::vector<Eigen::Vector5d>& samples);
 	void getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, int sampleSize, std::vector<Eigen::Vector5d>& samples);
+	void getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, int sampleSize, Eigen::Vector5d base, std::vector<Eigen::Vector5d>& samples);
+	Eigen::Vector5d  moveOutOfInsect(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, std::vector<Eigen::Vector5d>& samples, Eigen::Vector5d & insectPoint);
+	Eigen::Vector5d  moveOutOfInsect(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, std::vector<Eigen::Vector5d>& samples, Eigen::Vector5d & insectPoint, Eigen::Vector5d base);
+	std::vector<PRM::Edge> reSample(WormCell& mw, std::vector<Eigen::Vector5d>& samplePoints, std::vector<PRM::NodeAttemptPair> nodeFailVct);
+	std::vector<PRM::Edge> connectionTesting(WormCell& mw, std::vector<PRM::NodeAttemptPair>& nodeFailVct, std::vector<Eigen::Vector5d>& samplePoints, int startIndex);
 public:
 
 	struct OBPRMMetrics {

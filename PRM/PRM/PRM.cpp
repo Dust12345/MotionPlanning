@@ -341,9 +341,6 @@ std::vector<Eigen::VectorXd> PRM::getPath(WormCell& mw, Eigen::VectorXd start, E
 
 	std::cout << "calculating the shortest path" << std::endl;
 	std::vector<Eigen::Vector5d> path = getShortestPath(edges, configurationsPoints);	
-	
-
-	
 
 	//path of size one means dijstra found no path
 	if (path.size() > 1)

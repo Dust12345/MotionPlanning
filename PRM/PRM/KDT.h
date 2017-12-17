@@ -2,6 +2,7 @@
 #include "nanoflann.hpp"
 #include <vector>
 #include "cell.h"
+#include <math.h>
 
 using namespace nanoflann;
 class KDT
@@ -92,5 +93,6 @@ public:
 
 	//builds the k-d tree and returns the k nearest neigtbors of all nodes
 	void getKNN(std::vector<Eigen::Vector5d> vct,std::vector<nodeKnn>& nodeNNVct,int startIndex, int k);
+	void getKNNWithEuclid(std::vector<Eigen::Vector5d> vct, std::vector<KDT::nodeKnn>& nodeNNVct, int startIndex, int k);
 };
 

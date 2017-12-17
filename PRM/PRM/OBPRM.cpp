@@ -35,35 +35,81 @@ void OBPRM::printResult(std::vector<Eigen::VectorXd> path, OBPRM::OBPRMMetrics m
 }
 
 std::vector<Eigen::VectorXd> OBPRM::getPath(WormCell& mw, Eigen::VectorXd start, Eigen::VectorXd goal, OBPRM::OBPRMMetrics& prmMetrics) {
+	//start a clock to keep track on how long it took
 	clock_t clockStart = clock();
 
+	//set up the rng and random distribution for the sampleing
 	std::mt19937_64 rng(0);
-	std::uniform_real_distribution<double> dis(0, 1.0);
+	std::uniform_real_distribution<double> dis(0, 1);
 
 	std::cout << "Starting init sample" << std::endl;
-	std::vector<Eigen::Vector5d> initSampels;
-	initSampels.push_back(goal);
-	initSampels.push_back(start);
-	getSample(mw, rng, dis,initSampleSize, initSampels);
+	std::vector<Eigen::Vector5d> configurationsPoints;
+
+	//get the inital sample points
+	OBPRM::getSample(mw, rng, dis, initSampleSize, configurationsPoints);
 	std::vector<PRM::NodeAttemptPair> nodeFailVct;
 
-	std::cout << "getting connection" << std::endl;
-	std::vector<PRM::Edge> edges = connectionTesting(mw, nodeFailVct, initSampels, 0);
+	std::cout << "checking connection" << std::endl;
+	//test the connectifity of the sample points
+	std::vector<PRM::Edge> edges = connectionTesting(mw, nodeFailVct, configurationsPoints, 0);
 
-	std::cout << "resample" << std::endl;
-	std::vector<PRM::Edge> newEdges = reSample(mw, initSampels, nodeFailVct);
+	//resample until the number of connected components is below the threshold
+	while (true)
+	{
+		//resample
+		std::cout << "resampling points" << std::endl;
+		std::vector<PRM::Edge> newEdges = reSample(mw, configurationsPoints, nodeFailVct);
 
-	for (int i = 0; i < newEdges.size(); i++) {
+		//add the edges we got from the resampling to the ones we already know
+		for (int i = 0; i < newEdges.size(); i++)
+		{
+			edges.push_back(newEdges[i]);
+		}
+
+		//check if we are done
+		//we do the check at the end, to resample at least once
+		int numberOfCC = getConectedComponentNumber(edges);
+		if (numberOfCC <= ccLowThreshold) {
+			break;
+		}
+	}
+	std::cout << "adding start and goal to the graph" << std::endl;
+	//add the start and goal to the graph
+	std::vector<Eigen::VectorXd> p;
+
+	//check if start and goal are within the boundry
+	if (goal[0] < 0 || goal[0]>1 || goal[1] < 0 || goal[1]>1
+		|| start[0] < 0 || start[0]>1 || start[1] < 0 || start[1]>1)
+	{
+		std::cout << "unreachable goal or start" << std::endl;
+
+
+		prmMetrics.numberOfNN = k;
+		prmMetrics.numberCC = getConectedComponentNumber(edges);
+		prmMetrics.numberOfNodes = configurationsPoints.size();
+		prmMetrics.numberOfEdges = edges.size();
+		double t = (clock() - clockStart) / CLOCKS_PER_SEC;
+		prmMetrics.runtime = t;
+		return p;
+	}
+
+
+	configurationsPoints.push_back(goal);
+	configurationsPoints.push_back(start);
+	std::vector<PRM::Edge> newEdges = connectionTesting(mw, nodeFailVct, configurationsPoints, configurationsPoints.size() - 2);
+	for (int i = 0; i < newEdges.size(); i++)
+	{
 		edges.push_back(newEdges[i]);
 	}
 
-	std::cout << "number of Edges: " << edges.size() << std::endl;
+	std::cout << "calculating the shortest path" << std::endl;
+	std::vector<Eigen::Vector5d> path = getShortestPath(edges, configurationsPoints);
 
-	std::vector<Eigen::Vector5d> path = getShortestPath(edges, initSampels);
-
-	//convert the path
-
-	std::vector<Eigen::VectorXd> p;
+	//run the Dijkstra again wiht the last solution nodes
+	/* std::cout << "calculating the shortest path again" << std::endl;
+	std::vector<PRM::NodeAttemptPair> newNodeFailVct;
+	newEdges = connectionTesting(mw, newNodeFailVct, path, path.size());
+	path = getShortestPath(newEdges, path);*/
 
 	//path of size one means dijstra found no path
 	if (path.size() > 1)
@@ -73,24 +119,30 @@ std::vector<Eigen::VectorXd> OBPRM::getPath(WormCell& mw, Eigen::VectorXd start,
 			p.push_back(path[i]);
 		}
 	}
+	else {
+		std::cout << "No path found" << std::endl;
+	}
+	int numberOfCC = getConectedComponentNumber(edges);
 
-	prmMetrics.numberOfNodes = initSampels.size();
+	prmMetrics.numberOfNN = k;
+	prmMetrics.numberCC = numberOfCC;
+	prmMetrics.numberOfNodes = configurationsPoints.size();
 	prmMetrics.numberOfEdges = edges.size();
 	double t = (clock() - clockStart) / CLOCKS_PER_SEC;
 	prmMetrics.runtime = t;
 	return p;
 }
 
-void OBPRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, int sampleSize, std::vector<Eigen::Vector5d>& samples) {
+void OBPRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, int sampleSize, std::vector<Eigen::Vector5d>& samples)
+{
 	int added = 0;
-	Eigen::Vector5d moveVectorForward;
-	Eigen::Vector5d nextForwardPoint, nextBackwardPoint,lastBackwardPoint;
-	bool findCollision = false, findFreeSpace = false;
+	//to prevent an endless loop, we stop at some point no matter what
+	int maxTries = sampleSize * 25;
 
 	while (true)
 	{
 		//check if we are done
-		if (added >= sampleSize)
+		if (added > sampleSize || added >= maxTries)
 		{
 			//get enough sample points
 			return;
@@ -100,44 +152,169 @@ void OBPRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_dist
 			Eigen::Vector5d sample = MyWorm::Random(rng, dis);
 
 			//check if the sample point is in free space
-			if (!mw.CheckPosition(sample))
-			{
-				Eigen::Vector5d randomDirectionPoint = MyWorm::Random(rng, dis);
-				Eigen::Vector5d directionPoint = (randomDirectionPoint - sample)*0.1;
-				nextForwardPoint = directionPoint;
-
-				while (!findFreeSpace) {	
-					//If the next position is in free spacee
-					if (!mw.CheckPosition(nextForwardPoint)) {
-						//find the first obs collision
-						nextBackwardPoint = nextForwardPoint;
-
-						while (!findCollision) {
-							if (!mw.CheckPosition(nextBackwardPoint)) {
-								sample = lastBackwardPoint;
-								findFreeSpace = true;
-								findCollision = true;
-							}
-							else {
-								lastBackwardPoint = nextBackwardPoint;
-								nextBackwardPoint = nextBackwardPoint - (directionPoint / 2);
-							}
-						}
-					}
-					else {
-						nextForwardPoint = nextForwardPoint + directionPoint;
-					}
-				}
+			if (mw.CheckPosition(sample))
+			{		
+				//point is free
+				samples.push_back(sample);
+				added++;
 			}
-
-			samples.push_back(sample);
-			findFreeSpace = false;
-			findCollision = false;
-			added++;
+			else {
+				//if the point is not free
+				Eigen::Vector5d newPoint = moveOutOfInsect(mw, rng, dis, samples, sample);
+				samples.push_back(newPoint);
+				added++;
+			}
+			std::cout << samples.size() << "/" << sampleSize << std::endl;
 		}
 	}
 }
 
 void OBPRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, int sampleSize, Eigen::Vector5d base, std::vector<Eigen::Vector5d>& samples) {
-	
+	int added = 0;
+	//to prevent an endless loop, we stop at some point no matter what
+	int maxTries = sampleSize * 50;
+
+	while (true) {
+		//check if we are done
+		if (added > sampleSize || added >= maxTries) {
+			//get enough sample points
+			return;
+		}
+		else {
+			//not enough, try to get another one
+			Eigen::Vector5d sample = MyWorm::Random(base, rng, dis);
+
+			//check if the sample point is in free space
+			if (mw.CheckPosition(sample)) {
+				//point is free
+				samples.push_back(sample);
+				added++;
+			}
+			else {
+				//if the point is not free
+				Eigen::Vector5d newPoint = moveOutOfInsect(mw, rng, dis, samples, sample, base);
+				samples.push_back(newPoint);
+				added++;
+			}
+		}
+	}
+}
+
+Eigen::Vector5d OBPRM::moveOutOfInsect(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, std::vector<Eigen::Vector5d>& samples, Eigen::Vector5d & insectPoint) {
+	Eigen::Vector5d randomDirectionPoint = MyWorm::Random(rng, dis);
+	Eigen::Vector5d directionPoint = (randomDirectionPoint - insectPoint)*0.1;
+	Eigen::Vector5d nextForwardPoint = insectPoint + directionPoint;
+	Eigen::Vector5d nextBackwardPoint, lastBackwardPoint;
+
+	bool findFreeSpace = false, findCollision = false;
+
+	while (true) {
+		//If the next position is in free spacee
+		if (mw.CheckPosition(nextForwardPoint)) {
+			//find the first obs collision
+			nextBackwardPoint = nextForwardPoint;
+
+			while (true) {
+				if (!mw.CheckPosition(nextBackwardPoint)) {
+					return lastBackwardPoint;
+				}
+				else {
+					lastBackwardPoint = nextBackwardPoint;
+					nextBackwardPoint = nextBackwardPoint - (directionPoint / 2);
+				}
+			}
+		}
+		else {
+			nextForwardPoint = nextForwardPoint + directionPoint;
+		}
+	}
+}
+
+Eigen::Vector5d OBPRM::moveOutOfInsect(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, std::vector<Eigen::Vector5d>& samples, Eigen::Vector5d & insectPoint, Eigen::Vector5d base) {
+	Eigen::Vector5d randomDirectionPoint = MyWorm::Random(base, rng, dis);
+	Eigen::Vector5d directionPoint = (randomDirectionPoint - insectPoint)*0.1;
+	Eigen::Vector5d nextForwardPoint = insectPoint + directionPoint;
+	Eigen::Vector5d nextBackwardPoint, lastBackwardPoint;
+
+	bool findFreeSpace = false, findCollision = false;
+
+	while (true) {
+		//If the next position is in free spacee
+		if (mw.CheckPosition(nextForwardPoint)) {
+			//find the first obs collision
+			nextBackwardPoint = nextForwardPoint;
+
+			while (true) {
+				if (!mw.CheckPosition(nextBackwardPoint)) {
+					return lastBackwardPoint;
+				}
+				else {
+					lastBackwardPoint = nextBackwardPoint;
+					nextBackwardPoint = nextBackwardPoint - (directionPoint / 2);
+				}
+			}
+		}
+		else {
+			nextForwardPoint = nextForwardPoint + directionPoint;
+		}
+	}
+}
+
+std::vector<PRM::Edge> OBPRM::reSample(WormCell& mw, std::vector<Eigen::Vector5d>& samplePoints, std::vector<PRM::NodeAttemptPair> nodeFailVct) {
+	std::mt19937_64 rng(0);
+
+	for (int i = 0; i < nodeFailVct.size(); i++) {
+		//do a simple threshold check
+		if (nodeFailVct[i].failedAttemps >= k / 2) {
+			//the range in which the new samples should be created
+			//double range = sqrt(nodeFailVct[i].avrgDist);
+			double range = 0.6;
+			double min = (range / 2)*-1;
+			double max = range / 2;
+
+			if (min < 0) {
+				min = 0;
+			}
+
+			if (max > 1) {
+				max = 1;
+			}
+
+			std::uniform_real_distribution<double> dis(min, max);
+
+			//the base point around which the new samples should be created
+			Eigen::Vector5d base = samplePoints[nodeFailVct[i].index];
+
+			OBPRM::getSample(mw, rng, dis, resamplePointNumbers, base, samplePoints);
+		}
+	}
+	std::cout << "Testing connections again" << std::endl;
+
+	//test the new samples for their connectifity
+	std::vector<PRM::Edge> edges = connectionTesting(mw, nodeFailVct, samplePoints, initSampleSize);
+
+	return edges;
+}
+
+std::vector<PRM::Edge> OBPRM::connectionTesting(WormCell& mw, std::vector<PRM::NodeAttemptPair>& nodeFailVct, std::vector<Eigen::Vector5d>& samplePoints, int startIndex) {
+	std::vector<PRM::Edge> edges;
+	KDT kdTree;
+	std::vector<KDT::nodeKnn> nodeNNVct;
+
+	//get the nearest neigtbors for all nodes
+	kdTree.getKNNWithEuclid(samplePoints, nodeNNVct, startIndex, k);
+
+	for (int i = 0; i < nodeNNVct.size(); i++) {
+		//for each node, check the connectifity to its NN
+		PRM::NodeAttemptPair metric;
+		metric.avrgDist = nodeNNVct[i].avrgDist;
+		std::vector<Edge> edgesForNode = checkConnections(mw, samplePoints, nodeNNVct[i], metric);
+		nodeFailVct.push_back(metric);
+
+		//add the adges
+		for (int j = 0; j < edgesForNode.size(); j++) {
+			edges.push_back(edgesForNode[j]);
+		}
+	}
+	return edges;
 }

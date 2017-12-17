@@ -69,7 +69,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	const int nNodes = 1800;
 	int k = 13;
 	int resamplePointNumbers = 13;
-	int ccLowThreshold = 30;
+	int ccLowThreshold = 500;
 	//unter 1200 und 15, 15 geht nicht
 	
 	PRM::PRMMetrics prmMetrics;
@@ -78,6 +78,14 @@ int _tmain(int argc, _TCHAR* argv[])
 	write_easyrob_program_file(path, "prm.prg", false);
 	prm.printResult(path, prmMetrics, true, true);
 	path.clear();
+	
+	OBPRM::OBPRMMetrics obprmMetrics;
+	OBPRM obprm(nNodes, k, resamplePointNumbers, ccLowThreshold);
+	path = obprm.getPath(cell, qStart, qGoal, obprmMetrics);
+	write_easyrob_program_file(path, "obprm.prg", false);
+	obprm.printResult(path, obprmMetrics, true, true);
+	path.clear();
+	
 
     return EXIT_SUCCESS;
 }
