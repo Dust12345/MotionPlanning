@@ -129,38 +129,8 @@ void PRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distri
 
 double PRM::calcWeigth(Eigen::Vector5d a, Eigen::Vector5d b)
 {
-	//dist calculation with correct wrapping for rotations
-	double result = sqrt(pow(a[0] + b[0], 2) + pow(a[1] + b[1], 2));
-
-	float pi = 3.14159265358979323846;
-
-	for (int i = 2; i < 5; i++) {
-		double noWrapDist = std::abs(a[i] - b[i]);
-
-		double wrapDist = 0;
-
-		if (a[i] < b[i]) {
-			double d1 = std::abs((pi*-1) - a[i]);
-			double d2 = std::abs((pi)-b[i]);
-			wrapDist = d1 + d2;
-		}
-		else
-		{
-			double d1 = std::abs((pi*-1) - b[i]);
-			double d2 = std::abs((pi)-a[i]);
-			wrapDist = d1 + d2;
-		}
-
-		if (wrapDist < noWrapDist) {
-			result += wrapDist;
-		}
-		else {
-			result += noWrapDist;
-		}
-
-	}
-
-	return result;
+	//simple l2 norm
+	return vec5Distance(a, b);
 
 }
 
