@@ -465,7 +465,7 @@ void PRM::printResult(std::vector<Eigen::VectorXd> path, PRM::PRMMetrics metrics
 	}
 
 	if (printMetrics) {
-		std::cout << "------- Metric -------" << std::endl;
+		std::cout << "------- Metric PRM -------" << std::endl;
 		std::cout << "Number of nodes: " << metrics.numberOfNodes << std::endl;
 		std::cout << "Number of edges: " << metrics.numberOfEdges << std::endl;
 		std::cout << "Number of nearest neighbours: " << metrics.numberOfNN << std::endl;

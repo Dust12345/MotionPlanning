@@ -14,7 +14,8 @@ OBPRM::~OBPRM(){
 
 }
 
-void OBPRM::printResult(std::vector<Eigen::VectorXd> path, OBPRM::OBPRMMetrics metrics, bool printPath, bool printMetrics) {
+void OBPRM::printResult(std::vector<Eigen::VectorXd> path, PRM::PRMMetrics metrics, bool printPath, bool printMetrics) {
+	
 	if (path.size() > 1 && printPath)
 	{
 		for (int i = 0; i < path.size(); i++)
@@ -27,14 +28,14 @@ void OBPRM::printResult(std::vector<Eigen::VectorXd> path, OBPRM::OBPRMMetrics m
 	}
 
 	if (printMetrics) {
-		std::cout << "------- Metric -------" << std::endl;
+		std::cout << "------- Metric OBPRM -------" << std::endl;
 		std::cout << "Number of nodes: " << metrics.numberOfNodes << std::endl;
 		std::cout << "Number of edges: " << metrics.numberOfEdges << std::endl;
 		std::cout << "Runtime: " << metrics.runtime << "sec" << std::endl;
 	}
 }
 
-std::vector<Eigen::VectorXd> OBPRM::getPath(WormCell& mw, Eigen::VectorXd start, Eigen::VectorXd goal, OBPRM::OBPRMMetrics& prmMetrics) {
+std::vector<Eigen::VectorXd> OBPRM::getPath(WormCell& mw, Eigen::VectorXd start, Eigen::VectorXd goal, PRM::PRMMetrics& prmMetrics) {
 	//start a clock to keep track on how long it took
 	clock_t clockStart = clock();
 
@@ -104,13 +105,33 @@ std::vector<Eigen::VectorXd> OBPRM::getPath(WormCell& mw, Eigen::VectorXd start,
 
 	std::cout << "calculating the shortest path" << std::endl;
 	std::vector<Eigen::Vector5d> path = getShortestPath(edges, configurationsPoints);
-
+	
 	//run the Dijkstra again wiht the last solution nodes
-	/* std::cout << "calculating the shortest path again" << std::endl;
-	std::vector<PRM::NodeAttemptPair> newNodeFailVct;
-	newEdges = connectionTesting(mw, newNodeFailVct, path, path.size());
-	path = getShortestPath(newEdges, path);*/
+	std::cout << "calculating the shortest path again" << std::endl;
 
+	//delete goal and start Position because they have the wrong index (0 and path.size()-1)
+	for (std::_Vector_iterator<std::_Vector_val<std::_Simple_types<Eigen::Vector5d>>> it = path.begin(); it != path.end();)
+	{
+		if (*it._Ptr == start || *it._Ptr == goal) {
+			it = path.erase(it);
+		}
+		else {
+			++it;
+		}
+
+	}
+
+	//add goal and start 
+	path.push_back(goal);
+	path.push_back(start);
+	
+	std::vector<PRM::NodeAttemptPair> newNodeFailVct;
+
+	newEdges = connectionTesting(mw, newNodeFailVct, path, 0);
+	path = getShortestPath(newEdges, path);
+
+	// add Metric informations
+	std::cout << "set Metric informations" << std::endl;
 	//path of size one means dijstra found no path
 	if (path.size() > 1)
 	{
@@ -122,12 +143,12 @@ std::vector<Eigen::VectorXd> OBPRM::getPath(WormCell& mw, Eigen::VectorXd start,
 	else {
 		std::cout << "No path found" << std::endl;
 	}
-	int numberOfCC = getConectedComponentNumber(edges);
+	int numberOfCC = getConectedComponentNumber(newEdges);
 
 	prmMetrics.numberOfNN = k;
 	prmMetrics.numberCC = numberOfCC;
 	prmMetrics.numberOfNodes = configurationsPoints.size();
-	prmMetrics.numberOfEdges = edges.size();
+	prmMetrics.numberOfEdges = newEdges.size();
 	double t = (clock() - clockStart) / CLOCKS_PER_SEC;
 	prmMetrics.runtime = t;
 	return p;
@@ -159,8 +180,8 @@ void OBPRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_dist
 				added++;
 			}
 			else {
-				//if the point is not free
-				Eigen::Vector5d newPoint = moveOutOfInsect(mw, rng, dis, samples, sample);
+				//if the point is not free then move the point in a free position
+				Eigen::Vector5d newPoint = moveOutOfInsect(mw, rng, dis, samples, sample, sample.base());
 				samples.push_back(newPoint);
 				added++;
 			}
@@ -191,7 +212,7 @@ void OBPRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_dist
 				added++;
 			}
 			else {
-				//if the point is not free
+				//if the point is not free then move the point in a free position
 				Eigen::Vector5d newPoint = moveOutOfInsect(mw, rng, dis, samples, sample, base);
 				samples.push_back(newPoint);
 				added++;
@@ -200,61 +221,38 @@ void OBPRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_dist
 	}
 }
 
-Eigen::Vector5d OBPRM::moveOutOfInsect(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, std::vector<Eigen::Vector5d>& samples, Eigen::Vector5d & insectPoint) {
-	Eigen::Vector5d randomDirectionPoint = MyWorm::Random(rng, dis);
-	Eigen::Vector5d directionPoint = (randomDirectionPoint - insectPoint)*0.1;
-	Eigen::Vector5d nextForwardPoint = insectPoint + directionPoint;
-	Eigen::Vector5d nextBackwardPoint, lastBackwardPoint;
-
-	bool findFreeSpace = false, findCollision = false;
-
-	while (true) {
-		//If the next position is in free spacee
-		if (mw.CheckPosition(nextForwardPoint)) {
-			//find the first obs collision
-			nextBackwardPoint = nextForwardPoint;
-
-			while (true) {
-				if (!mw.CheckPosition(nextBackwardPoint)) {
-					return lastBackwardPoint;
-				}
-				else {
-					lastBackwardPoint = nextBackwardPoint;
-					nextBackwardPoint = nextBackwardPoint - (directionPoint / 2);
-				}
-			}
-		}
-		else {
-			nextForwardPoint = nextForwardPoint + directionPoint;
-		}
-	}
-}
-
 Eigen::Vector5d OBPRM::moveOutOfInsect(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, std::vector<Eigen::Vector5d>& samples, Eigen::Vector5d & insectPoint, Eigen::Vector5d base) {
+	double jumpForwardScalaMul = 0.1;
+	double jumpBackwardScalaDiv = 2;
+
+	//calc a random Point
 	Eigen::Vector5d randomDirectionPoint = MyWorm::Random(base, rng, dis);
-	Eigen::Vector5d directionPoint = (randomDirectionPoint - insectPoint)*0.1;
+
+	//calc a movement vector and multiply with the jumpForwardScalaMul
+	Eigen::Vector5d directionPoint = (randomDirectionPoint - insectPoint)*jumpForwardScalaMul;
+	//Calc the next Point with the move movement vector
 	Eigen::Vector5d nextForwardPoint = insectPoint + directionPoint;
 	Eigen::Vector5d nextBackwardPoint, lastBackwardPoint;
-
-	bool findFreeSpace = false, findCollision = false;
 
 	while (true) {
 		//If the next position is in free spacee
 		if (mw.CheckPosition(nextForwardPoint)) {
-			//find the first obs collision
 			nextBackwardPoint = nextForwardPoint;
 
 			while (true) {
+				//find the first obs collision
 				if (!mw.CheckPosition(nextBackwardPoint)) {
 					return lastBackwardPoint;
 				}
 				else {
+					// Calc the next backward point and save the current next backward point 
 					lastBackwardPoint = nextBackwardPoint;
-					nextBackwardPoint = nextBackwardPoint - (directionPoint / 2);
+					nextBackwardPoint = nextBackwardPoint - (directionPoint / jumpBackwardScalaDiv);
 				}
 			}
 		}
 		else {
+			// calc the next forward point
 			nextForwardPoint = nextForwardPoint + directionPoint;
 		}
 	}
