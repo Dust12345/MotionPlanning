@@ -36,6 +36,7 @@ protected:
 	int k;
 	int resamplePointNumbers;
 	int ccLowThreshold;
+	int numberOfSampleInvalid = 0;
 
 	//calculates the number of connected components in the given graph
 	int getConectedComponentNumber(std::vector<Edge>& edges);
@@ -79,6 +80,8 @@ public:
 		int numberOfNN;
 		double runtime;
 		int numberCC;
+		int numberOfGeneratedSampleInvalid;
+		int numberOfPathNodes;
 	};
 
 	//constuctor

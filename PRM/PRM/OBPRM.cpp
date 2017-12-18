@@ -31,6 +31,10 @@ void OBPRM::printResult(std::vector<Eigen::VectorXd> path, PRM::PRMMetrics metri
 		std::cout << "------- Metric OBPRM -------" << std::endl;
 		std::cout << "Number of nodes: " << metrics.numberOfNodes << std::endl;
 		std::cout << "Number of edges: " << metrics.numberOfEdges << std::endl;
+		std::cout << "Number of nearest neighbours: " << metrics.numberOfNN << std::endl;
+		std::cout << "Number of connected components: " << metrics.numberCC << std::endl;
+		std::cout << "Number of invalid generated nodes: " << metrics.numberOfGeneratedSampleInvalid << std::endl;
+		std::cout << "Number of nodes in path: " << metrics.numberOfPathNodes << std::endl;
 		std::cout << "Runtime: " << metrics.runtime << "sec" << std::endl;
 	}
 }
@@ -91,6 +95,8 @@ std::vector<Eigen::VectorXd> OBPRM::getPath(WormCell& mw, Eigen::VectorXd start,
 		prmMetrics.numberOfEdges = edges.size();
 		double t = (clock() - clockStart) / CLOCKS_PER_SEC;
 		prmMetrics.runtime = t;
+		prmMetrics.numberOfGeneratedSampleInvalid = numberOfSampleInvalid;
+		prmMetrics.numberOfPathNodes = 0;
 		return p;
 	}
 
@@ -148,9 +154,11 @@ std::vector<Eigen::VectorXd> OBPRM::getPath(WormCell& mw, Eigen::VectorXd start,
 	prmMetrics.numberOfNN = k;
 	prmMetrics.numberCC = numberOfCC;
 	prmMetrics.numberOfNodes = configurationsPoints.size();
-	prmMetrics.numberOfEdges = newEdges.size();
+	prmMetrics.numberOfEdges = newEdges.size()+edges.size();
 	double t = (clock() - clockStart) / CLOCKS_PER_SEC;
 	prmMetrics.runtime = t;
+	prmMetrics.numberOfGeneratedSampleInvalid = numberOfSampleInvalid;
+	prmMetrics.numberOfPathNodes = path.size();
 	return p;
 }
 
@@ -222,11 +230,14 @@ void OBPRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_dist
 }
 
 Eigen::Vector5d OBPRM::moveOutOfInsect(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distribution<double>& dis, std::vector<Eigen::Vector5d>& samples, Eigen::Vector5d & insectPoint, Eigen::Vector5d base) {
-	double jumpForwardScalaMul = 0.1;
+	double jumpForwardScalaMul = 0.4;
 	double jumpBackwardScalaDiv = 2;
 
 	//calc a random Point
 	Eigen::Vector5d randomDirectionPoint = MyWorm::Random(base, rng, dis);
+	randomDirectionPoint[2] = 0;
+	randomDirectionPoint[3] = 0;
+	randomDirectionPoint[4] = 0;
 
 	//calc a movement vector and multiply with the jumpForwardScalaMul
 	Eigen::Vector5d directionPoint = (randomDirectionPoint - insectPoint)*jumpForwardScalaMul;

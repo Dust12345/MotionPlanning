@@ -122,6 +122,9 @@ void PRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distri
 				samples.push_back(sample);
 				added++;
 			}
+			else {
+				numberOfSampleInvalid++;
+			}
 		}
 	}
 }
@@ -199,6 +202,10 @@ void PRM::getSample(WormCell& mw, std::mt19937_64& rng, std::uniform_real_distri
 				//point is free
 				samples.push_back(sample);
 				added++;
+			}
+			else
+			{
+				numberOfSampleInvalid++;
 			}
 		}
 	}
@@ -297,6 +304,8 @@ std::vector<Eigen::VectorXd> PRM::getPath(WormCell& mw, Eigen::VectorXd start, E
 		prmMetrics.numberOfEdges = edges.size();
 		double t = (clock() - clockStart) / CLOCKS_PER_SEC;
 		prmMetrics.runtime = t;
+		prmMetrics.numberOfGeneratedSampleInvalid = numberOfSampleInvalid;
+		prmMetrics.numberOfPathNodes = 0;
 		return p;
 	}
 
@@ -331,6 +340,8 @@ std::vector<Eigen::VectorXd> PRM::getPath(WormCell& mw, Eigen::VectorXd start, E
 	prmMetrics.numberOfEdges = edges.size();
 	double t = (clock() - clockStart) / CLOCKS_PER_SEC;
 	prmMetrics.runtime = t;
+	prmMetrics.numberOfGeneratedSampleInvalid = numberOfSampleInvalid;
+	prmMetrics.numberOfPathNodes = path.size();
 	return p;
 }
 
@@ -440,6 +451,8 @@ void PRM::printResult(std::vector<Eigen::VectorXd> path, PRM::PRMMetrics metrics
 		std::cout << "Number of edges: " << metrics.numberOfEdges << std::endl;
 		std::cout << "Number of nearest neighbours: " << metrics.numberOfNN << std::endl;
 		std::cout << "Number of connected components: " << metrics.numberCC << std::endl;
+		std::cout << "Number of invalid generated nodes: " << metrics.numberOfGeneratedSampleInvalid << std::endl;
+		std::cout << "Number of nodes in path: " << metrics.numberOfPathNodes << std::endl;
 		std::cout << "Runtime: " << metrics.runtime << "sec" << std::endl;
 	}
 }
