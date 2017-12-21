@@ -28,7 +28,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -175,11 +175,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cell.cpp" />
-    <ClCompile Include="Dijkstra.cpp" />
-    <ClCompile Include="KDT.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="OBPRM.cpp" />
-    <ClCompile Include="PRM.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -189,13 +185,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cell.h" />
-    <ClInclude Include="Dijkstra.h" />
-    <ClInclude Include="KDT.h" />
-    <ClInclude Include="OBPRM.h" />
-    <ClInclude Include="PRM.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cell.inl" />
