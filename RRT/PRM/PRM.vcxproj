@@ -175,7 +175,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cell.cpp" />
+    <ClCompile Include="KDT.cpp" />
+    <ClCompile Include="KDTree.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="RRTSimple.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -184,7 +187,12 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\PRM\nanoflann.hpp" />
     <ClInclude Include="cell.h" />
+    <ClInclude Include="KDT.h" />
+    <ClInclude Include="KDTree.h" />
+    <ClInclude Include="RRT5Dof.h" />
+    <ClInclude Include="RRTSimple.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>

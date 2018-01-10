@@ -3,7 +3,6 @@
 #include <vector>
 #include "cell.h"
 #include <math.h>
-#include "Point.h"
 
 using namespace nanoflann;
 class KDT
@@ -45,29 +44,6 @@ public:
 		
 	};
 
-	struct Element2D {
-
-		//default constructor
-		Element2D() {
-
-		}
-
-		//constructor which takes the values of a vec5
-		Element2D(Point vct, int elementIndex)
-		{
-			index = elementIndex;
-			values.push_back(vct.x);
-			values.push_back(vct.y);
-			values.push_back(vct.z);
-
-		}
-		//the values of the element
-		std::vector<double> values;
-		//the index if this elements in the vector5 vector
-		int index;
-
-	};
-
 	//represents the set of all points in the confifguration space
 	struct PointCloud
 	{
@@ -100,44 +76,13 @@ public:
 
 	};
 
-	//represents the set of all points in the confifguration space
-	struct Point2DCloud
-	{
-
-	public:
-		std::vector<Element2D> pts;
-
-		// Must return the number of data points
-		inline size_t kdtree_get_point_count() const { return pts.size(); }
-
-		// Returns the dim'th component of the idx'th point in the class:
-		// Since this is inlined and the "dim" argument is typically an immediate value, the
-		//  "if/else's" are actually solved at compile time.
-		inline double kdtree_get_pt(const size_t idx, int dim) const
-		{
-			if (dim >= pts[idx].values.size()) {
-				return  pts[idx].values.at(pts[idx].values.size() - 1);
-			}
-			else {
-				return  pts[idx].values.at(dim);
-			}
-
-		}
-
-		// Optional bounding-box computation: return false to default to a standard bbox computation loop.
-		//   Return true if the BBOX was already computed by the class and returned in "bb" so it can be avoided to redo it again.
-		//   Look at bb.size() to find out the expected dimensionality (e.g. 2 or 3 for point clouds)
-		template <class BBOX>
-		bool kdtree_get_bbox(BBOX& /* bb */) const { return false; }
-
-	};
-
 	// construct a kd-tree index:
 	typedef KDTreeSingleIndexAdaptor<
 		L2_Simple_Adaptor<double, PointCloud >,
 		PointCloud,
 		5 /* dim */
 	> my_kd_tree_t;
+
 
 private:
 	
@@ -148,6 +93,6 @@ public:
 
 	//builds the k-d tree and returns the k nearest neigtbors of all nodes
 	void getKNN(std::vector<Eigen::Vector5d> vct,std::vector<nodeKnn>& nodeNNVct,int startIndex, int k);
-	void getKNN(std::vector<Eigen::Vector5d> vct,std::vector<nodeKnn>& nodeNNVct,int startIndex, int endIndex, int k);
+	void getKNN(std::vector<Eigen::Vector5d> vct, std::vector<nodeKnn>& nodeNNVct, int startIndex, int endIndex, int k);
 };
 

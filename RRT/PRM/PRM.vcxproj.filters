@@ -24,6 +24,15 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RRTSimple.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KDT.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KDTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -33,6 +42,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RRTSimple.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\PRM\nanoflann.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RRT5Dof.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KDTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KDT.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
