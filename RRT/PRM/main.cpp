@@ -95,15 +95,14 @@ int _tmain(int argc, _TCHAR* argv[])
 #endif
 #endif
 	
-	Eigen::VectorXd root = qStart;
-	root[2] = 0;
-	root[3] = 0;
-	root[4] = 0;
-	//const Point STEP_SIZE(0.1, 0.1, 0);
+	RRTSimple::SimpleRRTMetrics metric;
+	Eigen::VectorXd root(5);
+	root << 0.5, 0.5, 0., 0., 0.;
 
 	RRTSimple rrtSimple;
-	rrtSimple.createTree(root, 1000);
+	RRTSimple::Tree tree = rrtSimple.createTree(root, 1000, metric);
+	rrtSimple.printResult(tree.nodes, metric,true,true);
 
-
+	int a = 0;
     return EXIT_SUCCESS;
 }

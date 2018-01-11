@@ -6,6 +6,8 @@
 #include "KDT.h"
 #include <iostream>
 #include <fstream>
+#include "time.h"
+#include <limits>
 
 using namespace std;
 
@@ -21,26 +23,34 @@ RRTSimple::~RRTSimple() {
 
 }
 
-void RRTSimple::createTree(const Eigen::Vector5d start, const int numberOfSample){
+RRTSimple::Tree RRTSimple::createTree(const Eigen::Vector5d start, const int numberOfSample, RRTSimple::SimpleRRTMetrics & metrics){
 
+	this->metrics = &metrics;
 	tree.nodes.push_back(start);
-	//tree.edges.push_back(Edge(0,0));
-	vector<Eigen::Vector5d> samples = getSamples(numberOfSample);
-	connectNodes(samples, 0);
 
+	clock_t clockStart = clock();
+	cout << "Process 1: Generating samples"<< endl;
+	vector<Eigen::Vector5d> samples = getSamples(numberOfSample);
+	cout << "Process 2: Connecting nodes" << endl;
+	connectNodes(samples);
+
+	metrics.runtime = (clock() - clockStart) / CLOCKS_PER_SEC;
+	// number of nodes without the start node
+	metrics.numberOfNodes = tree.nodes.size() - 1;
+	metrics.numberOfNodes = tree.edges.size();
+
+	cout << "Process 3: Generating gnuplot file" << endl;
 	writeGnuplotFile(tree.nodes,"simpleRRT", tree.edges);
+
+	return tree;
 }
 
-vector<RRTSimple::Edge> RRTSimple::connectNodes(vector<Eigen::Vector5d>nodes, int startIndex) {
+vector<RRTSimple::Edge> RRTSimple::connectNodes(vector<Eigen::Vector5d>nodes) {
 
 	std::vector<RRTSimple::Edge> edges;
 	KDT kdTree;
 
 	for (int i = 0; i < nodes.size(); i++) {
-		
-		if (i == 9) {
-			int a = 0;
-		}
 
 		tree.nodes.push_back(nodes[i]);
 		vector<KDT::nodeKnn> nodeNNVct;
@@ -78,38 +88,53 @@ void RRTSimple::connectNode(Eigen::Vector5d node, vector<KDT::nodeKnn> nodeNNVct
 		Eigen::Vector5d pointOnTheLine;
 		vector<int> relationsNodesFromNearestNeighbour = getAllRelationNodes(KDTnodeNearestNeighbour.nn[0], tree.edges);
 
+		double mindistanceBetweenNodeAndLine = numeric_limits<double>::max();
+		double mindistanceNodeIndex;
 		for (int i = 0; i < relationsNodesFromNearestNeighbour.size(); i++) {
 
 			//compute the distance from a Point to a linie and get the point on the line
 			double distanceBetweenNodeAndLine = distPointToLine(node, nearestNeighbourFromThePoint, tree.nodes[relationsNodesFromNearestNeighbour[i]], pointOnTheLine);
-
-			if (disNodeToNearestNeighbour > distanceBetweenNodeAndLine) {
-
-				// add point on the line
-				tree.nodes.push_back(pointOnTheLine);
-
-				// add Edge between new Point and the point on the line
-				tree.edges.push_back(Edge(nodeIndex, tree.nodes.size()-1));
-
-				return;
+		
+			if (distanceBetweenNodeAndLine < mindistanceBetweenNodeAndLine) {
+				mindistanceBetweenNodeAndLine = distanceBetweenNodeAndLine;
+				mindistanceNodeIndex = relationsNodesFromNearestNeighbour[i];
 			}
+
+		}
+
+		//check if a line was found with a shorter distance 
+		if (disNodeToNearestNeighbour > mindistanceBetweenNodeAndLine) {
+
+			// add point on the line
+			tree.nodes.push_back(pointOnTheLine);
+
+			// add Edge between new Point and the point on the line
+			tree.edges.push_back(Edge(nodeIndex, tree.nodes.size() - 1));
+			splittEdges(KDTnodeNearestNeighbour.nn[0], mindistanceNodeIndex,tree.nodes.size() - 1,tree.edges);
+			this->metrics->numberOfEdges++;
+			this->metrics->numberOfNodes++;
+
+			return;
 		}
 
 		// add the edge between the node and its nearest neighbour
 		tree.edges.push_back(Edge(nodeIndex, KDTnodeNearestNeighbour.nn[0]));
+		this->metrics->numberOfEdges++;
 	}
 }
 
+// generate a 2d sample with a fixed range and seed
 Eigen::Vector5d RRTSimple::getSample() {
 
 	Eigen::Vector5d sample = MyWorm::Random(rng, dis);
 	sample[2] = 0;
 	sample[3] = 0;
 	sample[4] = 0;
-
+	this->metrics->numberOfNodes++;
 	return sample;
 }
 
+// generate a 2d samples with a fixed range and seed
 vector<Eigen::Vector5d> RRTSimple::getSamples(int numberofSample) {
 
 	vector<Eigen::Vector5d> samples;
@@ -121,13 +146,14 @@ vector<Eigen::Vector5d> RRTSimple::getSamples(int numberofSample) {
 		sample[4] = 0;
 
 		samples.push_back(sample);
-		metrics.numberOfNodes++;
-		cout << "Point "<<i<<" x:"<<sample[0]<<" y:"<<sample[1] << endl;
+		this->metrics->numberOfNodes++;
+		//cout << "Point "<<i<<" x:"<<sample[0]<<" y:"<<sample[1] << endl;
 	}
 
 	return samples;
 }
 
+// write a gnuplot file witch all nodes and its egdes
 void RRTSimple::writeGnuplotFile(vector<Eigen::Vector5d> &points, string filename, vector<Edge> &edges)
 {
 	ofstream myfile;
@@ -146,6 +172,7 @@ void RRTSimple::writeGnuplotFile(vector<Eigen::Vector5d> &points, string filenam
 	myfile.close();
 }
 
+// compute the distance between two vectors
 double RRTSimple::vec5Distance(Eigen::Vector5d a, Eigen::Vector5d b)
 {
 	//simple euklidian distance
@@ -157,14 +184,15 @@ double RRTSimple::vec5Distance(Eigen::Vector5d a, Eigen::Vector5d b)
 	return length;
 }
 
-vector<int> RRTSimple::getAllRelationNodes(int nodeIndex, vector<Edge> &edges) {
+// get all nodesindexes which have a relation with the current node (nodeindex)
+vector<int> RRTSimple::getAllRelationNodes(int currentNodeIndex, vector<Edge> &edges) {
 	vector<int> relationNodeIndex;
 
 	for (int i = 0; i < edges.size(); i++) {
-		if (edges[i].first == nodeIndex) {
+		if (edges[i].first == currentNodeIndex) {
 			relationNodeIndex.push_back(edges[i].second);
 		}
-		else if (edges[i].second == nodeIndex) {
+		else if (edges[i].second == currentNodeIndex) {
 			relationNodeIndex.push_back(edges[i].first);
 		}
 	}
@@ -172,6 +200,26 @@ vector<int> RRTSimple::getAllRelationNodes(int nodeIndex, vector<Edge> &edges) {
 	return relationNodeIndex;
 }
 
+void RRTSimple::splittEdges(int nodeIndexOne, int nodeIndexTwo, int nodeIndexBetween, vector<Edge> &edges) {
+
+	for (int i = 0; i < edges.size(); i++) {
+
+		if ((edges[i].first == nodeIndexOne && edges[i].second == nodeIndexTwo)) {
+			edges[i].second = nodeIndexBetween;
+			tree.edges.push_back(Edge(nodeIndexBetween, nodeIndexTwo));
+			this->metrics->numberOfLineSplitts++;
+			return;
+		}
+		else if ((edges[i].first == nodeIndexTwo && edges[i].second == nodeIndexOne)) {
+			edges[i].second = nodeIndexBetween;
+			tree.edges.push_back(Edge(nodeIndexBetween, nodeIndexOne));
+			this->metrics->numberOfLineSplitts++;
+			return;
+		}
+	}
+}
+
+// compute the min. distance between a Point and a linie and compute the orthogonal point on the line
 double RRTSimple::distPointToLine(Eigen::Vector5d PV, Eigen::Vector5d PV0, Eigen::Vector5d PV1, Eigen::Vector5d &orthogonalPoint) {
 	Eigen::Vector2d P,P0,P1;
 	
@@ -205,7 +253,29 @@ double RRTSimple::distPointToLine(Eigen::Vector5d PV, Eigen::Vector5d PV0, Eigen
 	orthogonalPoint[2] = 0;
 	orthogonalPoint[3] = 0;
 	orthogonalPoint[4] = 0;
-	
+	this->metrics->numberOfNodesOnTheLine++;
 	return vec5Distance(PV, orthogonalPoint);
+}
+
+// print all nodes and metric information on the console
+void RRTSimple::printResult(vector<Eigen::Vector5d> &nodes, RRTSimple::SimpleRRTMetrics &metrics, bool printNodes, bool printMetrics) {
+	if (nodes.size() > 1 && printNodes)
+	{
+		cout << "-------------------- Nodes ------------------------" << endl;
+		for (int i = 0; i < nodes.size(); i++)
+		{
+			cout << "Point " << i << " x:" << nodes[i].x() << " y:" << nodes[i].y() << endl;
+		}
+		cout << "---------------------------------------------" << endl;
+	}
+
+	if (printMetrics) {
+		cout << "------- Metric PRM -------" <<endl;
+		cout << "Number of nodes: " << metrics.numberOfNodes << endl;
+		cout << "Number of edges: " << metrics.numberOfEdges << endl;
+		cout << "Number of nodes on the line: " << metrics.numberOfNodesOnTheLine << endl;
+		cout << "Number of lines splitts: " << metrics.numberOfLineSplitts << endl;
+		cout << "Runtime: " << metrics.runtime << "sec" << endl;
+	}
 }
 
