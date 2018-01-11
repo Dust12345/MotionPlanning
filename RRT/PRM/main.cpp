@@ -100,7 +100,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	root << 0.5, 0.5, 0., 0., 0.;
 
 	RRTSimple rrtSimple;
-	RRTSimple::Tree tree = rrtSimple.createTree(root, 1000, metric);
+	RRTSimple::Tree tree = rrtSimple.createTree(root,200, metric);
 	rrtSimple.printResult(tree.nodes, metric,true,true);
 
 	int a = 0;

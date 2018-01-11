@@ -55,8 +55,10 @@ vector<RRTSimple::Edge> RRTSimple::connectNodes(vector<Eigen::Vector5d>nodes) {
 		tree.nodes.push_back(nodes[i]);
 		vector<KDT::nodeKnn> nodeNNVct;
 
-		kdTree.getKNN(tree.nodes, nodeNNVct, 0, 2);
-		connectNode(nodes[i], nodeNNVct, tree.nodes.size()-1);
+		if (tree.nodes.size() <= 121) {
+			kdTree.getKNN(tree.nodes, nodeNNVct, 0, 2);
+			connectNode(nodes[i], nodeNNVct, tree.nodes.size() - 1);
+		}
 	}
 
 	return edges;
@@ -89,7 +91,9 @@ void RRTSimple::connectNode(Eigen::Vector5d node, vector<KDT::nodeKnn> nodeNNVct
 		vector<int> relationsNodesFromNearestNeighbour = getAllRelationNodes(KDTnodeNearestNeighbour.nn[0], tree.edges);
 
 		double mindistanceBetweenNodeAndLine = numeric_limits<double>::max();
-		double mindistanceNodeIndex;
+		int mindistanceNodeIndex;
+		Eigen::Vector5d mindPointOnTheLine;
+
 		for (int i = 0; i < relationsNodesFromNearestNeighbour.size(); i++) {
 
 			//compute the distance from a Point to a linie and get the point on the line
@@ -98,6 +102,7 @@ void RRTSimple::connectNode(Eigen::Vector5d node, vector<KDT::nodeKnn> nodeNNVct
 			if (distanceBetweenNodeAndLine < mindistanceBetweenNodeAndLine) {
 				mindistanceBetweenNodeAndLine = distanceBetweenNodeAndLine;
 				mindistanceNodeIndex = relationsNodesFromNearestNeighbour[i];
+				mindPointOnTheLine = pointOnTheLine;
 			}
 
 		}
@@ -106,7 +111,7 @@ void RRTSimple::connectNode(Eigen::Vector5d node, vector<KDT::nodeKnn> nodeNNVct
 		if (disNodeToNearestNeighbour > mindistanceBetweenNodeAndLine) {
 
 			// add point on the line
-			tree.nodes.push_back(pointOnTheLine);
+			tree.nodes.push_back(mindPointOnTheLine);
 
 			// add Edge between new Point and the point on the line
 			tree.edges.push_back(Edge(nodeIndex, tree.nodes.size() - 1));
@@ -147,7 +152,7 @@ vector<Eigen::Vector5d> RRTSimple::getSamples(int numberofSample) {
 
 		samples.push_back(sample);
 		this->metrics->numberOfNodes++;
-		//cout << "Point "<<i<<" x:"<<sample[0]<<" y:"<<sample[1] << endl;
+		cout << "Point "<<i<<" x:"<<sample[0]<<" y:"<<sample[1] << endl;
 	}
 
 	return samples;
