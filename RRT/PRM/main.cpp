@@ -3,6 +3,7 @@
 #include "cell.h"
 #include "Point.h"
 #include "RRTSimple.h"
+#include "RRT5Dof.h"
 
 using namespace std;
 namespace bg = boost::geometry;
@@ -12,7 +13,7 @@ namespace bgi = boost::geometry::index;
 int _tmain(int argc, _TCHAR* argv[])
 {
     WormCell cell;
-    Eigen::VectorXd qStart(5), qGoal(5), q(5);
+	Eigen::VectorXd qStart(5), qGoal(5);
     vector<Eigen::VectorXd> path; // create a point vector for storing the path
     graph_t g;
     knn_rtree_t rtree;
@@ -21,37 +22,8 @@ int _tmain(int argc, _TCHAR* argv[])
 #define TEST_CASE 0
 #ifdef TEST_CASE
 #if TEST_CASE == 0
-
 	qStart << 0., 0., 0., 0., 0.;
 	qGoal << .6, .9, DEG2RAD(-90.), DEG2RAD(-180.), DEG2RAD(180.);
-/*
-	Eigen::VectorXd segment(qGoal - qStart), delta(5);
-	delta = segment.normalized() * stepsize;
-	int steps = int(segment.norm() / stepsize);
-
-	do
-	{
-		if (!cell.CheckPosition(qStart))
-		{
-			for (int i = 0; i < 10; ++i)
-			{
-				path.push_back(qStart);
-				qStart += delta * .1f;
-			}
-		}
-		else
-		{
-			path.push_back(qStart);
-			qStart += delta;
-		}
-	} while (--steps > 0);
-
-	path.push_back(qGoal);
-	reverse(path.begin(), path.end());
-	write_easyrob_program_file(path, "example.prg", false);
-	path.clear();
-	*/
-
 #elif TEST_CASE == 1
 	cout << "Test case 1" << endl;
 	qStart << .6, .1, 0., 0., 0.;
@@ -94,7 +66,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	qGoal << .6, .95, DEG2RAD(-90.f), 0., 0.;
 #endif
 #endif
+	const int NUMBER_OF_SAMPLES = 10000;
 	
+	/**
 	RRTSimple::SimpleRRTMetrics metric;
 	Eigen::VectorXd root(5);
 	root << 0.5, 0.5, 0., 0., 0.;
@@ -102,7 +76,19 @@ int _tmain(int argc, _TCHAR* argv[])
 	RRTSimple rrtSimple;
 	RRTSimple::Tree tree = rrtSimple.createTree(root,200, metric);
 	rrtSimple.printResult(tree.nodes, metric,true,true);
+	
+	*/
+	//qStart << 0.5, 0.5, 0., 0., 0.;
 
+	RRT5Dof::RRT5dofMetrics rrt5dofMetric;
+	Eigen::VectorXd movementVector(5);
+	RRT5Dof rrt5dof(qStart, qGoal);
+	RRT5Dof::Result result = rrt5dof.getPath(cell, NUMBER_OF_SAMPLES,rrt5dofMetric, movementVector, 5.0);
+	rrt5dof.printResult(result.tree.nodes, rrt5dofMetric, true, true);
+	write_easyrob_program_file(result.path, "RRT5Dof.prg", false);
+	//write_easyrob_program_file(path, "RRT5dof.prg", false);
+	
 	int a = 0;
+	
     return EXIT_SUCCESS;
 }

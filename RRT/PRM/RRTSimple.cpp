@@ -55,10 +55,8 @@ vector<RRTSimple::Edge> RRTSimple::connectNodes(vector<Eigen::Vector5d>nodes) {
 		tree.nodes.push_back(nodes[i]);
 		vector<KDT::nodeKnn> nodeNNVct;
 
-		if (tree.nodes.size() <= 121) {
-			kdTree.getKNN(tree.nodes, nodeNNVct, 0, 2);
-			connectNode(nodes[i], nodeNNVct, tree.nodes.size() - 1);
-		}
+		kdTree.getKNN(tree.nodes, nodeNNVct, 0, 2);
+		connectNode(nodes[i], nodeNNVct, tree.nodes.size() - 1);
 	}
 
 	return edges;
@@ -152,7 +150,7 @@ vector<Eigen::Vector5d> RRTSimple::getSamples(int numberofSample) {
 
 		samples.push_back(sample);
 		this->metrics->numberOfNodes++;
-		cout << "Point "<<i<<" x:"<<sample[0]<<" y:"<<sample[1] << endl;
+		//cout << "Point "<<i<<" x:"<<sample[0]<<" y:"<<sample[1] << endl;
 	}
 
 	return samples;
@@ -211,14 +209,12 @@ void RRTSimple::splittEdges(int nodeIndexOne, int nodeIndexTwo, int nodeIndexBet
 
 		if ((edges[i].first == nodeIndexOne && edges[i].second == nodeIndexTwo)) {
 			edges[i].second = nodeIndexBetween;
-			tree.edges.push_back(Edge(nodeIndexBetween, nodeIndexTwo));
-			this->metrics->numberOfLineSplitts++;
+			tree.edges.push_back(Edge(nodeIndexBetween, nodeIndexTwo));			
 			return;
 		}
 		else if ((edges[i].first == nodeIndexTwo && edges[i].second == nodeIndexOne)) {
 			edges[i].second = nodeIndexBetween;
 			tree.edges.push_back(Edge(nodeIndexBetween, nodeIndexOne));
-			this->metrics->numberOfLineSplitts++;
 			return;
 		}
 	}
@@ -275,7 +271,7 @@ void RRTSimple::printResult(vector<Eigen::Vector5d> &nodes, RRTSimple::SimpleRRT
 	}
 
 	if (printMetrics) {
-		cout << "------- Metric PRM -------" <<endl;
+		cout << "------- RRTSimple PRM -------" <<endl;
 		cout << "Number of nodes: " << metrics.numberOfNodes << endl;
 		cout << "Number of edges: " << metrics.numberOfEdges << endl;
 		cout << "Number of nodes on the line: " << metrics.numberOfNodesOnTheLine << endl;

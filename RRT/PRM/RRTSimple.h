@@ -31,20 +31,22 @@ class RRTSimple
 		void writeGnuplotFile(std::vector<Eigen::Vector5d> &points, string filename, vector<Edge> &edges);
 		void printResult(std::vector<Eigen::Vector5d> &nodes, RRTSimple::SimpleRRTMetrics &metrics, bool printNodes, bool printMetrics);
 
-
-	private:
-		Eigen::Vector5d START_POINT;
-		SimpleRRTMetrics *metrics;
+	protected:
 		Tree tree;
 		uniform_real_distribution<double> dis;
 		mt19937_64 rng;
 
+		double vec5Distance(Eigen::Vector5d a, Eigen::Vector5d b);
+
+
+	private:
+		SimpleRRTMetrics *metrics;
 		vector<Eigen::Vector5d> getSamples(int numberofSample);
 		vector<Edge> connectNodes(vector<Eigen::Vector5d>nodes);
 		Eigen::Vector5d getSample();
 		void connectNode(Eigen::Vector5d node, vector<KDT::nodeKnn> nodeNNVct, int nodeIndex);
-		double vec5Distance(Eigen::Vector5d a, Eigen::Vector5d b);
 		double distPointToLine(Eigen::Vector5d PV, Eigen::Vector5d PV0, Eigen::Vector5d PV1, Eigen::Vector5d &orthogonalPoint);
+
 		vector<int> getAllRelationNodes(int currentNodeIndex, vector<Edge> &edges);
 		void splittEdges(int nodeIndexOne, int nodeIndexTwo, int nodeIndexBetween, vector<Edge> &edges);
 };
