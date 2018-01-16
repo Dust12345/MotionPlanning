@@ -14,40 +14,6 @@ namespace bgi = boost::geometry::index;
 /***********************************************************************************************************************************/
 int _tmain(int argc, _TCHAR* argv[])
 {
-	DynamicKDT dkdt;
-	Eigen::Vector5d p;
-	p[0] = 1;
-	p[1] = 1;
-	p[2] = 0;
-	p[3] = 0;
-	p[4] = 0;
-
-	Eigen::Vector5d p2;
-	p2[0] = 5;
-	p2[1] = 5;
-	p2[2] = 0;
-	p2[3] = 0;
-	p2[4] = 0;
-
-	Eigen::Vector5d p3;
-	p3[0] = 4;
-	p3[1] = 4;
-	p3[2] = 0;
-	p3[3] = 0;
-	p3[4] = 0;
-
-	dkdt.addPoint(p);
-	dkdt.addPoint(p2);
-	
-
-	int index = dkdt.getNN(p3);
-
-	std::cout << index << " is index " << std::endl;
-
-	
-
-	return 1;
-
     WormCell cell;
 	Eigen::VectorXd qStart(5), qGoal(5);
     vector<Eigen::VectorXd> path; // create a point vector for storing the path
@@ -102,7 +68,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	qGoal << .6, .95, DEG2RAD(-90.f), 0., 0.;
 #endif
 #endif
-	const int NUMBER_OF_SAMPLES = 10000;
+	const int NUMBER_OF_SAMPLES = 50000;
 	
 	/**
 	RRTSimple::SimpleRRTMetrics metric;
@@ -110,20 +76,21 @@ int _tmain(int argc, _TCHAR* argv[])
 	root << 0.5, 0.5, 0., 0., 0.;
 
 	RRTSimple rrtSimple;
-	RRTSimple::Tree tree = rrtSimple.createTree(root,200, metric);
+	RRTSimple::Tree tree = rrtSimple.createTree(root, NUMBER_OF_SAMPLES, metric);
 	rrtSimple.printResult(tree.nodes, metric,true,true);
 	
-	*/
+	
 	//qStart << 0.5, 0.5, 0., 0., 0.;
-
+	*/
 	RRT5Dof::RRT5dofMetrics rrt5dofMetric;
 	Eigen::VectorXd movementVector(5);
 	RRT5Dof rrt5dof(qStart, qGoal);
-	RRT5Dof::Result result = rrt5dof.getPath(cell, NUMBER_OF_SAMPLES,rrt5dofMetric, movementVector, 5.0);
-	rrt5dof.printResult(result.tree.nodes, rrt5dofMetric, true, true);
+	RRT5Dof::Result result = rrt5dof.getPath(cell, NUMBER_OF_SAMPLES,rrt5dofMetric, movementVector, 2.0);
+	//rrt5dof.printResult(result.tree.nodes, rrt5dofMetric, true, true);
 	write_easyrob_program_file(result.path, "RRT5Dof.prg", false);
 	//write_easyrob_program_file(path, "RRT5dof.prg", false);
 	
+
 	int a = 0;
 	
     return EXIT_SUCCESS;

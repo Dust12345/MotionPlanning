@@ -4,7 +4,7 @@
 #include <vector>
 #include "cell.h"
 #include "KDT.h"
-
+#include "DynamicKDT.h"
 
 using namespace std;
 class RRTSimple
@@ -40,11 +40,12 @@ class RRTSimple
 
 
 	private:
+		DynamicKDT dkdt;
 		SimpleRRTMetrics *metrics;
 		vector<Eigen::Vector5d> getSamples(int numberofSample);
 		vector<Edge> connectNodes(vector<Eigen::Vector5d>nodes);
 		Eigen::Vector5d getSample();
-		void connectNode(Eigen::Vector5d node, vector<KDT::nodeKnn> nodeNNVct, int nodeIndex);
+		void connectNode(Eigen::Vector5d node, int nearestNeighbourIndex, int nodeIndex);
 		double distPointToLine(Eigen::Vector5d PV, Eigen::Vector5d PV0, Eigen::Vector5d PV1, Eigen::Vector5d &orthogonalPoint);
 
 		vector<int> getAllRelationNodes(int currentNodeIndex, vector<Edge> &edges);

@@ -44,12 +44,12 @@ RRT5Dof::Result RRT5Dof::getPath(WormCell &cell, int numberOfSamples,RRT5dofMetr
 		return result;
 	}
 
-	cout << "Process 1: Generating samples" << endl;
+	std::cout << "Process 1: Generating samples" << endl;
 	vector<Eigen::Vector5d> samples = getSamples(numberOfSamples);
-	cout << "Process 2: Connecting nodes" << endl;
+	std::cout << "Process 2: Connecting nodes" << endl;
 	connectNodes(samples);
 
-	cout << "Process 3: Generating gnuplot file" << endl;
+	std::cout << "Process 3: Generating gnuplot file" << endl;
 	writeGnuplotFile(tree.nodes, "RRT5dof", tree.edges);
 
 	for (int i = 0; i < tree.nodes.size();i++) {
@@ -61,10 +61,10 @@ RRT5Dof::Result RRT5Dof::getPath(WormCell &cell, int numberOfSamples,RRT5dofMetr
 	}
 
 	if (this->goalIndex == -1) {
-		cout << "No connection to goal" <<endl;
+		std::cout << "No connection to goal" <<endl;
 	}
 	else {
-		cout << "Process 4: calculating the shortest path" <<endl;
+		std::cout << "Process 4: calculating the shortest path" <<endl;
 		vector<Eigen::Vector5d> path = getShortestPath(tree.edges, tree.nodes, 0, this->goalIndex);
 
 		//path of size one means dijstra found no path
@@ -76,7 +76,7 @@ RRT5Dof::Result RRT5Dof::getPath(WormCell &cell, int numberOfSamples,RRT5dofMetr
 			}
 		}
 		else {
-			cout << "No path found" <<endl;
+			std::cout << "No path found" <<endl;
 		}
 	}
 
@@ -89,71 +89,48 @@ RRT5Dof::Result RRT5Dof::getPath(WormCell &cell, int numberOfSamples,RRT5dofMetr
 vector<RRT5Dof::Edge> RRT5Dof::connectNodes(vector<Eigen::Vector5d>nodes) {
 
 	vector<Edge> edges;
-	KDT kdTree;
 	bool isNodeNew = false;
+	int nearestNeighbourIndex;
 
 	tree.nodes.push_back(this->START);
+	this->dkdt.addPoint(this->START);
 	this->generatedNodes.insert({ convertVector5dToString(this->START),tree.nodes.size() - 1 });
 
 	for (int i = 0; i < nodes.size(); i++) {
 		Eigen::Vector5d currentNode = nodes[i];
 		int currentNodeIndex;
 
-		string a = convertVector5dToString(currentNode);
-
 		auto search = this->generatedNodes.find(convertVector5dToString(currentNode));
 		if (search != this->generatedNodes.end()) {
 			currentNodeIndex = search->second;
 			isNodeNew = false;
+
 		}
 		else {
-			tree.nodes.push_back(currentNode);
+			//tree.nodes.push_back(currentNode);
 			this->generatedNodes.insert({ convertVector5dToString(currentNode),i });
 			currentNodeIndex = tree.nodes.size() - 1;
 			isNodeNew = true;
 		}
 
-
-		vector<KDT::nodeKnn> nodeNNVct;
-		kdTree.getKNN(tree.nodes, nodeNNVct, 0, 2);
-		connectNode(currentNode, nodeNNVct, currentNodeIndex, isNodeNew);
+		nearestNeighbourIndex = dkdt.getNN(currentNode);
+		connectNode(currentNode, nearestNeighbourIndex, currentNodeIndex, isNodeNew);
 	}
 
 	return edges;
 }
 
-void RRT5Dof::connectNode(Eigen::Vector5d node, vector<KDT::nodeKnn> nodeNNVct, int nodeIndex, bool isNodeNew) {
+void RRT5Dof::connectNode(Eigen::Vector5d node, int nearestNeighbourIndex, int nodeIndex, bool isNodeNew) {
 
-	KDT::nodeKnn KDTnodeNearestNeighbour;
-
-	// find the node in nodeNNVct
-	for (int i = nodeNNVct.size() - 1; 0 < i; i--) {
-		if (nodeNNVct[i].index == nodeIndex) {
-			KDTnodeNearestNeighbour = nodeNNVct[i];
-			break;
-		}
-	}
-
-	// delete new node from the list
-	if (nodeIndex == tree.nodes.size() - 1) {
-		tree.nodes.pop_back();
-	}
-
-
-	// check if we found one a nearest neighbour point
-	if (KDTnodeNearestNeighbour.nn.size() == 0) {
-		cout << "nearest neighbour could not found";
-	}
-	else {
 		// nearest neighbour from the node
-		Eigen::Vector5d nearestNeighbourFromThePoint = tree.nodes[KDTnodeNearestNeighbour.nn[0]];
+		Eigen::Vector5d nearestNeighbourFromThePoint = tree.nodes[nearestNeighbourIndex];
 
 		// Distance between node and its nearestNeighbour 
 		double disNodeToNearestNeighbour = vec5Distance(node, nearestNeighbourFromThePoint);
 
 		//search Find nodes that are connected to the nearestNeighbour
 		Eigen::Vector5d pointOnTheLine;
-		vector<int> relationsNodesFromNearestNeighbour = getAllRelationNodes(KDTnodeNearestNeighbour.nn[0], tree.edges);
+		vector<int> relationsNodesFromNearestNeighbour = getAllRelationNodes(nearestNeighbourIndex, tree.edges);
 
 		double mindistanceBetweenNodeAndLine = numeric_limits<double>::max();
 		int mindistanceNodeIndex;
@@ -182,9 +159,10 @@ void RRT5Dof::connectNode(Eigen::Vector5d node, vector<KDT::nodeKnn> nodeNNVct, 
 
 				// add point on the line
 				tree.nodes.push_back(mindPointOnTheLine);
+				this->dkdt.addPoint(mindPointOnTheLine);
 
 				// add Edge between new Point and the point on the line
-				splittEdges(KDTnodeNearestNeighbour.nn[0], mindistanceNodeIndex, tree.nodes.size() - 1, tree.edges);
+				splittEdges(nearestNeighbourIndex, mindistanceNodeIndex, tree.nodes.size() - 1, tree.edges);
 				this->metric->numberOfEdges++;
 				this->metric->numberOfNodes++;
 
@@ -192,6 +170,7 @@ void RRT5Dof::connectNode(Eigen::Vector5d node, vector<KDT::nodeKnn> nodeNNVct, 
 
 					if (isNodeNew == true) {
 						tree.nodes.push_back(node);
+						this->dkdt.addPoint(node);
 						tree.edges.push_back(Edge(tree.nodes.size() - 1, tree.nodes.size() - 2));
 					}
 					else {
@@ -202,6 +181,7 @@ void RRT5Dof::connectNode(Eigen::Vector5d node, vector<KDT::nodeKnn> nodeNNVct, 
 				}
 				else {
 					tree.nodes.push_back(stopVector);
+					this->dkdt.addPoint(stopVector);
 					// add Edge between new Point and the point on the line
 					tree.edges.push_back(Edge(nodeIndex, tree.nodes.size() - 1));
 					this->metric->numberOfEdges++;
@@ -219,6 +199,7 @@ void RRT5Dof::connectNode(Eigen::Vector5d node, vector<KDT::nodeKnn> nodeNNVct, 
 
 					if (isNodeNew == true) {
 						tree.nodes.push_back(node);
+						this->dkdt.addPoint(node);
 						tree.edges.push_back(Edge(tree.nodes.size() - 1, tree.nodes.size() - 2));
 					}
 					else {
@@ -229,15 +210,14 @@ void RRT5Dof::connectNode(Eigen::Vector5d node, vector<KDT::nodeKnn> nodeNNVct, 
 				}
 				else {
 					tree.nodes.push_back(stopVector2);
-					
-					tree.edges.push_back(Edge(KDTnodeNearestNeighbour.nn[0], tree.nodes.size() - 1));
+					this->dkdt.addPoint(stopVector2);
+					tree.edges.push_back(Edge(nearestNeighbourIndex, tree.nodes.size() - 1));
 					this->metric->numberOfEdges++;
 					this->metric->numberOfNodes++;
 				}
 			}
 
 		}
-	}
 }
 
 vector<Eigen::Vector5d> RRT5Dof::getSamples(int numberofSample) {

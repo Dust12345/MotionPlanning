@@ -9,6 +9,7 @@
 #include "time.h"
 #include <limits>
 
+
 using namespace std;
 
 RRTSimple::RRTSimple(){
@@ -27,6 +28,7 @@ RRTSimple::Tree RRTSimple::createTree(const Eigen::Vector5d start, const int num
 
 	this->metrics = &metrics;
 	tree.nodes.push_back(start);
+	this->dkdt.addPoint(start);
 
 	clock_t clockStart = clock();
 	cout << "Process 1: Generating samples"<< endl;
@@ -48,45 +50,30 @@ RRTSimple::Tree RRTSimple::createTree(const Eigen::Vector5d start, const int num
 vector<RRTSimple::Edge> RRTSimple::connectNodes(vector<Eigen::Vector5d>nodes) {
 
 	std::vector<RRTSimple::Edge> edges;
-	KDT kdTree;
 
 	for (int i = 0; i < nodes.size(); i++) {
 
 		tree.nodes.push_back(nodes[i]);
-		vector<KDT::nodeKnn> nodeNNVct;
 
-		kdTree.getKNN(tree.nodes, nodeNNVct, 0, 2);
-		connectNode(nodes[i], nodeNNVct, tree.nodes.size() - 1);
+		int nearestNeighbourIndex = dkdt.getNN(nodes[i]);
+		dkdt.addPoint(nodes[i]);
+		connectNode(nodes[i], nearestNeighbourIndex, tree.nodes.size() - 1);
 	}
 
 	return edges;
 }
 
-void RRTSimple::connectNode(Eigen::Vector5d node, vector<KDT::nodeKnn> nodeNNVct, int nodeIndex){
+void RRTSimple::connectNode(Eigen::Vector5d node, int nearestNeighbourIndex, int nodeIndex){
 
-	KDT::nodeKnn KDTnodeNearestNeighbour;
-
-	// find the node in nodeNNVct
-	for (int i = nodeNNVct.size()-1; 0 < i; i--) {
-		if (nodeNNVct[i].index == nodeIndex) {
-			KDTnodeNearestNeighbour = nodeNNVct[i];
-			break;
-		}
-	}
-
-	// check if we found one a nearest neighbour point
-	if (KDTnodeNearestNeighbour.nn.size() == 0) {
-		cout << "nearest neighbour could not found";
-	}else{
 		// nearest neighbour from the node
-		Eigen::Vector5d nearestNeighbourFromThePoint = tree.nodes[KDTnodeNearestNeighbour.nn[0]];
+		Eigen::Vector5d nearestNeighbourFromThePoint = tree.nodes[nearestNeighbourIndex];
 
 		// Distance between node and its nearestNeighbour 
 		double disNodeToNearestNeighbour = vec5Distance(node, nearestNeighbourFromThePoint);
 
 		//search Find nodes that are connected to the nearestNeighbour
 		Eigen::Vector5d pointOnTheLine;
-		vector<int> relationsNodesFromNearestNeighbour = getAllRelationNodes(KDTnodeNearestNeighbour.nn[0], tree.edges);
+		vector<int> relationsNodesFromNearestNeighbour = getAllRelationNodes(nearestNeighbourIndex, tree.edges);
 
 		double mindistanceBetweenNodeAndLine = numeric_limits<double>::max();
 		int mindistanceNodeIndex;
@@ -110,10 +97,11 @@ void RRTSimple::connectNode(Eigen::Vector5d node, vector<KDT::nodeKnn> nodeNNVct
 
 			// add point on the line
 			tree.nodes.push_back(mindPointOnTheLine);
+			this->dkdt.addPoint(mindPointOnTheLine);
 
 			// add Edge between new Point and the point on the line
 			tree.edges.push_back(Edge(nodeIndex, tree.nodes.size() - 1));
-			splittEdges(KDTnodeNearestNeighbour.nn[0], mindistanceNodeIndex,tree.nodes.size() - 1,tree.edges);
+			splittEdges(nearestNeighbourIndex, mindistanceNodeIndex,tree.nodes.size() - 1,tree.edges);
 			this->metrics->numberOfEdges++;
 			this->metrics->numberOfNodes++;
 
@@ -121,9 +109,8 @@ void RRTSimple::connectNode(Eigen::Vector5d node, vector<KDT::nodeKnn> nodeNNVct
 		}
 
 		// add the edge between the node and its nearest neighbour
-		tree.edges.push_back(Edge(nodeIndex, KDTnodeNearestNeighbour.nn[0]));
+		tree.edges.push_back(Edge(nodeIndex, nearestNeighbourIndex));
 		this->metrics->numberOfEdges++;
-	}
 }
 
 // generate a 2d sample with a fixed range and seed

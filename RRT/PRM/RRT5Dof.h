@@ -5,6 +5,7 @@
 #include "cell.h"
 #include <string>
 #include <unordered_map>
+#include "DynamicKDT.h"
 
 class RRT5Dof : public RRTSimple
 {
@@ -38,6 +39,7 @@ private:
 	double percent = 0;
 	RRT5dofMetrics *metric;
 	int goalIndex = -1;
+	DynamicKDT dkdt;
 
 	unordered_map<string, int> generatedNodes;
 
@@ -45,7 +47,7 @@ private:
 	bool isNextRandomSampleAsGoal(double percent);
 	vector<Edge> connectNodes(vector<Eigen::Vector5d>nodes);
 	double distPointToLine(Eigen::Vector5d P, Eigen::Vector5d P0, Eigen::Vector5d P1, Eigen::Vector5d &orthogonalPoint);
-	void connectNode(Eigen::Vector5d node, vector<KDT::nodeKnn> nodeNNVct, int nodeIndex, bool isNodeNew);
+	void connectNode(Eigen::Vector5d node, int nearestNeighbourIndex, int nodeIndex, bool isNodeNew);
 	string convertVector5dToString(Eigen::Vector5d node);
 	Eigen::Vector5d stopconfiguration(Eigen::Vector5d node, Eigen::Vector5d nearestNeighbourNode,WormCell *cell, Eigen::Vector5d stepSize);
 	vector<Eigen::Vector5d> getShortestPath(std::vector<Edge>edges, std::vector<Eigen::Vector5d>& samplePoint, int startIndex, int endIndex);
