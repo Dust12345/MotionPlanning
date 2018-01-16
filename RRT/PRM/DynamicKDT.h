@@ -14,7 +14,7 @@ public:
 	DynamicKDT();
 	~DynamicKDT();
 
-	void addPoint(Eigen::Vector5d vct, int elementIndex);
+	void addPoint(Eigen::Vector5d vct);
 	int getNN(Eigen::Vector5d vct);
 
 	//an element that represents a vector5 in the k-d tree
@@ -86,7 +86,7 @@ private:
 
 	PointCloud cloud;
 	dynamic_kd_tree* tree;
-
+	int index;
 	
 
 };

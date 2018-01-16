@@ -36,17 +36,15 @@ int _tmain(int argc, _TCHAR* argv[])
 	p3[3] = 0;
 	p3[4] = 0;
 
-	dkdt.addPoint(p,0);
-	dkdt.addPoint(p2, 1);
+	dkdt.addPoint(p);
+	dkdt.addPoint(p2);
 	
 
 	int index = dkdt.getNN(p3);
 
 	std::cout << index << " is index " << std::endl;
 
-	while (true) {
-
-	}
+	
 
 	return 1;
 

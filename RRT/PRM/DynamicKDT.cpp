@@ -4,7 +4,7 @@
 
 DynamicKDT::DynamicKDT()
 {
-
+	index = 0;
 	tree = new dynamic_kd_tree(5 /*dim*/, cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */));
 
 }
@@ -14,13 +14,13 @@ DynamicKDT::~DynamicKDT()
 {
 }
 
-void DynamicKDT::addPoint(Eigen::Vector5d vct, int elementIndex) {
-	Element e = Element(vct, elementIndex);
+void DynamicKDT::addPoint(Eigen::Vector5d vct) {
+	Element e = Element(vct, index);
 
 	cloud.pts.push_back(e);
 
-	tree->addPoints(elementIndex, elementIndex);
-
+	tree->addPoints(index, index);
+	index++;
 }
 int DynamicKDT::getNN(Eigen::Vector5d vct)
 {
