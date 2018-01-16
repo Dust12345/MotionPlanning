@@ -5,29 +5,28 @@
 #include <math.h>
 
 using namespace nanoflann;
-class KDT
+class DynamicKDT
 {
 public:
 
-	//compines the index of a node and the indicies of its nearest neigtbors
-	struct nodeKnn {
-	public:
-		int index;
-		std::vector<int> nn;
-		double avrgDist;
-
-	};
 	
+
+	DynamicKDT();
+	~DynamicKDT();
+
+	void addPoint(Eigen::Vector5d vct, int elementIndex);
+	int getNN(Eigen::Vector5d vct);
+
 	//an element that represents a vector5 in the k-d tree
-	struct Element {	
-		
+	struct Element {
+
 		//default constructor
 		Element() {
 
 		}
 
 		//constructor which takes the values of a vec5
-		Element(Eigen::Vector5d vct,int elementIndex)
+		Element(Eigen::Vector5d vct, int elementIndex)
 		{
 			index = elementIndex;
 			values.push_back(vct[0]);
@@ -41,7 +40,7 @@ public:
 		std::vector<double> values;
 		//the index if this elements in the vector5 vector
 		int index;
-		
+
 	};
 
 	//represents the set of all points in the confifguration space
@@ -60,7 +59,7 @@ public:
 		inline double kdtree_get_pt(const size_t idx, int dim) const
 		{
 			if (dim >= pts[idx].values.size()) {
-				return  pts[idx].values.at(pts[idx].values.size()-1);
+				return  pts[idx].values.at(pts[idx].values.size() - 1);
 			}
 			else {
 				return  pts[idx].values.at(dim);
@@ -76,25 +75,19 @@ public:
 
 	};
 
+
+private:
 	// construct a kd-tree index:
-	typedef KDTreeSingleIndexAdaptor<
+	typedef KDTreeSingleIndexDynamicAdaptor<
 		L2_Simple_Adaptor<double, PointCloud >,
 		PointCloud,
 		5 /* dim */
-	> my_kd_tree_t;
+	> dynamic_kd_tree;
 
+	PointCloud cloud;
+	dynamic_kd_tree* tree;
 
 	
 
-private:
-	
-
-public:
-	KDT();
-	~KDT();
-
-	//builds the k-d tree and returns the k nearest neigtbors of all nodes
-	void getKNN(std::vector<Eigen::Vector5d> vct,std::vector<nodeKnn>& nodeNNVct,int startIndex, int k);
-	void getKNN(std::vector<Eigen::Vector5d> vct, std::vector<nodeKnn>& nodeNNVct, int startIndex, int endIndex, int k);
 };
 

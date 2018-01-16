@@ -4,6 +4,8 @@
 #include "Point.h"
 #include "RRTSimple.h"
 #include "RRT5Dof.h"
+#include "DynamicKDT.h"
+
 
 using namespace std;
 namespace bg = boost::geometry;
@@ -12,6 +14,42 @@ namespace bgi = boost::geometry::index;
 /***********************************************************************************************************************************/
 int _tmain(int argc, _TCHAR* argv[])
 {
+	DynamicKDT dkdt;
+	Eigen::Vector5d p;
+	p[0] = 1;
+	p[1] = 1;
+	p[2] = 0;
+	p[3] = 0;
+	p[4] = 0;
+
+	Eigen::Vector5d p2;
+	p2[0] = 5;
+	p2[1] = 5;
+	p2[2] = 0;
+	p2[3] = 0;
+	p2[4] = 0;
+
+	Eigen::Vector5d p3;
+	p3[0] = 4;
+	p3[1] = 4;
+	p3[2] = 0;
+	p3[3] = 0;
+	p3[4] = 0;
+
+	dkdt.addPoint(p,0);
+	dkdt.addPoint(p2, 1);
+	
+
+	int index = dkdt.getNN(p3);
+
+	std::cout << index << " is index " << std::endl;
+
+	while (true) {
+
+	}
+
+	return 1;
+
     WormCell cell;
 	Eigen::VectorXd qStart(5), qGoal(5);
     vector<Eigen::VectorXd> path; // create a point vector for storing the path

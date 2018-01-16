@@ -28,7 +28,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -176,6 +176,7 @@
   <ItemGroup>
     <ClCompile Include="cell.cpp" />
     <ClCompile Include="Dijkstra.cpp" />
+    <ClCompile Include="DynamicKDT.cpp" />
     <ClCompile Include="KDT.cpp" />
     <ClCompile Include="KDTree.cpp" />
     <ClCompile Include="main.cpp" />
@@ -192,6 +193,7 @@
     <ClInclude Include="..\..\PRM\nanoflann.hpp" />
     <ClInclude Include="cell.h" />
     <ClInclude Include="Dijkstra.h" />
+    <ClInclude Include="DynamicKDT.h" />
     <ClInclude Include="KDT.h" />
     <ClInclude Include="KDTree.h" />
     <ClInclude Include="RRT5Dof.h" />
