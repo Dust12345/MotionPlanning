@@ -190,7 +190,7 @@ void RRT5Dof::connectNode(Eigen::Vector5d node, int nearestNeighbourIndex, int n
 					tree.nodes.push_back(stopVector);
 					this->dkdt.addPoint(stopVector);
 					// add Edge between new Point and the point on the line
-					tree.edges.push_back(Edge(nodeIndex, tree.nodes.size() - 1));
+					tree.edges.push_back(Edge(tree.nodes.size() - 2, tree.nodes.size() - 1));
 					this->metric->numberOfEdges++;
 					this->metric->numberOfNodes++;
 				}

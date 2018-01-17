@@ -82,7 +82,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	RRT5Dof::RRT5dofMetrics rrt5dofMetric;
 	RRT5Dof rrt5dof(qStart, qGoal);
-	RRT5Dof::Result result = rrt5dof.getPath(cell, NUMBER_OF_SAMPLES,rrt5dofMetric, stepsize, 5.0);
+	RRT5Dof::Result result = rrt5dof.getPath(cell, NUMBER_OF_SAMPLES,rrt5dofMetric, stepsize, 2.0);
 	rrt5dof.printResult(result.tree.nodes, rrt5dofMetric, false, true);
 	//write_easyrob_program_file(result.path, "RRT5Dof.prg", false);
 	
