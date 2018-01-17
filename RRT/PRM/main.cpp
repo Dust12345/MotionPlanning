@@ -19,7 +19,7 @@ int _tmain(int argc, _TCHAR* argv[])
     vector<Eigen::VectorXd> path; // create a point vector for storing the path
     graph_t g;
     knn_rtree_t rtree;
-    const float stepsize = .025f;
+    
 
 #define TEST_CASE 0
 #ifdef TEST_CASE
@@ -69,7 +69,7 @@ int _tmain(int argc, _TCHAR* argv[])
 #endif
 #endif
 	const int NUMBER_OF_SAMPLES = 50000;
-	
+	const float stepsize = .025f;
 	/**
 	RRTSimple::SimpleRRTMetrics metric;
 	Eigen::VectorXd root(5);
@@ -78,20 +78,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	RRTSimple rrtSimple;
 	RRTSimple::Tree tree = rrtSimple.createTree(root, NUMBER_OF_SAMPLES, metric);
 	rrtSimple.printResult(tree.nodes, metric,true,true);
-	
-	
-	//qStart << 0.5, 0.5, 0., 0., 0.;
 	*/
-	RRT5Dof::RRT5dofMetrics rrt5dofMetric;
-	Eigen::VectorXd movementVector(5);
-	RRT5Dof rrt5dof(qStart, qGoal);
-	RRT5Dof::Result result = rrt5dof.getPath(cell, NUMBER_OF_SAMPLES,rrt5dofMetric, movementVector, 2.0);
-	//rrt5dof.printResult(result.tree.nodes, rrt5dofMetric, true, true);
-	write_easyrob_program_file(result.path, "RRT5Dof.prg", false);
-	//write_easyrob_program_file(path, "RRT5dof.prg", false);
-	
 
-	int a = 0;
+	RRT5Dof::RRT5dofMetrics rrt5dofMetric;
+	RRT5Dof rrt5dof(qStart, qGoal);
+	RRT5Dof::Result result = rrt5dof.getPath(cell, NUMBER_OF_SAMPLES,rrt5dofMetric, stepsize, 5.0);
+	rrt5dof.printResult(result.tree.nodes, rrt5dofMetric, false, true);
+	//write_easyrob_program_file(result.path, "RRT5Dof.prg", false);
 	
     return EXIT_SUCCESS;
 }

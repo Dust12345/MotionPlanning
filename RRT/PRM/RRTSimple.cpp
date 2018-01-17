@@ -104,6 +104,7 @@ void RRTSimple::connectNode(Eigen::Vector5d node, int nearestNeighbourIndex, int
 			splittEdges(nearestNeighbourIndex, mindistanceNodeIndex,tree.nodes.size() - 1,tree.edges);
 			this->metrics->numberOfEdges++;
 			this->metrics->numberOfNodes++;
+			this->metrics->numberOfLineSplitts++;
 
 			return;
 		}
@@ -137,7 +138,6 @@ vector<Eigen::Vector5d> RRTSimple::getSamples(int numberofSample) {
 
 		samples.push_back(sample);
 		this->metrics->numberOfNodes++;
-		//cout << "Point "<<i<<" x:"<<sample[0]<<" y:"<<sample[1] << endl;
 	}
 
 	return samples;
@@ -258,7 +258,7 @@ void RRTSimple::printResult(vector<Eigen::Vector5d> &nodes, RRTSimple::SimpleRRT
 	}
 
 	if (printMetrics) {
-		cout << "------- RRTSimple PRM -------" <<endl;
+		cout << "------- RRTSimple Metrics -------" <<endl;
 		cout << "Number of nodes: " << metrics.numberOfNodes << endl;
 		cout << "Number of edges: " << metrics.numberOfEdges << endl;
 		cout << "Number of nodes on the line: " << metrics.numberOfNodesOnTheLine << endl;

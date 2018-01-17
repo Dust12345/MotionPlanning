@@ -23,7 +23,7 @@ RRT5Dof::~RRT5Dof(){
 
 }
 
-RRT5Dof::Result RRT5Dof::getPath(WormCell &cell, int numberOfSamples,RRT5dofMetrics &metric, Eigen::VectorXd stepSize, double percent) {
+RRT5Dof::Result RRT5Dof::getPath(WormCell &cell, int numberOfSamples,RRT5dofMetrics &metric, float stepSize, double percent) {
 	
 	this->cell = &cell;
 	this->percent = percent;
@@ -44,11 +44,13 @@ RRT5Dof::Result RRT5Dof::getPath(WormCell &cell, int numberOfSamples,RRT5dofMetr
 		return result;
 	}
 
+	clock_t clockStart = clock();
 	std::cout << "Process 1: Generating samples" << endl;
 	vector<Eigen::Vector5d> samples = getSamples(numberOfSamples);
 	std::cout << "Process 2: Connecting nodes" << endl;
+	samples.push_back(this->GOAL);
 	connectNodes(samples);
-
+	this->metric->runtime = (clock() - clockStart) / CLOCKS_PER_SEC;
 	std::cout << "Process 3: Generating gnuplot file" << endl;
 	writeGnuplotFile(tree.nodes, "RRT5dof", tree.edges);
 
@@ -100,6 +102,10 @@ vector<RRT5Dof::Edge> RRT5Dof::connectNodes(vector<Eigen::Vector5d>nodes) {
 		Eigen::Vector5d currentNode = nodes[i];
 		int currentNodeIndex;
 
+		if (nodes[i] == this->GOAL) {
+			int a = 0;
+		}
+
 		auto search = this->generatedNodes.find(convertVector5dToString(currentNode));
 		if (search != this->generatedNodes.end()) {
 			currentNodeIndex = search->second;
@@ -108,8 +114,8 @@ vector<RRT5Dof::Edge> RRT5Dof::connectNodes(vector<Eigen::Vector5d>nodes) {
 		}
 		else {
 			//tree.nodes.push_back(currentNode);
-			this->generatedNodes.insert({ convertVector5dToString(currentNode),i });
-			currentNodeIndex = tree.nodes.size() - 1;
+			//this->generatedNodes.insert({ convertVector5dToString(currentNode),i });
+			currentNodeIndex = - 1;
 			isNodeNew = true;
 		}
 
@@ -170,6 +176,7 @@ void RRT5Dof::connectNode(Eigen::Vector5d node, int nearestNeighbourIndex, int n
 
 					if (isNodeNew == true) {
 						tree.nodes.push_back(node);
+						this->generatedNodes.insert({ convertVector5dToString(node),tree.nodes.size() - 1 });
 						this->dkdt.addPoint(node);
 						tree.edges.push_back(Edge(tree.nodes.size() - 1, tree.nodes.size() - 2));
 					}
@@ -201,9 +208,10 @@ void RRT5Dof::connectNode(Eigen::Vector5d node, int nearestNeighbourIndex, int n
 						tree.nodes.push_back(node);
 						this->dkdt.addPoint(node);
 						tree.edges.push_back(Edge(tree.nodes.size() - 1, tree.nodes.size() - 2));
+						this->generatedNodes.insert({ convertVector5dToString(node),tree.nodes.size() - 1 });
 					}
 					else {
-						tree.edges.push_back(Edge(tree.nodes.size() - 1, nodeIndex));
+						tree.edges.push_back(Edge(nearestNeighbourIndex, nodeIndex));
 					}
 
 					this->metric->numberOfEdges++;
@@ -248,15 +256,15 @@ vector<Eigen::Vector5d> RRT5Dof::getSamples(int numberofSample) {
 
 		samples.push_back(sample);
 		this->metric->numberOfNodes++;
-		cout << "Point "<<i<<" x:"<<sample[0]<<" y:"<<sample[1] << endl;
+		//cout << "Point "<<i<<" x:"<<sample[0]<<" y:"<<sample[1] << endl;
 	}
 
 	return samples;
 }
 
-Eigen::Vector5d RRT5Dof::stopconfiguration(Eigen::Vector5d node, Eigen::Vector5d nearestNeighbourNode, WormCell *cell, Eigen::Vector5d stepSize) {
+Eigen::Vector5d RRT5Dof::stopconfiguration(Eigen::Vector5d node, Eigen::Vector5d nearestNeighbourNode, WormCell *cell, float stepSize) {
 	Eigen::Vector5d movementDirection = node -nearestNeighbourNode;
-	movementDirection = movementDirection * 0.25;
+	movementDirection = movementDirection * stepSize;
 	Eigen::Vector5d result, nextPosition = nearestNeighbourNode;
 	double tmpDistance;
 	int round = 1;
@@ -287,12 +295,10 @@ Eigen::Vector5d RRT5Dof::stopconfiguration(Eigen::Vector5d node, Eigen::Vector5d
 		else {
 			// Rundungsfehler. Es kann passieren das wir nocht genau auf die x und y Koordinaten von Node kommen. Sobald die Distanze wieder wächst wird 
 			// dies als das erreichen des Nodes gewertet. 
-			if (tmpDistance >  vec5Distance(result, node)) {
+			if (tmpDistance <  vec5Distance(result, node)) {
 				return node;
 			}
 		}
-
-
 		round++;
 	}
 
@@ -302,7 +308,7 @@ Eigen::Vector5d RRT5Dof::stopconfiguration(Eigen::Vector5d node, Eigen::Vector5d
 // check if the next Sample is a random or the goal. The result depend on the percent value
 bool RRT5Dof::isNextRandomSampleAsGoal(double percent) {
 	// generate a number between 1 and 100
-	double number = rand() % ((100 - 1) + 1) + 1;
+	double number = rand() % 100 + 1;
 
 	if (number > percent) {
 		return false;
@@ -350,7 +356,7 @@ void RRT5Dof::printResult(vector<Eigen::Vector5d> &nodes, RRT5Dof::RRT5dofMetric
 	}
 
 	if (printMetrics) {
-		cout << "------- RRT5dof PRM -------" << endl;
+		cout << "------- RRT5dof Metrics -------" << endl;
 		cout << "Number of nodes: " << metrics.numberOfNodes << endl;
 		cout << "Number of edges: " << metrics.numberOfEdges << endl;
 		cout << "Number of nodes as goal: " << metrics.numberOfGoalNodes << endl;
@@ -358,6 +364,30 @@ void RRT5Dof::printResult(vector<Eigen::Vector5d> &nodes, RRT5Dof::RRT5dofMetric
 		cout << "Number of lines splitts: " << metrics.numberOfLineSplitts << endl;
 		cout << "Runtime: " << metrics.runtime << "sec" << endl;
 	}
+
+	ofstream myfile;
+	string filename = "RT5DofMeta.txt";
+	myfile.open(filename);
+	myfile << "--------------------Nodes------------------------" << endl;
+	Eigen::Vector5d node;
+	for (int j = 0; j < nodes.size(); j++){
+	
+		node = nodes[j];
+		if (node == this->GOAL) {
+			myfile << "Point " << j << " x:" << node[0] << " y:" << node[1] << " r1:" << node[2] << " r2:" << node[3] << " r3:" << node[4] <<"-- GOAL --"<< endl;
+		}
+		else {
+			myfile << "Point " << j << " x:" << node[0] << " y:" << node[1] << " r1:" << node[2] << " r2:" << node[3] << " r3:" << node[4] << endl;
+		}
+	}
+	myfile << "---------------------------------------------" << endl;
+	myfile << "Number of nodes: " << metrics.numberOfNodes << endl;
+	myfile << "Number of edges: " << metrics.numberOfEdges << endl;
+	myfile << "Number of nodes as goal: " << metrics.numberOfGoalNodes << endl;
+	myfile << "Number of nodes on the line: " << metrics.numberOfNodesOnTheLine << endl;
+	myfile << "Number of lines splitts: " << metrics.numberOfLineSplitts << endl;
+	myfile << "Runtime: " << metrics.runtime << "sec" << endl;
+	myfile.close();
 }
 
 vector<Eigen::Vector5d> RRT5Dof::getShortestPath(vector<Edge>edges, vector<Eigen::Vector5d>& samplePoint, int startIndex, int endIndex)

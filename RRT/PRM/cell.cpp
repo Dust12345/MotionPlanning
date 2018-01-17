@@ -62,7 +62,7 @@ void MyWorm::operator()(boxv_t &obj_robot)
 void MyCell::operator()(boxv_t &obj_obstacle, t3fv_t &tf_obstacle)
 {
     //tf_obstacle.push_back(fcl::Transform3f(fcl::Vec3f(0.45, 0.3, 0)));
-    tf_obstacle.push_back(fcl::Transform3f(fcl::Vec3f(0.75, 0.3, 0)));
+    //tf_obstacle.push_back(fcl::Transform3f(fcl::Vec3f(0.75, 0.3, 0)));
     tf_obstacle.push_back(fcl::Transform3f(fcl::Vec3f(0.3, 0.6, 0)));
     tf_obstacle.push_back(fcl::Transform3f(fcl::Vec3f(0.6, 0.6, 0)));
     tf_obstacle.push_back(fcl::Transform3f(fcl::Vec3f(0.9, 0.6, 0)));

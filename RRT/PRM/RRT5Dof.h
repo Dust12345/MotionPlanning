@@ -29,13 +29,13 @@ public:
 
 	RRT5Dof(Eigen::VectorXd START, Eigen::VectorXd GOAL);
 	~RRT5Dof();
-	Result getPath(WormCell &cell, int numberOfSamples, RRT5dofMetrics &metric, Eigen::VectorXd stepSize, double percent);
+	Result getPath(WormCell &cell, int numberOfSamples, RRT5dofMetrics &metric, float stepSize, double percent);
 	void printResult(std::vector<Eigen::Vector5d> &nodes, RRT5Dof::RRT5dofMetrics &metrics, bool printNodes, bool printMetrics);
 
 private:
 	Eigen::VectorXd START, GOAL;
 	WormCell *cell;
-	Eigen::VectorXd stepSize;
+	float stepSize;
 	double percent = 0;
 	RRT5dofMetrics *metric;
 	int goalIndex = -1;
@@ -49,7 +49,7 @@ private:
 	double distPointToLine(Eigen::Vector5d P, Eigen::Vector5d P0, Eigen::Vector5d P1, Eigen::Vector5d &orthogonalPoint);
 	void connectNode(Eigen::Vector5d node, int nearestNeighbourIndex, int nodeIndex, bool isNodeNew);
 	string convertVector5dToString(Eigen::Vector5d node);
-	Eigen::Vector5d stopconfiguration(Eigen::Vector5d node, Eigen::Vector5d nearestNeighbourNode,WormCell *cell, Eigen::Vector5d stepSize);
+	Eigen::Vector5d stopconfiguration(Eigen::Vector5d node, Eigen::Vector5d nearestNeighbourNode,WormCell *cell, float stepSize);
 	vector<Eigen::Vector5d> getShortestPath(std::vector<Edge>edges, std::vector<Eigen::Vector5d>& samplePoint, int startIndex, int endIndex);
 
 
