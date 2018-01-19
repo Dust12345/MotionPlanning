@@ -311,7 +311,7 @@ std::vector<PRM::Edge> OBPRM::connectionTesting(WormCell& mw, std::vector<PRM::N
 	std::vector<KDT::nodeKnn> nodeNNVct;
 
 	//get the nearest neigtbors for all nodes
-	kdTree.getKNNWithEuclid(samplePoints, nodeNNVct, startIndex, k);
+	//kdTree.getKNNWithEuclid(samplePoints, nodeNNVct, startIndex, k);
 
 	for (int i = 0; i < nodeNNVct.size(); i++) {
 		//for each node, check the connectifity to its NN

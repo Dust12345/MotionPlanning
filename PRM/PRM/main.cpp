@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include <iostream>
 #include "cell.h"
-#include "PRM.h"
-#include "OBPRM.h"
+//#include "PRM.h"
+//#include "OBPRM.h"
 
 using namespace std;
 namespace bg = boost::geometry;
@@ -15,9 +15,19 @@ int _tmain(int argc, _TCHAR* argv[])
     Eigen::VectorXd qStart(5), qGoal(5), q(5);
     vector<Eigen::VectorXd> path; // create a point vector for storing the path
     graph_t g;
-    knn_rtree_t rtree;
+    //knn_rtree_t rtree;
     const float stepsize = .025f;
 
+	Eigen::VectorXd ff(5);
+	ff << .6, .81, DEG2RAD(-90.), DEG2RAD(-180.), DEG2RAD(180.);
+
+	Eigen::VectorXd ff2(5);
+	ff2 << .6, .8, DEG2RAD(-90.), DEG2RAD(-180.), DEG2RAD(180.);
+
+	bool zz = cell.CheckPosition(ff);
+	bool zz2 = cell.CheckPosition(ff2);
+	int h = 3;
+	/*
 #define TEST_CASE 0
 #ifdef TEST_CASE
 #if TEST_CASE == 0
@@ -86,7 +96,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	obprm.printResult(path, obprmMetrics, true, true);
 	path.clear();
 	
-
+	*/
     return EXIT_SUCCESS;
 }
 

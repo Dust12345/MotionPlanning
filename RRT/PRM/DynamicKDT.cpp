@@ -12,6 +12,15 @@ DynamicKDT::DynamicKDT()
 
 DynamicKDT::~DynamicKDT()
 {
+	delete tree;
+}
+
+void DynamicKDT::clear() {
+	index = 0;
+	delete tree;
+	PointCloud c = PointCloud();
+	cloud = c;
+	tree = new dynamic_kd_tree(5 /*dim*/, cloud, KDTreeSingleIndexAdaptorParams(10 /* max leaf */));
 }
 
 void DynamicKDT::addPoint(Eigen::Vector5d vct) {

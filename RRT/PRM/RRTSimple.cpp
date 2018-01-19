@@ -167,7 +167,7 @@ double RRTSimple::vec5Distance(Eigen::Vector5d a, Eigen::Vector5d b)
 {
 	//simple euklidian distance
 	Eigen::Vector5d c = a - b;
-	double sum = pow(c[0], 2) + pow(c[1], 2) + pow(c[2], 2) + pow(c[3], 2) + pow(c[4], 2);
+	double sum = pow(c[0], 2) + pow(c[1], 2)*+ pow(c[2], 2) + pow(c[3], 2) + pow(c[4], 2);
 
 	double length = sqrt(sum);
 

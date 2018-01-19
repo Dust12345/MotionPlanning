@@ -43,6 +43,35 @@ Eigen::Vector5d MyWorm::Random(std::mt19937_64 &rng, std::uniform_real_distribut
     return q;
 }
 
+
+Eigen::Vector5d MyWorm::Random(Eigen::Vector5d base, std::mt19937_64 &rng, std::uniform_real_distribution<double>& unif)
+{
+	Eigen::Vector5d q;
+
+	q(0) = base[0] + unif(rng);
+	q(1) = base[1] + unif(rng);
+
+	if (q(0) < 0) {
+		q(0) = 0;
+	}
+	else if (q(0) > 1) {
+		q(0) = 1;
+	}
+
+	if (q(1) < 0) {
+		q(1) = 0;
+	}
+	else if (q(1) > 1) {
+		q(1) = 1;
+	}
+
+	q(2) = base[2] + M_PI * (2. * unif(rng) - 1.);
+	q(3) = base[3] + M_PI * (2. * unif(rng) - 1.);
+	q(4) = base[4] + M_PI * (2. * unif(rng) - 1.);
+
+	return q;
+}
+
 bool MyWorm::IsInsideRange(const Eigen::Vector5d &q)
 {
     return q(0) >= 0. && q(0) <= 1.
@@ -61,10 +90,10 @@ void MyWorm::operator()(boxv_t &obj_robot)
 
 void MyCell::operator()(boxv_t &obj_obstacle, t3fv_t &tf_obstacle)
 {
-    //tf_obstacle.push_back(fcl::Transform3f(fcl::Vec3f(0.45, 0.3, 0)));
+    tf_obstacle.push_back(fcl::Transform3f(fcl::Vec3f(0.45, 0.3, 0)));
     tf_obstacle.push_back(fcl::Transform3f(fcl::Vec3f(0.75, 0.3, 0)));
-    //tf_obstacle.push_back(fcl::Transform3f(fcl::Vec3f(0.3, 0.6, 0)));
-    tf_obstacle.push_back(fcl::Transform3f(fcl::Vec3f(0.6, 0.6, 0)));
+    tf_obstacle.push_back(fcl::Transform3f(fcl::Vec3f(0.3, 0.6, 0)));
+    //tf_obstacle.push_back(fcl::Transform3f(fcl::Vec3f(0.6, 0.6, 0)));
     tf_obstacle.push_back(fcl::Transform3f(fcl::Vec3f(0.9, 0.6, 0)));
     tf_obstacle.push_back(fcl::Transform3f(fcl::Vec3f(0.45, 0.9, 0)));
     tf_obstacle.push_back(fcl::Transform3f(fcl::Vec3f(0.75, 0.9, 0)));

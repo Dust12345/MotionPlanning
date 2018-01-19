@@ -31,7 +31,7 @@ class RRTSimple
 		void writeGnuplotFile(std::vector<Eigen::Vector5d> &points, string filename, vector<Edge> &edges);
 		void printResult(std::vector<Eigen::Vector5d> &nodes, RRTSimple::SimpleRRTMetrics &metrics, bool printNodes, bool printMetrics);
 
-	protected:
+	//protected:
 		Tree tree;
 		uniform_real_distribution<double> dis;
 		mt19937_64 rng;
@@ -39,7 +39,7 @@ class RRTSimple
 		double vec5Distance(Eigen::Vector5d a, Eigen::Vector5d b);
 
 
-	private:
+	//private:
 		DynamicKDT dkdt;
 		SimpleRRTMetrics *metrics;
 		vector<Eigen::Vector5d> getSamples(int numberofSample);

@@ -68,23 +68,20 @@ int _tmain(int argc, _TCHAR* argv[])
 	qGoal << .6, .95, DEG2RAD(-90.f), 0., 0.;
 #endif
 #endif
-	const int NUMBER_OF_SAMPLES = 50000;
+	const int NUMBER_OF_SAMPLES = 70000;
 	const float stepsize = .025f;
-	/**
-	RRTSimple::SimpleRRTMetrics metric;
-	Eigen::VectorXd root(5);
-	root << 0.5, 0.5, 0., 0., 0.;
 
-	RRTSimple rrtSimple;
-	RRTSimple::Tree tree = rrtSimple.createTree(root, NUMBER_OF_SAMPLES, metric);
-	rrtSimple.printResult(tree.nodes, metric,true,true);
-	*/
 
 	RRT5Dof::RRT5dofMetrics rrt5dofMetric;
-	RRT5Dof rrt5dof(qStart, qGoal);
+
+	RRT5Dof rrt5dof(qGoal, qStart);
+	
 	RRT5Dof::Result result = rrt5dof.getPath(cell, NUMBER_OF_SAMPLES,rrt5dofMetric, stepsize, 2.0);
+
+	
+
 	rrt5dof.printResult(result.tree.nodes, rrt5dofMetric, false, true);
-	//write_easyrob_program_file(result.path, "RRT5Dof.prg", false);
+	write_easyrob_program_file(result.path, "RRT5Dof.prg", false);
 	
     return EXIT_SUCCESS;
 }

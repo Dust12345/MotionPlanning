@@ -94,7 +94,8 @@ public:
 	~KDT();
 
 	//builds the k-d tree and returns the k nearest neigtbors of all nodes
-	void getKNN(std::vector<Eigen::Vector5d> vct,std::vector<nodeKnn>& nodeNNVct,int startIndex, int k);
+	void getKNN(std::vector<Eigen::Vector5d> vct, std::vector<Eigen::Vector5d> toConnect,std::vector<nodeKnn>& nodeNNVct,int startIndex, int k);
+	void getKNN(std::vector<Eigen::Vector5d> vct, std::vector<nodeKnn>& nodeNNVct, int startIndex, int k);
 	void getKNN(std::vector<Eigen::Vector5d> vct, std::vector<nodeKnn>& nodeNNVct, int startIndex, int endIndex, int k);
 };
 

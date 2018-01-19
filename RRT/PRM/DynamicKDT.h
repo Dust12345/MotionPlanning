@@ -16,6 +16,7 @@ public:
 
 	void addPoint(Eigen::Vector5d vct);
 	int getNN(Eigen::Vector5d vct);
+	void clear();
 
 	//an element that represents a vector5 in the k-d tree
 	struct Element {
