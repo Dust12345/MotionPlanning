@@ -35,6 +35,8 @@ RRT5Dof::Result RRT5Dof::getPath(WormCell &cell, int numberOfSamples,RRT5dofMetr
 	RRT5Dof::Result result;
 
 
+	//check for special cases
+	//check if the goal and the start can be reached
 	if (!cell.CheckPosition(GOAL) || !cell.CheckPosition(START))
 	{
 		std::cout << "unreachable goal or start" << std::endl;
@@ -58,17 +60,20 @@ RRT5Dof::Result RRT5Dof::getPath(WormCell &cell, int numberOfSamples,RRT5dofMetr
 	}
 
 	clock_t clockStart = clock();
+	
+	//get the sample points
 	std::cout << "Process 1: Generating samples" << endl;
 	vector<Eigen::Vector5d> samples = getSamples(numberOfSamples);
 	std::cout << "Process 2: Connecting nodes" << endl;
-
+	
+	//build the rrt
 	connectNodes(samples);
-
-
 	this->metric->runtime = (clock() - clockStart) / CLOCKS_PER_SEC;
 	std::cout << "Process 3: Generating gnuplot file" << endl;
+	
 	writeGnuplotFile(tree.nodes, "RRT5dof", tree.edges);
 
+	//check if the goal was reached
 	for (int i = 0; i < tree.nodes.size();i++) {
 
 		if (tree.nodes[i] == this->GOAL) {
@@ -105,105 +110,25 @@ RRT5Dof::Result RRT5Dof::getPath(WormCell &cell, int numberOfSamples,RRT5dofMetr
 	return result;
 }
 
-std::vector<RRT5Dof::Edge> RRT5Dof::checkConnections(WormCell& mw, std::vector<Eigen::Vector5d>& t1,  std::vector<Eigen::Vector5d>& t2,KDT::nodeKnn node)
-{
-	std::vector<Edge> edges;
-
-	// nodeA is the base node
-	Eigen::Vector5d nodeA = t2[node.index];
-	int failedAttempts = 0;
-
-	for (int i = 0; i < node.nn.size(); i++)
-	{
-		//nodeB is one of the base nodes nearest neigtbors
-		Eigen::Vector5d nodeB = t1[node.nn[i]];
-
-		//check if the nodes can be connected
-		bool connected = canConnect(mw, nodeA, nodeB);
-
-		if (connected)
-		{
-			//nodes can be connected, create an edge
-			Edge e;
-			e.first = node.index;
-			e.second = node.nn[i];
-			edges.push_back(e);
-		}
-		else {
-			failedAttempts++;
-		}
-	}
-
-
-
-	return edges;
-
-}
 
 bool RRT5Dof::canConnect(WormCell& mw, Eigen::Vector5d a, Eigen::Vector5d b) {
 	//how many collision checks will be done
 	int checks = 30;
 	//simple but not efficent way to check
-	Eigen::Vector5d c = a - b;
+	Eigen::Vector5d step = a - b;
 
-	c = c / (checks - 1);
+	step = step / (checks - 1);
 
 	for (int i = 0; i < (checks - 1); i++) {
-		Eigen::Vector5d d = b + (c*i);
+		Eigen::Vector5d pos = b + (step*i);
 
-		if (!mw.CheckPosition(d)) {
+		if (!mw.CheckPosition(pos)) {
 			return false;
 		}
 	}
 	return true;
 }
 
-void RRT5Dof::mergeTrees(Tree& t1, Tree& t2)
-{
-
-	std::vector<Edge> edges;
-	KDT kd;
-	std::vector<KDT::nodeKnn> nodeNNVct;
-	//get the nearest neigtbors for all nodes
-	kd.getKNN(t1.nodes,t2.nodes ,nodeNNVct, 0, 6);
-
-
-	for (int i = 0; i < nodeNNVct.size(); i++) {
-		//for each node, check the connectifity to its NN
-	
-		std::vector<Edge> edgesForNode = checkConnections((*cell), t1.nodes,t2.nodes, nodeNNVct[i]);
-
-		//add the adges
-		for (int j = 0; j < edgesForNode.size(); j++) {
-			edges.push_back(edgesForNode[j]);
-		}
-	}
-
-	//merge t2 into t1
-	int t1OriginalSize = t1.nodes.size();
-	for (int i = 0; i < t2.nodes.size(); i++) {
-		t1.nodes.push_back(t2.nodes[i]);
-	}
-
-	for (int i = 0; i < t2.edges.size(); i++) {
-		Edge & e = t2.edges[i];
-		//add the offset that the nodes in t2 will have in t1
-		e.first += t1OriginalSize;
-		e.second += t1OriginalSize;
-		t1.edges.push_back(e);
-	}
-
-	for (int i = 0; i < edges.size(); i++) {
-		Edge & e = edges[i];
-		//the first is from t2 so we have to add an offset
-		e.first += t1OriginalSize;
-		
-		t1.edges.push_back(e);
-	}
-
-
-	
-}
 
 vector<RRT5Dof::Edge> RRT5Dof::connectNodes(vector<Eigen::Vector5d>nodes) {
 
@@ -213,17 +138,14 @@ vector<RRT5Dof::Edge> RRT5Dof::connectNodes(vector<Eigen::Vector5d>nodes) {
 	tree.nodes.push_back(this->START);
 	this->dkdt.addPoint(this->START);
 	this->generatedNodes.insert({ convertVector5dToString(this->START),tree.nodes.size() - 1 });
-	
-	
 
-	for (int i = 0; i < nodes.size(); i++) {
-		
-		
+	for (int i = 0; i < nodes.size(); i++)
+	{
 		
 		Eigen::Vector5d currentNode = nodes[i];
 		int currentNodeIndex;
-
 	
+		//check if the node is new or was added before
 		auto search = this->generatedNodes.find(convertVector5dToString(currentNode));
 		if (search != this->generatedNodes.end()) {
 			currentNodeIndex = search->second;
@@ -235,6 +157,7 @@ vector<RRT5Dof::Edge> RRT5Dof::connectNodes(vector<Eigen::Vector5d>nodes) {
 			isNodeNew = true;
 		}
 
+		//get the NN of the current node
 		nearestNeighbourIndex = dkdt.getNN(currentNode);
 		connectNode(currentNode, nearestNeighbourIndex, currentNodeIndex, isNodeNew,i);
 	}
@@ -305,16 +228,17 @@ void RRT5Dof::connectNode(Eigen::Vector5d node, int nearestNeighbourIndex, int n
 						tree.edges.push_back(Edge(tree.nodes.size() - 1, nodeIndex));
 					}
 
+					//the node we just added was a node that is close to the goal
+					//because of that is is likly we can connect to the goal and try to do so
+					if (sampleIndex%nearSamlpleRate == 0&&foundPathToGoal && !goalFound) {
+						bool connacable = canConnect((*cell), node, GOAL);
 
-					if (sampleIndex%nearSamlpleRate == 0&&neverDone && !goalFound) {
-						bool r = canConnect((*cell), node, GOAL);
-
-						if (r) {
+						if (connacable) {
 							tree.nodes.push_back(GOAL);
 							this->generatedNodes.insert({ convertVector5dToString(GOAL),tree.nodes.size() - 1 });
 							this->dkdt.addPoint(GOAL);
 							tree.edges.push_back(Edge(tree.nodes.size() - 1, tree.nodes.size() - 2));
-							neverDone = false;
+							foundPathToGoal = false;
 						}
 
 					}
@@ -353,16 +277,17 @@ void RRT5Dof::connectNode(Eigen::Vector5d node, int nearestNeighbourIndex, int n
 						tree.edges.push_back(Edge(nearestNeighbourIndex, nodeIndex));
 					}
 
+					//the node we just added was a node that is close to the goal
+					//because of that is is likly we can connect to the goal and try to do so
+					if (sampleIndex%nearSamlpleRate == 0 && foundPathToGoal && !goalFound) {
+						bool connectable = canConnect((*cell), node, GOAL);
 
-					if (sampleIndex%nearSamlpleRate == 0 && neverDone && !goalFound) {
-						bool r = canConnect((*cell), node, GOAL);
-
-						if (r) {
+						if (connectable) {
 							tree.nodes.push_back(GOAL);
 							this->generatedNodes.insert({ convertVector5dToString(GOAL),tree.nodes.size() - 1 });
 							this->dkdt.addPoint(GOAL);
 							tree.edges.push_back(Edge(tree.nodes.size() - 1, tree.nodes.size() - 2));
-							neverDone = false;
+							foundPathToGoal = false;
 						}
 					}
 
@@ -399,11 +324,13 @@ vector<Eigen::Vector5d> RRT5Dof::getSamples(int numberofSample) {
 			
 			}
 			else {
-				// generating a random sample
+				
+				//generate a random sample near the goal
 				if (i % nearSamlpleRate == 0&& i>numberofSample/2) {
 					sample = MyWorm::Random(GOAL,rng, dis2);
 				}
 				else {
+					// generating a random sample
 					sample = MyWorm::Random(rng, dis);
 				}
 
@@ -417,57 +344,11 @@ vector<Eigen::Vector5d> RRT5Dof::getSamples(int numberofSample) {
 
 		samples.push_back(sample);
 		this->metric->numberOfNodes++;
-		//cout << "Point "<<i<<" x:"<<sample[0]<<" y:"<<sample[1] << endl;
 	}
 
 	return samples;
 }
 
-Eigen::Vector5d RRT5Dof::stopconfiguration(Eigen::Vector5d node, Eigen::Vector5d nearestNeighbourNode, WormCell *cell, float stepSize) {
-	
-	return stopconfiguration(node, nearestNeighbourNode, cell);
-	
-	Eigen::Vector5d movementDirection = node -nearestNeighbourNode;
-	movementDirection = movementDirection * stepSize;
-	Eigen::Vector5d result, nextPosition = nearestNeighbourNode;
-	double tmpDistance;
-	int round = 1;
-
-	while (true) {
-		// compute the next step torward node
-		tmpDistance = vec5Distance(result, node);
-		nextPosition = nextPosition + movementDirection;
-
-		// check if the next step lie in free space
-		if (!cell->CheckPosition(nextPosition)) {
-
-			// Wenn es beim ersten Durhlauf eine kollision gefunden wird, gebe den nächsten Nachbar Punkt zurück
-			if (round == 1) {
-				return nearestNeighbourNode;
-			}
-			// Wenn es nach dem ersten Durhlauf eine kollision gefunden wird. gebe den letzten gefundenen Punkt zurück
-			return result;
-		}
-		else {
-			result = nextPosition;
-		}
-		
-		// check if the current founded step arrive the node
-		if (((result.x() >= node.x()) && (result.y() >= node.y()))) {
-			return node;
-		}
-		else {
-			// Rundungsfehler. Es kann passieren das wir nocht genau auf die x und y Koordinaten von Node kommen. Sobald die Distanze wieder wächst wird 
-			// dies als das erreichen des Nodes gewertet. 
-			if (tmpDistance <  vec5Distance(result, node)) {
-				return node;
-			}
-		}
-		round++;
-	}
-
-	return result;
-}
 
 
 Eigen::Vector5d RRT5Dof::stopconfiguration(Eigen::Vector5d node, Eigen::Vector5d nearestNeighbourNode, WormCell *cell)
@@ -475,18 +356,20 @@ Eigen::Vector5d RRT5Dof::stopconfiguration(Eigen::Vector5d node, Eigen::Vector5d
 	//how many collision checks will be done
 	int checks = 30;
 	//simple but not efficent way to check
-	Eigen::Vector5d c = node - nearestNeighbourNode;
+	Eigen::Vector5d step = node - nearestNeighbourNode;
 	Eigen::Vector5d last = nearestNeighbourNode;
-	c = c / (checks - 1);
+	step = step / (checks - 1);
 
 	for (int i = 0; i < (checks - 1); i++) {
-		Eigen::Vector5d d = nearestNeighbourNode + (c*i);
+		Eigen::Vector5d pos = nearestNeighbourNode + (step*i);
 
-		if (!cell->CheckPosition(d)) {
+		if (!cell->CheckPosition(pos)) {
+			//return the last free configuration
 			return last;
 		}
 		else {
-			last = d;
+			//store the last free configuration
+			last = pos;
 		}
 	}
 	return node;
@@ -494,23 +377,14 @@ Eigen::Vector5d RRT5Dof::stopconfiguration(Eigen::Vector5d node, Eigen::Vector5d
 
 
 // check if the next Sample is a random or the goal. The result depend on the percent value
-bool RRT5Dof::isNextRandomSampleAsGoal(double percent,int number) {
-	// generate a number between 1 and 100
-	
-	if (number % 30 == 0) {
+bool RRT5Dof::isNextRandomSampleAsGoal(double percent,int number)
+{
+	if (number % goalSampleRate == 0) {
 		return true;
 	}
 	else {
 		return false;
 	}
-	
-	
-	/*double number = rand() % 100 + 1;
-
-	if (number > percent) {
-		return false;
-	}
-	return true;*/
 }
 
 // compute the min. distance between a Point and a linie and compute the orthogonal point on the line
@@ -627,7 +501,6 @@ vector<Eigen::Vector5d> RRT5Dof::getShortestPath(vector<Edge>edges, vector<Eigen
 
 }
 
-// get all nodesindexes which have a relation with the current node (nodeindex)
 vector<int> RRT5Dof::getAllRelationNodes(int currentNodeIndex, vector<Edge> &edges) {
 	vector<int> relationNodeIndex;
 
